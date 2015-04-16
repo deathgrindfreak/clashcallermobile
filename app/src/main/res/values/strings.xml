@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Clash Caller Mobile</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_start_war">Start War</string>
+
+    <string name="api_url">http://clashcaller.com/api.php?</string>
+
+    <string-array name="war_sizes">
+        <item>50 vs 50</item>
+        <item>45 vs 45</item>
+        <item>40 vs 40</item>
+        <item>35 vs 35</item>
+        <item>30 vs 30</item>
+        <item>25 vs 25</item>
+        <item>20 vs 20</item>
+        <item>15 vs 15</item>
+        <item>10 vs 10</item>
+    </string-array>
+
+    <string-array name="timer_options">
+        <item>none</item>
+        <item>(1/2) flex timer</item>
+        <item>(1/4) flex timer</item>
+        <item>1 hours</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>4 hours</item>
+        <item>5 hours</item>
+        <item>6 hours</item>
+        <item>7 hours</item>
+        <item>8 hours</item>
+        <item>9 hours</item>
+        <item>10 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+    </string-array>
+    <string name="title_activity_show_war">ShowWarActivity</string>
+</resources>
