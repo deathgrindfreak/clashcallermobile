@@ -61,4 +61,9 @@ public class MainActivity extends ActionBarActivity {
         Intent startWarIntent = new Intent(this, StartWarActivity.class);
         startActivity(startWarIntent);
     }
+
+    public void joinWarButtonClicked(View view) {
+        Intent joinWarIntent = new Intent(this, JoinWarActivity.class);
+        startActivity(joinWarIntent);
+    }
 }

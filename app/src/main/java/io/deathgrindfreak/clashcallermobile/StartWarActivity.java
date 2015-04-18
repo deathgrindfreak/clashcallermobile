@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.deathgrindfreak.controllers.StartWarController;
+import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
@@ -201,14 +202,20 @@ public class StartWarActivity extends ActionBarActivity {
         } else {
             Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-            String warId = startWarController.getWarId(R.string.api_url + urlMap.getEncodeURIString());
+            String warId = startWarController.getWarId(getResources().getString(R.string.api_url),
+                    urlMap.getEncodeURIString());
+
+            UrlParameterContainer<String, String> clanInfoUrl =
+                    new UrlParameterContainer<>(new String[] {"REQUEST", "warcode"});
+
+            clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+            clanInfoUrl.put("warcode", warId.substring(4));
+
+            Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
+                    clanInfoUrl.getEncodeURIString());
 
             if (warId != null && !warId.isEmpty()) {
-                showWarIntent.putExtra("cname", clanName);
-                showWarIntent.putExtra("ename", enemyClanName);
-                showWarIntent.putExtra("size", urlMap.get("size"));
-                showWarIntent.putExtra("warId", warId);
-
+                showWarIntent.putExtra("clan", clanInfo);
                 startActivity(showWarIntent);
             } else {
                 // TODO handle empty warId

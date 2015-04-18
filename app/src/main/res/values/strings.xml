@@ -37,4 +37,5 @@
         <item>24 hours</item>
     </string-array>
     <string name="title_activity_show_war">ShowWarActivity</string>
+    <string name="title_activity_join_war">JoinWarActivity</string>
 </resources>

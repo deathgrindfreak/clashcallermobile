@@ -25,6 +25,10 @@
             android:name=".ShowWarActivity"
             android:label="@string/title_activity_show_war" >
         </activity>
+        <activity
+            android:name=".JoinWarActivity"
+            android:label="@string/title_activity_join_war" >
+        </activity>
     </application>
 
 </manifest>

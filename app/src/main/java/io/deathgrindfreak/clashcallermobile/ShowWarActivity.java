@@ -4,14 +4,26 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import io.deathgrindfreak.model.Clan;
 
 
 public class ShowWarActivity extends ActionBarActivity {
+
+    Clan clanInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_war);
+
+        Bundle data = getIntent().getExtras();
+        clanInfo = data.getParcelable("clan");
+
+        // TODO remove json test print
+        TextView tv = (TextView) findViewById(R.id.testTextView);
+        tv.setText(clanInfo.toString());
     }
 
 
