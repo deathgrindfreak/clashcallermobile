@@ -6,14 +6,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import io.deathgrindfreak.clashcallermobile.R;
 import io.deathgrindfreak.controllers.StartWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.UrlParameterContainer;
@@ -23,6 +24,9 @@ public class JoinWarActivity extends ActionBarActivity {
     private Typeface clashFont;
     private StartWarController startWarController;
 
+    private String warId;
+
+    private static final String JOINTAG = "Join War Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +34,6 @@ public class JoinWarActivity extends ActionBarActivity {
         setContentView(R.layout.activity_join_war);
 
         startWarController = new StartWarController(this);
-
-        initListeners();
 
         // Set the Clash of Clans font
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
@@ -69,46 +71,43 @@ public class JoinWarActivity extends ActionBarActivity {
     }
 
 
-    public void initListeners() {
-
-        EditText warCodeField = (EditText) findViewById(R.id.warIdCodeField);
-        warCodeField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+    private String getWarIdFromField() {
+        EditText warField = (EditText) findViewById(R.id.warIdCodeField);
+        return warField.getText().toString();
     }
 
 
-    public void submitButtonClicked(View view) {
+    public void joinSubmitButtonClicked(View view) {
 
-        Intent showWarIntent = new Intent(this, ShowWarActivity.class);
+        String warId = getWarIdFromField();
 
-        UrlParameterContainer<String, String> clanInfoUrl =
-                new UrlParameterContainer<>(new String[] {"REQUEST", "warcode"});
+        // TODO check for length requirements for warID
+        if (warId != null && !warId.isEmpty()) {
 
-        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-        clanInfoUrl.put("warcode", warId);
+            Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-        Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
-                clanInfoUrl.getEncodeURIString());
+            UrlParameterContainer<String, String> clanInfoUrl =
+                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
 
-        if (clanInfo != null) {
-            showWarIntent.putExtra("clan", clanInfo);
-            startActivity(showWarIntent);
+            clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+            clanInfoUrl.put("warcode", warId);
+
+            Log.i(JOINTAG, "warId passed in join: " + warId);
+
+            Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
+                    clanInfoUrl.getEncodeURIString());
+
+            Log.d(JOINTAG, "<-- CLANINFO -->");
+            Log.d(JOINTAG, clanInfo.toString());
+
+            if (clanInfo != null) {
+                showWarIntent.putExtra("clan", clanInfo);
+                startActivity(showWarIntent);
+            } else {
+                // TODO handle empty Clan
+            }
         } else {
-            // TODO handle empty Clan
+            Toast.makeText(this, "Please enter a valid War ID!", Toast.LENGTH_SHORT).show();
         }
     }
 }

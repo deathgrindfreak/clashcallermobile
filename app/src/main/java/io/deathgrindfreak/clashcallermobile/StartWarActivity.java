@@ -4,16 +4,12 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -37,8 +33,6 @@ public class StartWarActivity extends ActionBarActivity {
         setContentView(R.layout.activity_start_war);
 
         startWarController = new StartWarController(this);
-
-        initListeners();
 
         setWarSizeCombo();
         setTimerCombo();
@@ -92,109 +86,47 @@ public class StartWarActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initListeners() {
+    private UrlParameterContainer<String, String> getValuesFromScreen(UrlParameterContainer<String, String> params) {
         EditText cNameField = (EditText) findViewById(R.id.clanNameField);
-        cNameField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         EditText eNameField = (EditText) findViewById(R.id.enemyNameField);
-        eNameField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         EditText cIdField = (EditText) findViewById(R.id.clanId);
-        cIdField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         EditText eIdField = (EditText) findViewById(R.id.enemyId);
-        eIdField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         Spinner warSizeSpinner = (Spinner) findViewById(R.id.warSizeSpinner);
-        warSizeSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
-
-        Spinner timerSpinner = (Spinner) findViewById(R.id.timerSpinner);
-        timerSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
-
+        Spinner timerSizeSpinner = (Spinner) findViewById(R.id.timerSpinner);
         CheckBox archiveCB = (CheckBox) findViewById(R.id.archiveCB);
-        archiveCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-            }
-        });
+        params.put("cname", cNameField.getText().toString());
+        params.put("ename", eNameField.getText().toString());
+        params.put("size", getResources().getStringArray(R.array.war_values)[warSizeSpinner.getSelectedItemPosition()]);
+        params.put("timer", getResources().getStringArray(R.array.timer_values)[timerSizeSpinner.getSelectedItemPosition()]);
+
+        String cId = cIdField.getText().toString();
+        String eId = eIdField.getText().toString();
+        if (cId == null || cId.isEmpty()) {
+            params.put("clanid", null);
+        } else {
+            params.put("clanid", cId);
+        }
+        if (eId == null || eId.isEmpty()) {
+            params.put("clanid", null);
+        } else {
+            params.put("clanid", eId);
+        }
+
+        params.put("searchable", (archiveCB.isChecked() ? "1" : "0"));
+
+        return params;
     }
 
     public void submitButtonClicked(View view) {
 
+        // Get the values from the screen
+        urlMap = getValuesFromScreen(urlMap);
+
         String clanName = urlMap.get("cname");
         String enemyClanName = urlMap.get("ename");
 
+        // Clan name and enemy name must be filled out
         if (clanName == null || clanName.isEmpty()) {
             Toast.makeText(this, "Please fill out the Clan Name field", Toast.LENGTH_SHORT).show();
         } else if (enemyClanName == null || enemyClanName.isEmpty()) {

@@ -1,11 +1,14 @@
 package io.deathgrindfreak.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
  * Created by jcbell on 4/18/2015.
  */
-public class ClanMember {
+public class ClanMember implements Parcelable {
     private int posy;
     private int posx;
     private int stars;
@@ -14,6 +17,48 @@ public class ClanMember {
     private Date updatetime;
     private String note;
     private String last;
+
+    private ClanMember(Parcel in) {
+        posy = in.readInt();
+        posx = in.readInt();
+        stars = in.readInt();
+        playername = in.readString();
+
+        // TODO replace serializable with long version
+        calltime = (Date) in.readSerializable();
+        updatetime = (Date) in.readSerializable();
+        note = in.readString();
+        last = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(posy);
+        dest.writeInt(posx);
+        dest.writeInt(stars);
+        dest.writeString(playername);
+        dest.writeSerializable(calltime);
+        dest.writeSerializable(updatetime);
+        dest.writeString(note);
+        dest.writeString(last);
+    }
+
+    public static final Creator<ClanMember> CREATOR = new Creator<ClanMember>() {
+        @Override
+        public ClanMember createFromParcel(Parcel source) {
+            return new ClanMember(source);
+        }
+
+        @Override
+        public ClanMember[] newArray(int size) {
+            return new ClanMember[size];
+        }
+    };
 
     @Override
     public String toString() {

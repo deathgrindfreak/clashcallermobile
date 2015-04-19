@@ -30,7 +30,8 @@
             android:id="@+id/joinWarButton"
             android:textColor="@color/button_blue"
             android:textSize="25dp"
-            style="?android:attr/borderlessButtonStyle" />
+            style="?android:attr/borderlessButtonStyle"
+            android:onClick="joinWarButtonClicked" />
 
         <Button
             android:layout_width="wrap_content"

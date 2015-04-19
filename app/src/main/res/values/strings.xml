@@ -19,6 +19,18 @@
         <item>10 vs 10</item>
     </string-array>
 
+    <string-array name="war_values">
+        <item>50</item>
+        <item>45</item>
+        <item>40</item>
+        <item>35</item>
+        <item>30</item>
+        <item>25</item>
+        <item>20</item>
+        <item>15</item>
+        <item>10</item>
+    </string-array>
+
     <string-array name="timer_options">
         <item>none</item>
         <item>(1/2) flex timer</item>
@@ -36,6 +48,25 @@
         <item>12 hours</item>
         <item>24 hours</item>
     </string-array>
+
+    <string-array name="timer_values">
+        <item>none</item>
+        <item>-2</item>
+        <item>-4</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
     <string name="title_activity_show_war">ShowWarActivity</string>
     <string name="title_activity_join_war">JoinWarActivity</string>
 </resources>

@@ -11,9 +11,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
+import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
 import io.deathgrindfreak.clashcallermobile.StartWarActivity;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.ApiClassConnector;
 import io.deathgrindfreak.util.JsonParse;
 
 /**
@@ -22,11 +25,16 @@ import io.deathgrindfreak.util.JsonParse;
 public class StartWarController {
 
     private StartWarActivity startWarActivity;
+    private JoinWarActivity joinWarActivity;
 
     private static final String SWCTAG = "Start War Controller";
 
     public StartWarController(StartWarActivity startWarActivity) {
         this.startWarActivity = startWarActivity;
+    }
+
+    public StartWarController(JoinWarActivity joinWarActivity) {
+        this.joinWarActivity = joinWarActivity;
     }
 
     public String getWarId(String url, String parms) {
@@ -41,40 +49,14 @@ public class StartWarController {
 
 
     private String getReturnString(String url , String parms) {
-
-        BufferedReader in = null;
-        StringBuilder sb = null;
-
+        String returnStr = "";
         try {
-            URL warUrl = new URL(url);
-            HttpURLConnection warCon = (HttpURLConnection) warUrl.openConnection();
-            warCon.setRequestMethod("POST");
-            warCon.setDoOutput(true);
-            warCon.connect();
-
-            PrintStream ps = new PrintStream(warCon.getOutputStream());
-            ps.print(parms);
-
-            in = new BufferedReader(new InputStreamReader(warCon.getInputStream()));
-
-            String str;
-            sb = new StringBuilder();
-            while((str = in.readLine()) != null)
-                sb.append(str);
-
-        } catch (MalformedURLException ex) {
-            Log.e(SWCTAG, ex.getMessage());
-        } catch (IOException ex) {
-            Log.e(SWCTAG, ex.getMessage());
-        } finally {
-            try {
-                if (in != null)
-                    in.close();
-            } catch (IOException ex) {
-                Log.e(SWCTAG, ex.getMessage());
-            }
+            returnStr = new ApiClassConnector().execute(url, parms).get();
+        } catch (InterruptedException e) {
+            Log.e(SWCTAG, e.getMessage());
+        } catch (ExecutionException e) {
+            Log.e(SWCTAG, e.getMessage());
         }
-
-        return sb.toString();
+        return returnStr;
     }
 }

@@ -1,6 +1,7 @@
 package io.deathgrindfreak.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import io.deathgrindfreak.model.Clan;
 
@@ -10,6 +11,8 @@ import io.deathgrindfreak.model.Clan;
 public class JsonParse {
 
     public static Clan parseWarJson(String jsonString) {
-        return (new Gson()).fromJson(jsonString, Clan.class);
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+        return gson.fromJson(jsonString, Clan.class);
     }
 }
