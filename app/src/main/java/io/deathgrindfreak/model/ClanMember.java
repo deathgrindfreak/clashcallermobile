@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by jcbell on 4/18/2015.
  */
-public class ClanMember implements Parcelable {
+public class ClanMember implements Parcelable, Comparable<ClanMember> {
     private int posy;
     private int posx;
     private int stars;
@@ -59,6 +59,16 @@ public class ClanMember implements Parcelable {
             return new ClanMember[size];
         }
     };
+
+
+    @Override
+    public int compareTo(ClanMember other) {
+        if (this.posy != other.posy) {
+            return Integer.compare(this.posy, other.posy);
+        } else {
+            return Integer.compare(this.posx, other.posx);
+        }
+    }
 
     @Override
     public String toString() {
