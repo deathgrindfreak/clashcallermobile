@@ -63,7 +63,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ScrollView mainView = (ScrollView) findViewById(R.id.showWarLayout);
 
         mainView.addView(getGeneralLayout(clan.getGeneral()));
-        //mainView.addView(getCalls(clan.getCalls()));
+        mainView.addView(getCalls(clan.getCalls()));
     }
 
 
@@ -210,10 +210,45 @@ public class ShowWarActivity extends ActionBarActivity {
         rowLayout.setGravity(Gravity.TOP);
         rowLayout.setOrientation(LinearLayout.HORIZONTAL);
 
+        // TODO Add stars in front of comment (keep alignment the same)
+
+        // TODO Then add Comment button
+
+        // TODO Add number
+
+        // Add Clan members
         LinearLayout memLayout = new LinearLayout(this);
         memLayout.setGravity(Gravity.TOP);
         memLayout.setOrientation(LinearLayout.VERTICAL);
 
+        for (ClanMember mem : rowList)
+            memLayout.addView(makeClanMemberButtonLayout(mem));
+
+        // TODO Add + button
+
         return rowLayout;
+    }
+
+    private LinearLayout makeClanMemberButtonLayout(ClanMember member) {
+
+        LinearLayout memLayout = new LinearLayout(this);
+        memLayout.setGravity(Gravity.TOP);
+        memLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        Button memberButton = new Button(this);
+        memberButton.setText(member.getPlayername());
+        memberButton.setTypeFace(clanFont);
+        memberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen.abc_text_size_medium_material));
+        // TODO set a listener here
+
+        Button xButton = new Button(this);
+        // TODO Set button to picture
+        // TODO set a listener here
+
+        memLayout.addView(memberButton);
+        memLayout.addview(xButton);
+
+        return memLayout;
     }
 }

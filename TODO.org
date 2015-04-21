@@ -1,0 +1,8 @@
+* TODO/CHANGELOG
+** TODO Add buttons for position call list
+** TODO Disable submit button on click for start/join war activities
+** TODO Add a logo to activity bar
+** TODO Add refresh button on show war activity
+** TODO Add search activity
+** TODO Add about activity
+** TODO Add tabbed layout to show war activity 
