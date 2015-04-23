@@ -7,127 +7,133 @@
     tools:context="io.deathgrindfreak.clashcallermobile.StartWarActivity"
     android:gravity="center">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Start War"
-            android:id="@+id/startWarTextView"
-            android:textColor="@color/button_blue"
-            android:textSize="25dp"
-            android:phoneNumber="false"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="15dp" />
-
-        <EditText
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/clanNameField"
-            android:inputType="text"
-            android:hint="Your Clan Name"
-            android:layout_margin="5dp" />
-
-        <EditText
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/enemyNameField"
-            android:inputType="text"
-            android:hint="Enemy Clan Name"
-            android:layout_margin="5dp" />
+        android:id="@+id/scrollView" >
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="150dp"
-            android:layout_height="fill_parent"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp">
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="War Size:"
-                android:id="@+id/warSpinnerLabel" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Start War"
+                android:id="@+id/startWarTextView"
+                android:textColor="@color/button_blue"
+                android:textSize="25dp"
+                android:phoneNumber="false"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="15dp" />
 
-            <Spinner
-                android:layout_width="fill_parent"
+            <EditText
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/warSizeSpinner" />
-        </LinearLayout>
+                android:id="@+id/clanNameField"
+                android:inputType="text"
+                android:hint="Your Clan Name"
+                android:layout_margin="5dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="More Options"
-            android:id="@+id/optionsTextView"
-            android:textColor="@color/button_blue"
-            android:textSize="25dp"
-            android:phoneNumber="false"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="15dp" />
+            <EditText
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/enemyNameField"
+                android:inputType="text"
+                android:hint="Enemy Clan Name"
+                android:layout_margin="5dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="150dp"
-            android:layout_height="fill_parent"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="150dp"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="War Size:"
+                    android:id="@+id/warSpinnerLabel" />
+
+                <Spinner
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/warSizeSpinner" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Timer:"
-                android:id="@+id/timerLabel" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="More Options"
+                android:id="@+id/optionsTextView"
+                android:textColor="@color/button_blue"
+                android:textSize="25dp"
+                android:phoneNumber="false"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="15dp" />
 
-            <Spinner
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="150dp"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Timer:"
+                    android:id="@+id/timerLabel" />
+
+                <Spinner
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/timerSpinner" />
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/timerSpinner" />
+                android:id="@+id/clanId"
+                android:inputType="text"
+                android:hint="Your Clan ID #"
+                android:layout_margin="5dp" />
+
+            <EditText
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/enemyId"
+                android:inputType="text"
+                android:hint="Enemy Clan ID #"
+                android:layout_margin="5dp" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Archive?"
+                android:id="@+id/archiveCB"
+                android:layout_margin="5dp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/submitButton"
+                android:textColor="@color/button_blue"
+                android:layout_margin="5dp"
+                android:background="@color/button_blue"
+                android:textSize="25dp"
+                android:text="SUBMIT"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
+                android:onClick="submitButtonClicked" />
+
         </LinearLayout>
-
-        <EditText
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/clanId"
-            android:inputType="text"
-            android:hint="Your Clan ID #"
-            android:layout_margin="5dp" />
-
-        <EditText
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/enemyId"
-            android:inputType="text"
-            android:hint="Enemy Clan ID #"
-            android:layout_margin="5dp" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Archive?"
-            android:id="@+id/archiveCB"
-            android:layout_margin="5dp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/submitButton"
-            android:textColor="@color/button_blue"
-            android:layout_margin="5dp"
-            android:background="@color/button_blue"
-            android:textSize="25dp"
-            android:text="SUBMIT"
-            android:paddingLeft="7dp"
-            android:paddingRight="7dp"
-            android:onClick="submitButtonClicked" />
-
-    </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

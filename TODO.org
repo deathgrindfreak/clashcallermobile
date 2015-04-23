@@ -6,3 +6,6 @@
 ** TODO Add search activity
 ** TODO Add about activity
 ** TODO Add tabbed layout to show war activity 
+** DONE Make the start war activity scrollable
+** TODO Make layout for show war activity table layout
+CLOSED: [2015-04-22 Wed 21:16]

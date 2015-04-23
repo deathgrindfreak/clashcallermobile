@@ -11,6 +11,8 @@
 <item name="darkorange" type="color">#FFFF8800</item>
 <item name="darkred" type="color">#FFCC0000</item>
 <item name="button_blue" type="color">#01abf2</item>
+<item name="number_gold" type="color">#f5e20b</item>
+<item name="number_grey" type="color">#bdbdbd</item>
 <item name="white" type="color">#FFFFFF</item>
 
 <integer-array name="androidcolors">

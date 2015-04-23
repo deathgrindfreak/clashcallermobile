@@ -5,6 +5,10 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_start_war">Start War</string>
 
+    <string name="clan_message">Update Clan Message</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+
     <string name="api_url">http://clashcaller.com/api.php?</string>
 
     <string-array name="war_sizes">
