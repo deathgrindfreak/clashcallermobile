@@ -2,9 +2,14 @@ package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -14,26 +19,39 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import io.deathgrindfreak.controllers.StartWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
+import io.deathgrindfreak.util.UrlParameterContainer;
 
 
 public class ShowWarActivity extends ActionBarActivity {
+
+    private Button clanMessage;
 
     private Typeface clashFont;
 
     private Clan clanInfo;
 
+    private StartWarController startWarController;
+
+    private static final String SHOWTAG = "Show War Activity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_war);
+
+        startWarController = new StartWarController(this);
 
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
 
@@ -65,6 +83,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     private void displayClanInfo(Clan clan) {
 
@@ -173,7 +192,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
         // Clan message
-        Button clanMessage = new Button(this);
+        clanMessage = new Button(this);
         clanMessage.setPadding(0, dpAsPixels, 0, dpAsPixels);
         clanMessage.setText(gen.getClanmessage());
         clanMessage.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -186,12 +205,24 @@ public class ShowWarActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+                final EditText input = new EditText(ShowWarActivity.this);
+                input.setHint("Message");
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+
                 AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
                         .setTitle("Update Clan Message")
-                        //.setMessage("Are you sure you want to delete this entry?")
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
+
+                                // Get the value from the input field
+                                final String note = input.getText().toString();
+
+                                // Set the value of the button in the app and call API to update
+                                setClanMessage(clanInfo.getGeneral().getWarcode(), note);
+                                clanMessage.setText(note);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -199,14 +230,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                 // do nothing
                             }
                         });
-                        //.setIcon(android.R.drawable.ic_dialog_alert)
 
-                final EditText input = new EditText(ShowWarActivity.this);
-                input.setHint("Message");
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
                 alert.setView(input);
 
                 alert.show();
@@ -218,11 +242,13 @@ public class ShowWarActivity extends ActionBarActivity {
         return mainGenLayout;
     }
 
-    private LinearLayout getCalls(ClanMember[] members) {
+    private TableLayout getCalls(ClanMember[] members) {
 
-        LinearLayout callLayout = new LinearLayout(this);
+        TableLayout callLayout = new TableLayout(this);
+        callLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.WRAP_CONTENT));
         callLayout.setGravity(Gravity.TOP);
-        callLayout.setOrientation(LinearLayout.VERTICAL);
+        callLayout.setOrientation(TableLayout.VERTICAL);
 
         // Sort members by position
         Arrays.sort(members);
@@ -241,18 +267,20 @@ public class ShowWarActivity extends ActionBarActivity {
         return callLayout;
     }
 
-    private LinearLayout getMembersLayout(final int i, ArrayList<ClanMember> rowList) {
+    private TableRow getMembersLayout(final int i, final ArrayList<ClanMember> rowList) {
 
-        LinearLayout rowLayout = new LinearLayout(this);
-        rowLayout.setGravity(Gravity.TOP);
-        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+        final TableRow rowLayout = new TableRow(this);
+        rowLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.WRAP_CONTENT));
 
         // TODO Add stars in front of comment (keep alignment the same)
 
         // TODO Then add Comment button
 
         // Add number button
-        Button numberButton = new Button(this);
+        final Button numberButton = new Button(this);
+        numberButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, 1.3f));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((i + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -270,25 +298,35 @@ public class ShowWarActivity extends ActionBarActivity {
         // TODO set a listener here
         rowLayout.addView(numberButton);
 
+
         // Add Clan members
+        final LinearLayout membLayout = new LinearLayout(this);
+        membLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, 3f));
+        membLayout.setGravity(Gravity.TOP);
+        membLayout.setOrientation(LinearLayout.VERTICAL);
+
         if (!rowList.isEmpty()) {
-            LinearLayout membLayout = new LinearLayout(this);
-            membLayout.setGravity(Gravity.TOP);
-            membLayout.setOrientation(LinearLayout.VERTICAL);
-
             for (ClanMember mem : rowList)
-                membLayout.addView(dummyLayout(mem));
+                membLayout.addView(dummyLayout(mem, membLayout, numberButton));
 
-            rowLayout.addView(membLayout);
         }
 
+        rowLayout.addView(membLayout);
+
+
         // Add + button
+        Drawable plus = getResources().getDrawable(R.drawable.add);
+        plus.setBounds(0, 0, (int)(plus.getIntrinsicWidth()*0.8),
+                (int)(plus.getIntrinsicHeight()*0.8));
+        ScaleDrawable sd = new ScaleDrawable(plus, 0, .8f, .8f);
+
         Button plusButton = new Button(this);
-        plusButton.setGravity(Gravity.LEFT);
-        plusButton.setBackgroundResource(R.drawable.add);
-        plusButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
-        plusButton.setTypeface(clashFont);
+        plusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        plusButton.setGravity(Gravity.CENTER);
+        //plusButton.setBackgroundDrawable(plus);
+        plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
         plusButton.setOnClickListener(new View.OnClickListener() {
 
@@ -297,11 +335,34 @@ public class ShowWarActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+                final EditText input = new EditText(ShowWarActivity.this);
+                input.setHint("Your Name");
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+
                 AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
                         .setTitle("Call Target #" + num)
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
                             public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
+
+                                String name = input.getText().toString();
+
+                                // Call the api
+                                appendCall(clanInfo.getGeneral().getWarcode(), String.valueOf(num - 1), name);
+
+                                // Set up a new clan member
+                                ClanMember mem = new ClanMember();
+                                mem.setPlayername(name);
+                                mem.setPosy(num - 1);
+                                mem.setPosx(rowList.size());
+
+                                // Add to the clan view
+                                membLayout.addView(dummyLayout(mem, membLayout, numberButton));
+
+                                // TODO might need to refresh the log after this is called
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -309,13 +370,6 @@ public class ShowWarActivity extends ActionBarActivity {
                                 // do nothing
                             }
                         });
-
-                final EditText input = new EditText(ShowWarActivity.this);
-                input.setHint("Your Name");
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
                 alert.setView(input);
 
                 alert.show();
@@ -327,13 +381,13 @@ public class ShowWarActivity extends ActionBarActivity {
         return rowLayout;
     }
 
-    private LinearLayout dummyLayout(ClanMember mem) {
+    private LinearLayout dummyLayout(final ClanMember mem, final LinearLayout row, final Button numberButton) {
 
-        LinearLayout dumb = new LinearLayout(this);
+        final LinearLayout dumb = new LinearLayout(this);
         dumb.setGravity(Gravity.TOP);
-        dumb.setOrientation(LinearLayout.VERTICAL);
+        dumb.setOrientation(LinearLayout.HORIZONTAL);
 
-        Button memButton = new Button(this);
+        final Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
         memButton.setText(mem.getPlayername());
         memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -347,30 +401,89 @@ public class ShowWarActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Change Call To:")
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        });
-
                 final EditText input = new EditText(ShowWarActivity.this);
                 input.setHint("New Call");
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 input.setLayoutParams(lp);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                        .setTitle("Change Call To:")
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String newName = input.getText().toString();
+
+                                // Call the api
+                                submitClanName(clanInfo.getGeneral().getWarcode(),
+                                        String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()), newName);
+
+                                // Set the text of the button
+                                memButton.setText(newName);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+
+                        });
+
                 alert.setView(input);
 
                 alert.show();
             }
         });
+
+
+        Drawable x = getResources().getDrawable(R.drawable.x_grey);
+        x.setBounds(0, 0, (int)(x.getIntrinsicWidth()*0.6),
+                (int)(x.getIntrinsicHeight()*0.6));
+        ScaleDrawable sd = new ScaleDrawable(x, 0, .6f, .6f);
+
+        Button xButton = new Button(this);
+        xButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        xButton.setGravity(Gravity.CENTER);
+        xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+        xButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                        .setTitle("Delete " + mem.getPlayername() + "'s Call?")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // Call the api
+                                deleteCall(clanInfo.getGeneral().getWarcode(),
+                                        String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()));
+
+                                // Delete from layout
+                                row.removeView(dumb);
+
+                                // Set the color based on occupancy
+                                if (row.getChildCount() == 0) {
+                                    numberButton.setTextColor(getResources().getColor(R.color.number_gold));
+                                } else {
+                                    numberButton.setTextColor(getResources().getColor(R.color.number_grey));
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+
+                        });
+
+                alert.show();
+            }
+        });
+        // TODO set a listener here
+
+        dumb.addView(xButton);
 
         return dumb;
     }
@@ -407,5 +520,104 @@ public class ShowWarActivity extends ActionBarActivity {
         mainMemLayout.addView(callButton);
 
         return memLayout;
+    }
+
+
+    private void submitClanName(String warUrl, String posy, String posx, String name) {
+
+        if (name != null && !name.isEmpty()) {
+
+            UrlParameterContainer<String, String> clanNameUrl =
+                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx", "value"});
+
+            clanNameUrl.put("REQUEST", "UPDATE_NAME");
+            clanNameUrl.put("warcode", warUrl);
+            clanNameUrl.put("posy", posy);
+            clanNameUrl.put("posx", posx);
+            clanNameUrl.put("value", name);
+
+            Log.d(SHOWTAG, "warId passed in submitClanName: " + warUrl);
+            Log.d(SHOWTAG, "posy passed in submitClanName: " + posy);
+            Log.d(SHOWTAG, "posx passed in submitClanName: " + posx);
+            Log.d(SHOWTAG, "name passed in submitClanName: " + name);
+
+            String clanName = startWarController.submitCallName(getResources().getString(R.string.api_url),
+                    clanNameUrl.getEncodeURIString());
+
+            Log.d(SHOWTAG, "<-- SUBMIT CLAN NAME -->");
+            Log.d(SHOWTAG, clanName);
+
+        } else {
+            Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void appendCall(String warUrl, String posy, String name) {
+
+        if (name != null && !name.isEmpty()) {
+
+            UrlParameterContainer<String, String> appendUrl =
+                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
+
+            appendUrl.put("REQUEST", "APPEND_CALL");
+            appendUrl.put("warcode", warUrl);
+            appendUrl.put("posy", posy);
+            appendUrl.put("value", name);
+
+            Log.d(SHOWTAG, "warId passed in appendCall: " + warUrl);
+            Log.d(SHOWTAG, "posy passed in appendCall: " + posy);
+            Log.d(SHOWTAG, "name passed in appendCall: " + name);
+
+            String appendCall = startWarController.appendCall(getResources().getString(R.string.api_url),
+                    appendUrl.getEncodeURIString());
+
+            Log.d(SHOWTAG, "<-- APPEND CALL -->");
+            Log.d(SHOWTAG, appendCall);
+
+        } else {
+            Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setClanMessage(String warUrl, String note) {
+
+
+        UrlParameterContainer<String, String> clanMessage =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
+
+        clanMessage.put("REQUEST", "UPDATE_CLAN_MESSAGE");
+        clanMessage.put("warcode", warUrl);
+        clanMessage.put("value", note);
+
+        Log.d(SHOWTAG, "warId passed in setClanMessage: " + warUrl);
+        Log.d(SHOWTAG, "name passed in setClanMessage: " + note);
+
+        String msg = startWarController.setClanMessage(getResources().getString(R.string.api_url),
+                clanMessage.getEncodeURIString());
+
+        Log.d(SHOWTAG, "<-- CLAN MESSAGE -->");
+        Log.d(SHOWTAG, msg);
+    }
+
+    private void deleteCall(String warUrl, String posy, String posx) {
+
+
+        UrlParameterContainer<String, String> clanMessage =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx"});
+
+        clanMessage.put("REQUEST", "DELETE_CALL");
+        clanMessage.put("warcode", warUrl);
+        clanMessage.put("posy", posy);
+        clanMessage.put("posx", posx);
+
+        Log.d(SHOWTAG, "warId passed in deleteCall: " + warUrl);
+        Log.d(SHOWTAG, "posy passed in deleteCall: " + posy);
+        Log.d(SHOWTAG, "posx passed in deleteCall: " + posx);
+
+        String msg = startWarController.deleteCall(getResources().getString(R.string.api_url),
+                clanMessage.getEncodeURIString());
+
+        Log.d(SHOWTAG, "<-- DELETE MEMBER -->");
+        Log.d(SHOWTAG, msg);
     }
 }

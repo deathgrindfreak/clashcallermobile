@@ -18,6 +18,8 @@ public class ClanMember implements Parcelable, Comparable<ClanMember> {
     private String note;
     private String last;
 
+    public ClanMember() {}
+
     private ClanMember(Parcel in) {
         posy = in.readInt();
         posx = in.readInt();

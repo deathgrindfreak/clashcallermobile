@@ -102,11 +102,13 @@ public class StartWarActivity extends ActionBarActivity {
 
         String cId = cIdField.getText().toString();
         String eId = eIdField.getText().toString();
+
         if (cId == null || cId.isEmpty()) {
             params.put("clanid", null);
         } else {
             params.put("clanid", cId);
         }
+
         if (eId == null || eId.isEmpty()) {
             params.put("clanid", null);
         } else {

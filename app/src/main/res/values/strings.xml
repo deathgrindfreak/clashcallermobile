@@ -8,6 +8,8 @@
     <string name="clan_message">Update Clan Message</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 
     <string name="api_url">http://clashcaller.com/api.php?</string>
 

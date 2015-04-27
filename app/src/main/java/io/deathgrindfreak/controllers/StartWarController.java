@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
+import io.deathgrindfreak.clashcallermobile.ShowWarActivity;
 import io.deathgrindfreak.clashcallermobile.StartWarActivity;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.ApiClassConnector;
@@ -26,6 +27,7 @@ public class StartWarController {
 
     private StartWarActivity startWarActivity;
     private JoinWarActivity joinWarActivity;
+    private ShowWarActivity showWarActivity;
 
     private static final String SWCTAG = "Start War Controller";
 
@@ -37,6 +39,10 @@ public class StartWarController {
         this.joinWarActivity = joinWarActivity;
     }
 
+    public StartWarController(ShowWarActivity showWarActivity) {
+        this.showWarActivity = showWarActivity;
+    }
+
     public String getWarId(String url, String parms) {
         return getReturnString(url, parms);
     }
@@ -45,6 +51,22 @@ public class StartWarController {
     public Clan getClanInfo(String url, String parms) {
         String jsonStr = getReturnString(url, parms);
         return JsonParse.parseWarJson(jsonStr);
+    }
+
+    public String submitCallName(String url, String parms) {
+        return getReturnString(url, parms);
+    }
+
+    public String appendCall(String url, String parms) {
+        return getReturnString(url, parms);
+    }
+
+    public String setClanMessage(String url, String parms) {
+        return getReturnString(url, parms);
+    }
+
+    public String deleteCall(String url, String parms) {
+        return getReturnString(url, parms);
     }
 
 
