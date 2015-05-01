@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -206,14 +207,25 @@ public class ShowWarActivity extends ActionBarActivity {
             public void onClick(View v) {
 
                 final EditText input = new EditText(ShowWarActivity.this);
-                input.setHint("Message");
+                String msg = clanInfo.getGeneral().getClanmessage();
+                String title;
+
+                // If the default message isn't set, just set the hint
+                if (msg.equals(getResources().getString(R.string.default_message))) {
+                    title = "Set Clan Message";
+                    input.setHint("Message");
+                } else {
+                    title = "Update Clan Message";
+                    input.setText(clanInfo.getGeneral().getClanmessage());
+                }
+
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 input.setLayoutParams(lp);
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Update Clan Message")
+                        .setTitle(title)
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
@@ -280,7 +292,7 @@ public class ShowWarActivity extends ActionBarActivity {
         // Add number button
         final Button numberButton = new Button(this);
         numberButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, 1.3f));
+                TableRow.LayoutParams.WRAP_CONTENT, .7f));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((i + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -323,7 +335,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         Button plusButton = new Button(this);
         plusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, 1f));
+                TableRow.LayoutParams.WRAP_CONTENT, 1.3f));
         plusButton.setGravity(Gravity.CENTER);
         //plusButton.setBackgroundDrawable(plus);
         plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
@@ -384,18 +396,22 @@ public class ShowWarActivity extends ActionBarActivity {
     private LinearLayout dummyLayout(final ClanMember mem, final LinearLayout row, final Button numberButton) {
 
         final LinearLayout dumb = new LinearLayout(this);
+        dumb.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
         dumb.setGravity(Gravity.TOP);
         dumb.setOrientation(LinearLayout.HORIZONTAL);
 
         final Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
+        memButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 2f));
         memButton.setText(mem.getPlayername());
         memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
         memButton.setTypeface(clashFont);
         memButton.setTextColor(getResources().getColor(R.color.button_blue));
         memButton.setBackgroundDrawable(null);
-        dumb.addView(memButton);
+        memButton.setEllipsize(TextUtils.TruncateAt.END);
 
         memButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -436,6 +452,8 @@ public class ShowWarActivity extends ActionBarActivity {
             }
         });
 
+        dumb.addView(memButton);
+
 
         Drawable x = getResources().getDrawable(R.drawable.x_grey);
         x.setBounds(0, 0, (int)(x.getIntrinsicWidth()*0.6),
@@ -443,9 +461,10 @@ public class ShowWarActivity extends ActionBarActivity {
         ScaleDrawable sd = new ScaleDrawable(x, 0, .6f, .6f);
 
         Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        xButton.setGravity(Gravity.CENTER);
+        //xButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+        //        LinearLayout.LayoutParams.WRAP_CONTENT, 3f));
+        //xButton.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
+        xButton.setGravity(Gravity.LEFT);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override

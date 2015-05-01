@@ -11,6 +11,8 @@
     <string name="yes">YES</string>
     <string name="no">NO</string>
 
+    <string name="default_message">Click here to add a clan message!</string>
+
     <string name="api_url">http://clashcaller.com/api.php?</string>
 
     <string-array name="war_sizes">
@@ -73,6 +75,8 @@
         <item>24</item>
     </string-array>
 
-    <string name="title_activity_show_war">ShowWarActivity</string>
-    <string name="title_activity_join_war">JoinWarActivity</string>
+    <string name="title_activity_show_war">War</string>
+    <string name="title_activity_join_war">Join War</string>
+    <string name="title_activity_search_clan">Search Archives</string>
+    <string name="title_activity_about">About</string>
 </resources>

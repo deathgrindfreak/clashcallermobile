@@ -66,4 +66,14 @@ public class MainActivity extends ActionBarActivity {
         Intent joinWarIntent = new Intent(this, JoinWarActivity.class);
         startActivity(joinWarIntent);
     }
+
+    public void searchButtonClicked(View view) {
+        Intent searchIntent = new Intent(this, SearchClanActivity.class);
+        startActivity(searchIntent);
+    }
+
+    public void aboutButtonClicked(View view) {
+        Intent aboutIntent = new Intent(this, AboutActivity.class);
+        startActivity(aboutIntent);
+    }
 }
