@@ -3,6 +3,8 @@ package io.deathgrindfreak.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -10,7 +12,7 @@ import java.util.Map;
  */
 public class Clan implements Parcelable {
     private General general;
-    private ClanMember[] calls;
+    private ArrayList<ClanMember> calls;
     private Targets[] targets;
     private String[] log;
 
@@ -18,8 +20,9 @@ public class Clan implements Parcelable {
         general = in.readParcelable(General.class.getClassLoader());
 
         int cSize = in.readInt();
-        calls = new ClanMember[cSize];
-        in.readTypedArray(calls, ClanMember.CREATOR);
+        ClanMember[] c = new ClanMember[cSize];
+        in.readTypedArray(c, ClanMember.CREATOR);
+        calls = new ArrayList<ClanMember>(Arrays.asList(c));
 
         int tSize = in.readInt();
         targets = new Targets[tSize];
@@ -38,8 +41,11 @@ public class Clan implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(general, flags);
-        dest.writeInt(calls.length);
-        dest.writeTypedArray(calls, flags);
+
+        ClanMember[] c = new ClanMember[calls.size()];
+        dest.writeInt(calls.size());
+        dest.writeTypedArray(calls.toArray(c), flags);
+
         dest.writeInt(targets.length);
         dest.writeTypedArray(targets, flags);
         dest.writeInt(log.length);
@@ -85,6 +91,14 @@ public class Clan implements Parcelable {
         return ret.toString();
     }
 
+    public void addClanMember(ClanMember member) {
+        calls.add(member);
+    }
+
+    public void removeClanMember(ClanMember member) {
+        calls.remove(member);
+    }
+
     public General getGeneral() {
         return general;
     }
@@ -93,11 +107,9 @@ public class Clan implements Parcelable {
         this.general = general;
     }
 
-    public ClanMember[] getCalls() {
-        return calls;
-    }
+    public ArrayList<ClanMember> getCalls() { return calls; }
 
-    public void setCalls(ClanMember[] calls) {
+    public void setCalls(ArrayList<ClanMember> calls) {
         this.calls = calls;
     }
 

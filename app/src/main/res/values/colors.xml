@@ -13,6 +13,7 @@
 <item name="button_blue" type="color">#01abf2</item>
 <item name="number_gold" type="color">#f5e20b</item>
 <item name="number_grey" type="color">#bdbdbd</item>
+<item name="light_grey" type="color">#EEEEEE</item>
 <item name="white" type="color">#FFFFFF</item>
 
 <integer-array name="androidcolors">

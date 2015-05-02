@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import io.deathgrindfreak.controllers.StartWarController;
 import io.deathgrindfreak.model.Clan;
@@ -37,6 +38,7 @@ import io.deathgrindfreak.util.UrlParameterContainer;
 
 public class ShowWarActivity extends ActionBarActivity {
 
+    private TableLayout callLayout;
     private Button clanMessage;
 
     private Typeface clashFont;
@@ -47,17 +49,31 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private static final String SHOWTAG = "Show War Activity";
 
+    private enum NUMBER_COLOR { GOLD, GREY }
+
+    private static final float NUMBER_WEIGHT = 1f;
+    private static final float MEMBER_WEIGHT = .01f;
+    private static final float X_WEIGHT = 1f;
+    private static final float PLUS_WEIGHT = 1f;
+    private static final float WEIGHT_SUM =
+            NUMBER_WEIGHT + MEMBER_WEIGHT + X_WEIGHT + PLUS_WEIGHT;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_war);
 
-        startWarController = new StartWarController(this);
+        // Create the controller
+        if (startWarController == null)
+            startWarController = new StartWarController(this);
 
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
 
-        Bundle data = getIntent().getExtras();
-        clanInfo = data.getParcelable("clan");
+        if (clanInfo == null) {
+            Bundle data = getIntent().getExtras();
+            clanInfo = data.getParcelable("clan");
+        }
 
         displayClanInfo(clanInfo);
     }
@@ -254,157 +270,181 @@ public class ShowWarActivity extends ActionBarActivity {
         return mainGenLayout;
     }
 
-    private TableLayout getCalls(ClanMember[] members) {
 
-        TableLayout callLayout = new TableLayout(this);
+    private TableLayout getCalls(ArrayList<ClanMember> members) {
+
+        callLayout = new TableLayout(this);
         callLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
+                TableLayout.LayoutParams.MATCH_PARENT));
         callLayout.setGravity(Gravity.TOP);
         callLayout.setOrientation(TableLayout.VERTICAL);
+        //callLayout.setWeightSum(WEIGHT_SUM);
 
         // Sort members by position
-        Arrays.sort(members);
+        Collections.sort(members);
 
         int memInd = 0;
         ArrayList<ClanMember> memberList = new ArrayList<ClanMember>();
         for (int i = 0; i < clanInfo.getGeneral().getSize(); i++) {
-            while (memInd < members.length && members[memInd].getPosy() == i) {
-                memberList.add(members[memInd]);
+
+            // Add all members belonging to a call to the member list
+            while (memInd < members.size() && members.get(memInd).getPosy() == i) {
+                memberList.add(members.get(memInd));
                 memInd++;
             }
-            callLayout.addView(getMembersLayout(i, memberList));
+
+            // Add the members to the table
+            if (!memberList.isEmpty()) {
+                for (ClanMember mem : memberList)
+                    callLayout.addView(getMembersLayout(i, mem));
+
+            } else {
+                callLayout.addView(getMembersLayout(i, null));
+            }
+
             memberList = new ArrayList<ClanMember>();
         }
 
         return callLayout;
     }
 
-    private TableRow getMembersLayout(final int i, final ArrayList<ClanMember> rowList) {
+
+    private TableRow getMembersLayout(int row, ClanMember member) {
 
         final TableRow rowLayout = new TableRow(this);
         rowLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                 TableLayout.LayoutParams.WRAP_CONTENT));
 
+        // Set the tag with the clan member
+        rowLayout.setTag(member == null ? row : member);
+
+        // Set the background color
+        if (row % 2 == 0)
+            rowLayout.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+
         // TODO Add stars in front of comment (keep alignment the same)
 
         // TODO Then add Comment button
 
-        // Add number button
-        final Button numberButton = new Button(this);
+
+        // If member is null, row hasn't been claimed yet (set to grey)
+        if (member == null) {
+            Button num = makeNumberButton(row, NUMBER_COLOR.GREY);
+            num.setId(R.id.numButton);
+            rowLayout.addView(num);
+        } else if (member.getPosx() == 0) {
+            Button num = makeNumberButton(row, NUMBER_COLOR.GOLD);
+            num.setId(R.id.numButton);
+            rowLayout.addView(num);
+        } else {
+            Button n = makeSpacer(NUMBER_WEIGHT);
+
+            // Set the background color
+            if (row % 2 == 0)
+                n.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            rowLayout.addView(n);
+        }
+
+        // Add Clan members
+        if (member == null) {
+            Button m = makeSpacer(MEMBER_WEIGHT);
+            Button x = makeSpacer(X_WEIGHT);
+
+            // Set the background color
+            if (row % 2 == 0) {
+                m.setBackgroundColor(getResources().getColor(R.color.light_grey));
+                x.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            }
+
+            rowLayout.addView(m);
+            rowLayout.addView(x);
+
+        } else {
+            Button memB = makeMemberButton(member);
+            memB.setId(R.id.memButton);
+
+            Button x = makeXButton(member);
+
+            // Set the background color
+            if (row % 2 == 0)
+                x.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            rowLayout.addView(memB);
+            rowLayout.addView(x);
+        }
+
+        // Add + button
+        if (member == null || member.getPosx() == 0) {
+
+            Button plus = makePlusButton(row, member);
+
+            // Set the background color
+            if (row % 2 == 0)
+                plus.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            rowLayout.addView(plus);
+
+        } else {
+            Button s = makeSpacer(PLUS_WEIGHT);
+
+            // Set the background color
+            if (row % 2 == 0)
+                s.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+            rowLayout.addView(s);
+        }
+
+        return rowLayout;
+    }
+
+
+    private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
+
+        Button numberButton = new Button(this);
         numberButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, .7f));
+                TableRow.LayoutParams.WRAP_CONTENT, NUMBER_WEIGHT));
         numberButton.setGravity(Gravity.LEFT);
-        numberButton.setText((i + 1) + ".");
+        numberButton.setText((callNumber + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_medium_material));
         numberButton.setTypeface(clashFont);
         numberButton.setBackgroundDrawable(null);
 
-        // Set the color based on occupancy
-        if (rowList.isEmpty()) {
-            numberButton.setTextColor(getResources().getColor(R.color.number_gold));
-        } else {
-            numberButton.setTextColor(getResources().getColor(R.color.number_grey));
+        switch (color) {
+            case GOLD:
+                numberButton.setTextColor(getResources().getColor(R.color.number_gold));
+                break;
+            case GREY:
+                numberButton.setTextColor(getResources().getColor(R.color.number_grey));
+                break;
         }
 
         // TODO set a listener here
-        rowLayout.addView(numberButton);
 
-
-        // Add Clan members
-        final LinearLayout membLayout = new LinearLayout(this);
-        membLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, 3f));
-        membLayout.setGravity(Gravity.TOP);
-        membLayout.setOrientation(LinearLayout.VERTICAL);
-
-        if (!rowList.isEmpty()) {
-            for (ClanMember mem : rowList)
-                membLayout.addView(dummyLayout(mem, membLayout, numberButton));
-
-        }
-
-        rowLayout.addView(membLayout);
-
-
-        // Add + button
-        Drawable plus = getResources().getDrawable(R.drawable.add);
-        plus.setBounds(0, 0, (int)(plus.getIntrinsicWidth()*0.8),
-                (int)(plus.getIntrinsicHeight()*0.8));
-        ScaleDrawable sd = new ScaleDrawable(plus, 0, .8f, .8f);
-
-        Button plusButton = new Button(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, 1.3f));
-        plusButton.setGravity(Gravity.CENTER);
-        //plusButton.setBackgroundDrawable(plus);
-        plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
-
-        plusButton.setOnClickListener(new View.OnClickListener() {
-
-            final int num = i + 1;
-
-            @Override
-            public void onClick(View v) {
-
-                final EditText input = new EditText(ShowWarActivity.this);
-                input.setHint("Your Name");
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
-
-                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Call Target #" + num)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                String name = input.getText().toString();
-
-                                // Call the api
-                                appendCall(clanInfo.getGeneral().getWarcode(), String.valueOf(num - 1), name);
-
-                                // Set up a new clan member
-                                ClanMember mem = new ClanMember();
-                                mem.setPlayername(name);
-                                mem.setPosy(num - 1);
-                                mem.setPosx(rowList.size());
-
-                                // Add to the clan view
-                                membLayout.addView(dummyLayout(mem, membLayout, numberButton));
-
-                                // TODO might need to refresh the log after this is called
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        });
-                alert.setView(input);
-
-                alert.show();
-            }
-        });
-
-        rowLayout.addView(plusButton);
-
-        return rowLayout;
+        return numberButton;
     }
 
-    private LinearLayout dummyLayout(final ClanMember mem, final LinearLayout row, final Button numberButton) {
 
-        final LinearLayout dumb = new LinearLayout(this);
-        dumb.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        dumb.setGravity(Gravity.TOP);
-        dumb.setOrientation(LinearLayout.HORIZONTAL);
+    private Button makeSpacer(float weight) {
 
-        final Button memButton = new Button(this);
+        Button butt = new Button(this);
+        butt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, weight));
+        butt.setWidth(0);
+
+        return butt;
+    }
+
+
+    private Button makeMemberButton(final ClanMember mem) {
+
+        Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
-        memButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 2f));
+        memButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
+        memButton.setWidth(0);
         memButton.setText(mem.getPlayername());
         memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
@@ -412,6 +452,7 @@ public class ShowWarActivity extends ActionBarActivity {
         memButton.setTextColor(getResources().getColor(R.color.button_blue));
         memButton.setBackgroundDrawable(null);
         memButton.setEllipsize(TextUtils.TruncateAt.END);
+        memButton.setSingleLine(true);
 
         memButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -431,12 +472,22 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                 String newName = input.getText().toString();
 
-                                // Call the api
-                                submitClanName(clanInfo.getGeneral().getWarcode(),
-                                        String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()), newName);
+                                if (newName != null && !newName.isEmpty()) {
 
-                                // Set the text of the button
-                                memButton.setText(newName);
+                                    // Call the api
+                                    submitClanName(clanInfo.getGeneral().getWarcode(),
+                                            String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()), newName);
+
+                                    // Find the table row
+                                    TableRow row = (TableRow) callLayout.findViewWithTag(mem);
+                                    int index = callLayout.indexOfChild(row);
+
+                                    Button memB = (Button) row.findViewById(R.id.memButton);
+                                    memB.setText(newName);
+
+                                } else {
+                                    Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
+                                }
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -452,17 +503,118 @@ public class ShowWarActivity extends ActionBarActivity {
             }
         });
 
-        dumb.addView(memButton);
+        return memButton;
+    }
 
+
+    private Button makePlusButton(final int row, final ClanMember member) {
+
+        Drawable plus = getResources().getDrawable(R.drawable.add);
+        plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
+                (int) (plus.getIntrinsicHeight() * 0.8));
+        ScaleDrawable sd = new ScaleDrawable(plus, 0, .8f, .8f);
+
+        Button plusButton = new Button(this);
+        plusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, PLUS_WEIGHT));
+        plusButton.setWidth(0);
+        plusButton.setGravity(Gravity.CENTER);
+        //plusButton.setBackgroundDrawable(plus);
+        plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+
+        plusButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                final EditText input = new EditText(ShowWarActivity.this);
+                input.setHint("Your Name");
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                        .setTitle("Call Target #" + (row + 1))
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String name = input.getText().toString();
+
+                                if (name != null && !name.isEmpty()) {
+
+                                    // Call the api
+                                    appendCall(clanInfo.getGeneral().getWarcode(), String.valueOf(row), name);
+
+                                    // Set the new player name
+                                    ClanMember mem = new ClanMember();
+                                    mem.setPlayername(name);
+                                    mem.setPosy(row);
+
+
+                                    if (member != null) {
+
+                                        // Find the table row
+                                        TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
+                                        int index = callLayout.indexOfChild(rowL);
+
+                                        mem.setPosx(member.getPosx() + 1);
+
+                                        Log.d(SHOWTAG, "row: " + row + " New Row: " + (getLastMemberIndex(index) + 1));
+
+                                        // Add to the clan view
+                                        callLayout.addView(getMembersLayout(row, mem), getLastMemberIndex(index) + 1);
+
+                                    } else {
+
+                                        // Find the table row
+                                        TableRow rowL = (TableRow) callLayout.findViewWithTag(row);
+                                        int index = callLayout.indexOfChild(rowL);
+
+                                        mem.setPosx(0);
+
+                                        // Add to the clan view
+                                        callLayout.removeView(rowL);
+                                        callLayout.addView(getMembersLayout(row, mem), index);
+                                    }
+
+                                    // Add the clan member to the clan array
+                                    clanInfo.addClanMember(mem);
+
+                                } else {
+                                    Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
+                                }
+
+                                // TODO might need to refresh the log after this is called
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        });
+                alert.setView(input);
+
+                alert.show();
+            }
+        });
+
+        return plusButton;
+    }
+
+
+    private Button makeXButton(final ClanMember member) {
 
         Drawable x = getResources().getDrawable(R.drawable.x_grey);
-        x.setBounds(0, 0, (int)(x.getIntrinsicWidth()*0.6),
-                (int)(x.getIntrinsicHeight()*0.6));
+        x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
+                (int) (x.getIntrinsicHeight() * 0.6));
         ScaleDrawable sd = new ScaleDrawable(x, 0, .6f, .6f);
 
         Button xButton = new Button(this);
-        //xButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-        //        LinearLayout.LayoutParams.WRAP_CONTENT, 3f));
+        xButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT, X_WEIGHT));
+        xButton.setWidth(0);
         //xButton.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
         xButton.setGravity(Gravity.LEFT);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
@@ -471,23 +623,31 @@ public class ShowWarActivity extends ActionBarActivity {
             public void onClick(View v) {
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Delete " + mem.getPlayername() + "'s Call?")
+                        .setTitle("Delete " + member.getPlayername() + "'s Call?")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 // Call the api
                                 deleteCall(clanInfo.getGeneral().getWarcode(),
-                                        String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()));
+                                        String.valueOf(member.getPosy()), String.valueOf(member.getPosx()));
+
+                                // Find the table row
+                                TableRow row = (TableRow) callLayout.findViewWithTag(member);
+                                int index = callLayout.indexOfChild(row);
+
+                                // Get the number button
+                                Button numButton = (Button) row.findViewById(0);
 
                                 // Delete from layout
-                                row.removeView(dumb);
+                                callLayout.removeView(row);
 
-                                // Set the color based on occupancy
-                                if (row.getChildCount() == 0) {
-                                    numberButton.setTextColor(getResources().getColor(R.color.number_gold));
-                                } else {
-                                    numberButton.setTextColor(getResources().getColor(R.color.number_grey));
+                                // If member was the top call, add an empty call row back
+                                if (member.getPosx() == 0) {
+                                    callLayout.addView(getMembersLayout(member.getPosy(), null), index);
                                 }
+
+                                // Remove from clan calls
+                                clanInfo.removeClanMember(member);
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -502,43 +662,20 @@ public class ShowWarActivity extends ActionBarActivity {
         });
         // TODO set a listener here
 
-        dumb.addView(xButton);
-
-        return dumb;
+        return xButton;
     }
 
-    private LinearLayout makeClanMemberButtonLayout(ClanMember member) {
 
-        LinearLayout mainMemLayout = new LinearLayout(this);
-        mainMemLayout.setGravity(Gravity.TOP);
-        mainMemLayout.setOrientation(LinearLayout.VERTICAL);
+    private int getLastMemberIndex(int row) {
 
-        LinearLayout memLayout = new LinearLayout(this);
-        memLayout.setGravity(Gravity.TOP);
-        memLayout.setOrientation(LinearLayout.HORIZONTAL);
+        ArrayList<ClanMember> mems = clanInfo.getCalls();
+        Collections.sort(mems);
 
-        Button memberButton = new Button(this);
-        memberButton.setText(member.getPlayername());
-        memberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
-        memberButton.setTypeface(clashFont);
-        // TODO set a listener here
-        memLayout.addView(memberButton);
+        int lastrow = row;
+        while (mems.get(lastrow).getPosy() == row)
+            ++lastrow;
 
-        Button xButton = new Button(this);
-        xButton.setBackgroundResource(R.drawable.x_grey);
-        // TODO set a listener here
-        memLayout.addView(xButton);
-        mainMemLayout.addView(memLayout);
-
-        Button callButton = new Button(this);
-        callButton.setBackgroundResource(R.drawable.called);
-        callButton.setGravity(Gravity.LEFT);
-        // TODO Set button to picture
-        // TODO set a listener here
-        mainMemLayout.addView(callButton);
-
-        return memLayout;
+        return lastrow;
     }
 
 
