@@ -51,12 +51,12 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private enum NUMBER_COLOR { GOLD, GREY }
 
-    private static final float NUMBER_WEIGHT = 1f;
-    private static final float MEMBER_WEIGHT = .01f;
-    private static final float X_WEIGHT = 1f;
-    private static final float PLUS_WEIGHT = 1f;
-    private static final float WEIGHT_SUM =
-            NUMBER_WEIGHT + MEMBER_WEIGHT + X_WEIGHT + PLUS_WEIGHT;
+    //private static final float NUMBER_WEIGHT = 1f;
+    private static final float MEMBER_WEIGHT = 1f;
+    //private static final float X_WEIGHT = 1f;
+    //private static final float PLUS_WEIGHT = 1f;
+    //private static final float WEIGHT_SUM = 4 +
+    //        NUMBER_WEIGHT + MEMBER_WEIGHT + X_WEIGHT + PLUS_WEIGHT;
 
 
     @Override
@@ -65,18 +65,36 @@ public class ShowWarActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_war);
 
         // Create the controller
-        if (startWarController == null)
-            startWarController = new StartWarController(this);
+        startWarController = new StartWarController(this);
 
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
 
-        if (clanInfo == null) {
-            Bundle data = getIntent().getExtras();
-            clanInfo = data.getParcelable("clan");
-        }
+        Bundle data = getIntent().getExtras();
+        clanInfo = data.getParcelable("clan");
 
         displayClanInfo(clanInfo);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d(SHOWTAG, "Claninfo on save: " + clanInfo);
+
+        // Save the clanInfo object
+        outState.putParcelable("savedClan", clanInfo);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Log.d(SHOWTAG, "Claninfo on load: " + clanInfo);
+
+        // Retrieve the clanInfo object
+        clanInfo = savedInstanceState.getParcelable("savedClan");
+    }
+
 
 
     @Override
@@ -278,7 +296,6 @@ public class ShowWarActivity extends ActionBarActivity {
                 TableLayout.LayoutParams.MATCH_PARENT));
         callLayout.setGravity(Gravity.TOP);
         callLayout.setOrientation(TableLayout.VERTICAL);
-        //callLayout.setWeightSum(WEIGHT_SUM);
 
         // Sort members by position
         Collections.sort(members);
@@ -315,6 +332,8 @@ public class ShowWarActivity extends ActionBarActivity {
         rowLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                 TableLayout.LayoutParams.WRAP_CONTENT));
 
+        //rowLayout.setWeightSum(WEIGHT_SUM);
+
         // Set the tag with the clan member
         rowLayout.setTag(member == null ? row : member);
 
@@ -338,7 +357,7 @@ public class ShowWarActivity extends ActionBarActivity {
             num.setId(R.id.numButton);
             rowLayout.addView(num);
         } else {
-            Button n = makeSpacer(NUMBER_WEIGHT);
+            Button n = makeSpacer(0);
 
             // Set the background color
             if (row % 2 == 0)
@@ -350,7 +369,7 @@ public class ShowWarActivity extends ActionBarActivity {
         // Add Clan members
         if (member == null) {
             Button m = makeSpacer(MEMBER_WEIGHT);
-            Button x = makeSpacer(X_WEIGHT);
+            Button x = makeSpacer(0);
 
             // Set the background color
             if (row % 2 == 0) {
@@ -387,7 +406,7 @@ public class ShowWarActivity extends ActionBarActivity {
             rowLayout.addView(plus);
 
         } else {
-            Button s = makeSpacer(PLUS_WEIGHT);
+            Button s = makeSpacer(0);
 
             // Set the background color
             if (row % 2 == 0)
@@ -403,8 +422,7 @@ public class ShowWarActivity extends ActionBarActivity {
     private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
 
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, NUMBER_WEIGHT));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT, 0));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((callNumber + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -432,7 +450,6 @@ public class ShowWarActivity extends ActionBarActivity {
         Button butt = new Button(this);
         butt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT, weight));
-        butt.setWidth(0);
 
         return butt;
     }
@@ -442,9 +459,8 @@ public class ShowWarActivity extends ActionBarActivity {
 
         Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
-        memButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
-        memButton.setWidth(0);
+        memButton.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
+        memButton.setPadding(0,0,40,0);
         memButton.setText(mem.getPlayername());
         memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
@@ -512,14 +528,11 @@ public class ShowWarActivity extends ActionBarActivity {
         Drawable plus = getResources().getDrawable(R.drawable.add);
         plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
                 (int) (plus.getIntrinsicHeight() * 0.8));
-        ScaleDrawable sd = new ScaleDrawable(plus, 0, .8f, .8f);
+        ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, .8f, .8f);
 
         Button plusButton = new Button(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, PLUS_WEIGHT));
-        plusButton.setWidth(0);
-        plusButton.setGravity(Gravity.CENTER);
-        //plusButton.setBackgroundDrawable(plus);
+        plusButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setGravity(Gravity.RIGHT);
         plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -561,9 +574,8 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                         mem.setPosx(member.getPosx() + 1);
 
-                                        Log.d(SHOWTAG, "row: " + row + " New Row: " + (getLastMemberIndex(index) + 1));
-
                                         // Add to the clan view
+                                        Log.d(SHOWTAG, "row: " + row + " New Row: " + (getLastMemberIndex(index) + 1));
                                         callLayout.addView(getMembersLayout(row, mem), getLastMemberIndex(index) + 1);
 
                                     } else {
@@ -609,14 +621,11 @@ public class ShowWarActivity extends ActionBarActivity {
         Drawable x = getResources().getDrawable(R.drawable.x_grey);
         x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
                 (int) (x.getIntrinsicHeight() * 0.6));
-        ScaleDrawable sd = new ScaleDrawable(x, 0, .6f, .6f);
+        ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .1f, .3f);
 
         Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, X_WEIGHT));
-        xButton.setWidth(0);
-        //xButton.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
-        xButton.setGravity(Gravity.LEFT);
+        xButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setGravity(Gravity.RIGHT);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
