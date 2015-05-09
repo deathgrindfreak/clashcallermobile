@@ -4,9 +4,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +22,6 @@ public class JoinWarActivity extends ActionBarActivity {
 
     private Typeface clashFont;
     private StartWarController startWarController;
-
-    private String warId;
 
     private static final String JOINTAG = "Join War Activity";
 
@@ -94,18 +91,27 @@ public class JoinWarActivity extends ActionBarActivity {
 
             Log.i(JOINTAG, "warId passed in join: " + warId);
 
-            Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
-                    clanInfoUrl.getEncodeURIString());
+            try {
+                Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
+                        clanInfoUrl.getEncodeURIString());
 
-            Log.d(JOINTAG, "<-- CLANINFO -->");
-            Log.d(JOINTAG, clanInfo.toString());
+                Log.d(JOINTAG, "<-- CLANINFO -->");
+                Log.d(JOINTAG, clanInfo.toString());
 
-            if (clanInfo != null) {
-                showWarIntent.putExtra("clan", clanInfo);
-                startActivity(showWarIntent);
-            } else {
-                // TODO handle empty Clan
+                if (clanInfo != null) {
+                    showWarIntent.putExtra("clan", clanInfo);
+                    startActivity(showWarIntent);
+                } else {
+                    // TODO handle empty Clan
+                }
+            } catch (Exception ex) {
+                Toast errorToast = Toast.makeText(this,
+                        "Unable to join war, please check the War ID and try again.", Toast.LENGTH_SHORT);
+
+                errorToast.setGravity(Gravity.CENTER, 0, 0);
+                errorToast.show();
             }
+
         } else {
             Toast.makeText(this, "Please enter a valid War ID!", Toast.LENGTH_SHORT).show();
         }

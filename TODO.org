@@ -11,5 +11,6 @@
 CLOSED: [2015-05-02 Sat 17:46]
 ** TODO Make "vs" text in show war handle overflow (switch from horizontal to vertical)
 ** TODO Handle mistyped/invalid war ids in join war activity
-** TODO When deleting the highest level member for a call, lower member needs to move up (it's left empty atm)
+** DONE When deleting the highest level member for a call, lower member needs to move up (it's left empty atm)
+CLOSED: [2015-05-09 Sat 13:47]
 ** TODO Align x and + buttons to the far right at fixed width in table layout.

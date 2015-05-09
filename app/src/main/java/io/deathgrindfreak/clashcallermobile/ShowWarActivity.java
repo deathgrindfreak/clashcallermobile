@@ -2,14 +2,15 @@ package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -26,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import io.deathgrindfreak.controllers.StartWarController;
@@ -51,12 +51,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private enum NUMBER_COLOR { GOLD, GREY }
 
-    //private static final float NUMBER_WEIGHT = 1f;
-    private static final float MEMBER_WEIGHT = 1f;
-    //private static final float X_WEIGHT = 1f;
-    //private static final float PLUS_WEIGHT = 1f;
-    //private static final float WEIGHT_SUM = 4 +
-    //        NUMBER_WEIGHT + MEMBER_WEIGHT + X_WEIGHT + PLUS_WEIGHT;
+    private static final float MEMBER_WEIGHT = 2f;
 
 
     @Override
@@ -69,10 +64,22 @@ public class ShowWarActivity extends ActionBarActivity {
 
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
 
-        Bundle data = getIntent().getExtras();
-        clanInfo = data.getParcelable("clan");
+        if (savedInstanceState != null) {
+            clanInfo = savedInstanceState.getParcelable("clan");
+        } else {
+            Bundle data = getIntent().getExtras();
+            clanInfo = data.getParcelable("clan");
+        }
+
+        Log.d(SHOWTAG, "Claninfo on load: " + clanInfo);
 
         displayClanInfo(clanInfo);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
     }
 
     @Override
@@ -82,19 +89,19 @@ public class ShowWarActivity extends ActionBarActivity {
         Log.d(SHOWTAG, "Claninfo on save: " + clanInfo);
 
         // Save the clanInfo object
-        outState.putParcelable("savedClan", clanInfo);
+        outState.putParcelable("clan", clanInfo);
     }
+
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        Log.d(SHOWTAG, "Claninfo on load: " + clanInfo);
-
         // Retrieve the clanInfo object
-        clanInfo = savedInstanceState.getParcelable("savedClan");
-    }
+        clanInfo = savedInstanceState.getParcelable("clan");
 
+        Log.d(SHOWTAG, "Claninfo on load (onRestoreInstanceState): " + clanInfo);
+    }
 
 
     @Override
@@ -130,6 +137,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         mainViewChild.addView(getGeneralLayout(clan.getGeneral()));
         mainViewChild.addView(getCalls(clan.getCalls()));
+        mainViewChild.addView(getClanLog(clan.getLog()));
 
         mainView.addView(mainViewChild);
     }
@@ -319,7 +327,7 @@ public class ShowWarActivity extends ActionBarActivity {
                 callLayout.addView(getMembersLayout(i, null));
             }
 
-            memberList = new ArrayList<ClanMember>();
+            memberList = new ArrayList<>();
         }
 
         return callLayout;
@@ -331,8 +339,6 @@ public class ShowWarActivity extends ActionBarActivity {
         final TableRow rowLayout = new TableRow(this);
         rowLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                 TableLayout.LayoutParams.WRAP_CONTENT));
-
-        //rowLayout.setWeightSum(WEIGHT_SUM);
 
         // Set the tag with the clan member
         rowLayout.setTag(member == null ? row : member);
@@ -422,7 +428,7 @@ public class ShowWarActivity extends ActionBarActivity {
     private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
 
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT, 0));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(190, TableRow.LayoutParams.WRAP_CONTENT, 0));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((callNumber + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -457,6 +463,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private Button makeMemberButton(final ClanMember mem) {
 
+        // Create the member button
         Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
         memButton.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
@@ -470,6 +477,8 @@ public class ShowWarActivity extends ActionBarActivity {
         memButton.setEllipsize(TextUtils.TruncateAt.END);
         memButton.setSingleLine(true);
 
+
+        // Set the listener and alertdialog popup
         memButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -525,16 +534,19 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private Button makePlusButton(final int row, final ClanMember member) {
 
+        // Create the button
         Drawable plus = getResources().getDrawable(R.drawable.add);
         plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
                 (int) (plus.getIntrinsicHeight() * 0.8));
         ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, .8f, .8f);
 
         Button plusButton = new Button(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(130, TableRow.LayoutParams.WRAP_CONTENT));
         plusButton.setGravity(Gravity.RIGHT);
         plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
+
+        // Add the listener and alertdialog popup
         plusButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -555,6 +567,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                 String name = input.getText().toString();
 
+                                // Name cannot be empty
                                 if (name != null && !name.isEmpty()) {
 
                                     // Call the api
@@ -568,15 +581,16 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                     if (member != null) {
 
-                                        // Find the table row
+                                        // Find the table row for the call number
                                         TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
                                         int index = callLayout.indexOfChild(rowL);
 
-                                        mem.setPosx(member.getPosx() + 1);
+                                        // Set the member index to the last for that call number
+                                        mem.setPosx(getLastMemberIndex(index));
 
                                         // Add to the clan view
-                                        Log.d(SHOWTAG, "row: " + row + " New Row: " + (getLastMemberIndex(index) + 1));
-                                        callLayout.addView(getMembersLayout(row, mem), getLastMemberIndex(index) + 1);
+                                        Log.d(SHOWTAG, "row: " + index + " New Row: " + getLastMemberIndex(index));
+                                        callLayout.addView(getMembersLayout(index, mem), index + getLastMemberIndex(index));
 
                                     } else {
 
@@ -624,7 +638,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .1f, .3f);
 
         Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(3, TableRow.LayoutParams.WRAP_CONTENT));
         xButton.setGravity(Gravity.RIGHT);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
         xButton.setOnClickListener(new View.OnClickListener() {
@@ -644,15 +658,29 @@ public class ShowWarActivity extends ActionBarActivity {
                                 TableRow row = (TableRow) callLayout.findViewWithTag(member);
                                 int index = callLayout.indexOfChild(row);
 
-                                // Get the number button
-                                Button numButton = (Button) row.findViewById(0);
-
                                 // Delete from layout
                                 callLayout.removeView(row);
 
-                                // If member was the top call, add an empty call row back
+                                // Get all the clan members belonging to PosY of member
+                                ArrayList<ClanMember> rowMembers = getMembersAtRow(member.getPosy());
+
+                                // Remove the deleted member
+                                rowMembers.remove(member);
+
+                                // Decrement the x position of all lower members
+                                for (ClanMember mem : rowMembers)
+                                    if (mem.getPosx() > member.getPosx())
+                                        mem.setPosx(mem.getPosx() - 1);
+
+                                // If member was the top call, add a new row back with appropriate member (empty if it was the last)
                                 if (member.getPosx() == 0) {
-                                    callLayout.addView(getMembersLayout(member.getPosy(), null), index);
+                                    if (!rowMembers.isEmpty()) {
+                                        TableRow nextMemRow = (TableRow) callLayout.findViewWithTag(rowMembers.get(0));
+                                        callLayout.removeView(nextMemRow);
+                                        callLayout.addView(getMembersLayout(member.getPosy(), rowMembers.get(0)), index);
+                                    } else {
+                                        callLayout.addView(getMembersLayout(member.getPosy(), null), index);
+                                    }
                                 }
 
                                 // Remove from clan calls
@@ -675,16 +703,80 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
+    private LinearLayout getClanLog(String[] log) {
+
+        LinearLayout logLayout = new LinearLayout(this);
+        logLayout.setGravity(Gravity.TOP);
+        logLayout.setOrientation(LinearLayout.VERTICAL);
+
+
+        if (log.length != 0) {
+
+            // Set the title
+            TextView logTitle = new TextView(this);
+            logTitle.setTextColor(getResources().getColor(R.color.button_blue));
+            logTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimension(R.dimen.abc_text_size_large_material));
+            logTitle.setTypeface(clashFont);
+            logTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+            logTitle.setPadding(0, 0, 0, 20);
+
+            logTitle.setText("Log");
+            logLayout.addView(logTitle);
+
+
+            // Add the log entries
+            for (String line : log) {
+
+                TextView logLine = new TextView(this);
+                logLine.setTextColor(getResources().getColor(R.color.number_grey));
+                logLine.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.abc_text_size_small_material));
+                logLine.setTypeface(clashFont);
+
+                Spannable goldLine = new SpannableString(line);
+                goldLine.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_gold))
+                        , 0, line.indexOf(":", line.indexOf(":") + 1) + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                logLine.setText(goldLine);
+
+                logLayout.addView(logLine);
+            }
+        }
+
+        return logLayout;
+    }
+
+
+    private ArrayList<ClanMember> getMembersAtRow(int row) {
+
+        ArrayList<ClanMember> rowMems = new ArrayList<ClanMember>();
+
+        for (ClanMember mem : clanInfo.getCalls())
+            if (mem.getPosy() == row)
+                rowMems.add(mem);
+
+        // Sort by posx before returning
+        Collections.sort(rowMems);
+
+        return rowMems;
+    }
+
+
     private int getLastMemberIndex(int row) {
 
         ArrayList<ClanMember> mems = clanInfo.getCalls();
         Collections.sort(mems);
 
-        int lastrow = row;
-        while (mems.get(lastrow).getPosy() == row)
-            ++lastrow;
+        // Find the first occurrence of member at y position row
+        int rowMembers = 0, memInd = 0;
+        while (memInd < mems.size()) {
+            if (mems.get(memInd).getPosy() == row)
+                ++rowMembers;
+            ++memInd;
+        }
 
-        return lastrow;
+        return rowMembers;
     }
 
 
