@@ -2,6 +2,8 @@ package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
@@ -51,7 +53,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private enum NUMBER_COLOR { GOLD, GREY }
 
-    private static final float MEMBER_WEIGHT = 2f;
+    private static final float MEMBER_WEIGHT = 5f;
 
 
     @Override
@@ -76,11 +78,6 @@ public class ShowWarActivity extends ActionBarActivity {
         displayClanInfo(clanInfo);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -108,7 +105,7 @@ public class ShowWarActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show_war, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -121,9 +118,48 @@ public class ShowWarActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.refresh_button) {
+            refreshPage();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void refreshPage() {
+
+        Intent showWarIntent = getIntent();
+
+        UrlParameterContainer<String, String> clanInfoUrl =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+
+        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+        clanInfoUrl.put("warcode", clanInfo.getGeneral().getWarcode());
+
+        try {
+            clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
+                    clanInfoUrl.getEncodeURIString());
+
+            Log.d(SHOWTAG, "<-- CLANINFO -->");
+            Log.d(SHOWTAG, clanInfo.toString());
+
+
+            if (clanInfo != null) {
+                showWarIntent.putExtra("clan", clanInfo);
+
+                finish();
+                startActivity(showWarIntent);
+            } else {
+                    // TODO handle empty Clan
+            }
+        } catch (Exception ex) {
+            Toast errorToast = Toast.makeText(this,
+                    "Unable to join war, please check the War ID and try again.", Toast.LENGTH_SHORT);
+
+            errorToast.setGravity(Gravity.CENTER, 0, 0);
+            errorToast.show();
+        }
     }
 
 
@@ -155,8 +191,15 @@ public class ShowWarActivity extends ActionBarActivity {
 
         // Clan and enemy text
         LinearLayout genLayout = new LinearLayout(this);
-        genLayout.setGravity(Gravity.TOP);
-        genLayout.setOrientation(LinearLayout.VERTICAL);
+        genLayout.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
+
+
+        // Set the orientation of the title based on that of the device
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            genLayout.setOrientation(LinearLayout.HORIZONTAL);
+        else
+            genLayout.setOrientation(LinearLayout.VERTICAL);
+
 
         genLayout.setPadding(0, dpAsPixels, 0, dpAsPixels);
 
@@ -477,7 +520,6 @@ public class ShowWarActivity extends ActionBarActivity {
         memButton.setEllipsize(TextUtils.TruncateAt.END);
         memButton.setSingleLine(true);
 
-
         // Set the listener and alertdialog popup
         memButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -542,9 +584,8 @@ public class ShowWarActivity extends ActionBarActivity {
 
         Button plusButton = new Button(this);
         plusButton.setLayoutParams(new TableRow.LayoutParams(130, TableRow.LayoutParams.WRAP_CONTENT));
-        plusButton.setGravity(Gravity.RIGHT);
+        plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
-
 
         // Add the listener and alertdialog popup
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -635,12 +676,23 @@ public class ShowWarActivity extends ActionBarActivity {
         Drawable x = getResources().getDrawable(R.drawable.x_grey);
         x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
                 (int) (x.getIntrinsicHeight() * 0.6));
-        ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .1f, .3f);
+        ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .8f, .8f);
 
         Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(3, TableRow.LayoutParams.WRAP_CONTENT));
-        xButton.setGravity(Gravity.RIGHT);
+        xButton.setLayoutParams(new TableRow.LayoutParams(50, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+
+/*        Button xButton = new Button(this);
+        xButton.setLayoutParams(new TableRow.LayoutParams(40, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setGravity(Gravity.LEFT);
+        xButton.setText("X");
+        xButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen.abc_text_size_medium_material));
+        xButton.setTypeface(clashFont);
+        xButton.setBackgroundDrawable(null);
+        xButton.setTextColor(getResources().getColor(R.color.number_grey));*/
+
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
