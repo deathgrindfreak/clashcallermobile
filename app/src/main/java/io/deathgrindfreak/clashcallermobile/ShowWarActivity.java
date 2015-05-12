@@ -545,6 +545,10 @@ public class ShowWarActivity extends ActionBarActivity {
                                     submitClanName(clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()), newName);
 
+                                    // Set the name of the clan member
+                                    int ind = clanInfo.getCalls().indexOf(mem);
+                                    clanInfo.getCalls().get(ind).setPlayername(newName);
+
                                     // Find the table row
                                     TableRow row = (TableRow) callLayout.findViewWithTag(mem);
                                     int index = callLayout.indexOfChild(row);
@@ -583,7 +587,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, .8f, .8f);
 
         Button plusButton = new Button(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(130, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(30, TableRow.LayoutParams.WRAP_CONTENT));
         plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
@@ -679,7 +683,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .8f, .8f);
 
         Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(50, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(30, TableRow.LayoutParams.WRAP_CONTENT));
         xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
