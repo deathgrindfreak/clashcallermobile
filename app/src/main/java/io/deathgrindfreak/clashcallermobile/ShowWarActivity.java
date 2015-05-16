@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -53,7 +55,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private enum NUMBER_COLOR { GOLD, GREY }
 
-    private static final float MEMBER_WEIGHT = 5f;
+    private static final float MEMBER_WEIGHT = 20f;
 
 
     @Override
@@ -279,7 +281,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         // Clan message
         clanMessage = new Button(this);
-        clanMessage.setPadding(0, dpAsPixels, 0, dpAsPixels);
+        clanMessage.setPadding(0, dpAsPixels, 0, 2 * dpAsPixels);
         clanMessage.setText(gen.getClanmessage());
         clanMessage.setGravity(Gravity.CENTER_HORIZONTAL);
         clanMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -433,11 +435,13 @@ public class ShowWarActivity extends ActionBarActivity {
             Button memB = makeMemberButton(member);
             memB.setId(R.id.memButton);
 
-            Button x = makeXButton(member);
+            ImageButton x = makeXButton(member);
 
             // Set the background color
             if (row % 2 == 0)
                 x.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            else
+                x.setBackgroundColor(getResources().getColor(R.color.white));
 
             rowLayout.addView(memB);
             rowLayout.addView(x);
@@ -446,11 +450,13 @@ public class ShowWarActivity extends ActionBarActivity {
         // Add + button
         if (member == null || member.getPosx() == 0) {
 
-            Button plus = makePlusButton(row, member);
+            ImageButton plus = makePlusButton(row, member);
 
             // Set the background color
             if (row % 2 == 0)
                 plus.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            else
+                plus.setBackgroundColor(getResources().getColor(R.color.white));
 
             rowLayout.addView(plus);
 
@@ -578,18 +584,20 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private Button makePlusButton(final int row, final ClanMember member) {
+    private ImageButton makePlusButton(final int row, final ClanMember member) {
 
         // Create the button
-        Drawable plus = getResources().getDrawable(R.drawable.add);
-        plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
-                (int) (plus.getIntrinsicHeight() * 0.8));
-        ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, .8f, .8f);
+        //Drawable plus = getResources().getDrawable(R.drawable.add);
+        //plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
+        //        (int) (plus.getIntrinsicHeight() * 0.8));
+        //ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, 1f, .8f);
 
-        Button plusButton = new Button(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(30, TableRow.LayoutParams.WRAP_CONTENT));
-        plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
-        plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+        ImageButton plusButton = new ImageButton(this);
+        plusButton.setImageResource(R.drawable.add);
+        plusButton.setLayoutParams(new TableRow.LayoutParams(110, TableRow.LayoutParams.WRAP_CONTENT));
+        //plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
+        //plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+        //plusButton.setWidth(10);
 
         // Add the listener and alertdialog popup
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -675,17 +683,19 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private Button makeXButton(final ClanMember member) {
+    private ImageButton makeXButton(final ClanMember member) {
 
-        Drawable x = getResources().getDrawable(R.drawable.x_grey);
-        x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
-                (int) (x.getIntrinsicHeight() * 0.6));
-        ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .8f, .8f);
+        //Drawable x = getResources().getDrawable(R.drawable.x_grey);
+        //x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
+        //        (int) (x.getIntrinsicHeight() * 0.6));
+        //ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .8f, .8f);
 
-        Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(30, TableRow.LayoutParams.WRAP_CONTENT));
-        xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
-        xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
+        ImageButton xButton = new ImageButton(this);
+        xButton.setImageResource(R.drawable.x_grey);
+        xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        xButton.setLayoutParams(new TableRow.LayoutParams(40, TableRow.LayoutParams.WRAP_CONTENT));
+        //xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
+        //xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
 /*        Button xButton = new Button(this);
         xButton.setLayoutParams(new TableRow.LayoutParams(40, TableRow.LayoutParams.WRAP_CONTENT));
