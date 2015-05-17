@@ -11,6 +11,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -55,10 +56,15 @@ public class ShowWarActivity extends ActionBarActivity {
     private enum NUMBER_COLOR { GOLD, GREY }
 
     private static final float MEMBER_WEIGHT = 20f;
-    private static final int COMMENT_WIDTH = 180;
-    private static final int X_WIDTH = 130;
-    private static final int NUMBER_WIDTH = 200;
-    private static final int PLUS_WIDTH = 110;
+    //private static final int COMMENT_WIDTH = 180;
+    //private static final int X_WIDTH = 130;
+    //private static final int NUMBER_WIDTH = 200;
+    //private static final int PLUS_WIDTH = 110;
+
+    private static final int COMMENT_WIDTH = 60;
+    private static final int X_WIDTH = 43;
+    private static final int NUMBER_WIDTH = 67;
+    private static final int PLUS_WIDTH = 37;
 
 
 
@@ -546,7 +552,8 @@ public class ShowWarActivity extends ActionBarActivity {
         else
             commentButton.setImageResource(R.drawable.litechaticon);
 
-        commentButton.setLayoutParams(new TableRow.LayoutParams(COMMENT_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        commentButton.setLayoutParams(new TableRow.LayoutParams(dptopx(COMMENT_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
 
         // Add the listener and alertdialog popup
         commentButton.setOnClickListener(new View.OnClickListener() {
@@ -623,7 +630,8 @@ public class ShowWarActivity extends ActionBarActivity {
     private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
 
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(NUMBER_WIDTH, TableRow.LayoutParams.WRAP_CONTENT, 0));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(dptopx(NUMBER_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT, 0));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((callNumber + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -723,7 +731,8 @@ public class ShowWarActivity extends ActionBarActivity {
 
         ImageButton plusButton = new ImageButton(this);
         plusButton.setImageResource(R.drawable.add);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(PLUS_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
 
         // Add the listener and alertdialog popup
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -814,7 +823,8 @@ public class ShowWarActivity extends ActionBarActivity {
         ImageButton xButton = new ImageButton(this);
         xButton.setImageResource(R.drawable.x_grey);
         xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        xButton.setLayoutParams(new TableRow.LayoutParams(X_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(dptopx(X_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
 
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -920,6 +930,15 @@ public class ShowWarActivity extends ActionBarActivity {
         }
 
         return logLayout;
+    }
+
+
+    private int dptopx(int dp) {
+
+        DisplayMetrics m = getResources().getDisplayMetrics();
+        Log.i(SHOWTAG, "Current Device dpi: " + m.densityDpi);
+
+        return dp * (m.densityDpi / 160);
     }
 
 

@@ -20,7 +20,7 @@
             android:text="Start War"
             android:id="@+id/startWarButton"
             android:textColor="@color/button_blue"
-            android:textSize="25dp"
+            android:textSize="25sp"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="startWarButtonClicked" />
 
@@ -30,7 +30,7 @@
             android:text="Join War"
             android:id="@+id/joinWarButton"
             android:textColor="@color/button_blue"
-            android:textSize="25dp"
+            android:textSize="25sp"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="joinWarButtonClicked" />
 
@@ -40,7 +40,7 @@
             android:text="Search"
             android:id="@+id/searchButton"
             android:textColor="@color/button_blue"
-            android:textSize="25dp"
+            android:textSize="25sp"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="searchButtonClicked" />
 
@@ -50,7 +50,7 @@
             android:text="About"
             android:id="@+id/aboutButton"
             android:textColor="@color/button_blue"
-            android:textSize="25dp"
+            android:textSize="25sp"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="aboutButtonClicked" />
     </LinearLayout>

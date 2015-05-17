@@ -25,7 +25,12 @@ public class MainActivity extends ActionBarActivity {
         // Set the button typeface
         Button swarButton = (Button) findViewById(R.id.startWarButton);
         Button jwarButton = (Button) findViewById(R.id.joinWarButton);
+
+        // TODO make visible when search has been implemented
         Button search = (Button) findViewById(R.id.searchButton);
+        search.setVisibility(View.GONE);
+
+
         Button about = (Button) findViewById(R.id.aboutButton);
 
         swarButton.setTypeface(clashFont);
