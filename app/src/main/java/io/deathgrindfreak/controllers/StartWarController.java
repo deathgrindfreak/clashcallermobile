@@ -73,6 +73,10 @@ public class StartWarController {
         return getReturnString(url, parms);
     }
 
+    public String updateMemberStars(String url, String parms) {
+        return getReturnString(url, parms);
+    }
+
 
     private String getReturnString(String url , String parms) {
         String returnStr = "";

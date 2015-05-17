@@ -55,16 +55,18 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private enum NUMBER_COLOR { GOLD, GREY }
 
+    // Weight for the member button
     private static final float MEMBER_WEIGHT = 20f;
-    //private static final int COMMENT_WIDTH = 180;
-    //private static final int X_WIDTH = 130;
-    //private static final int NUMBER_WIDTH = 200;
-    //private static final int PLUS_WIDTH = 110;
 
+    // DP widths for buttons
+    private static final int STAR_WIDTH = 70;
     private static final int COMMENT_WIDTH = 60;
     private static final int X_WIDTH = 43;
     private static final int NUMBER_WIDTH = 67;
     private static final int PLUS_WIDTH = 37;
+
+    // The minimum width required to display the star buttons
+    private static final int MIN_WIDTH_FOR_STAR = 3;
 
 
 
@@ -417,7 +419,23 @@ public class ShowWarActivity extends ActionBarActivity {
         rowLayout.setBackgroundColor(getResources().getColor(color));
 
 
-        // TODO Add stars in front of comment (keep alignment the same)
+        // Add the star button if the screen width is big enough
+        DisplayMetrics m = getResources().getDisplayMetrics();
+        int width = m.widthPixels / m.densityDpi;
+
+        if (width >= MIN_WIDTH_FOR_STAR) {
+            if (member != null && member.getPosx() == 0) {
+
+                ImageButton star = makeStarButton(row);
+                star.setBackgroundColor(getResources().getColor(color));
+                rowLayout.addView(star);
+
+            } else {
+                ImageButton s = makeStarSpacer();
+                s.setBackgroundColor(getResources().getColor(color));
+                rowLayout.addView(s);
+            }
+        }
 
 
         // Add Comment button
@@ -429,9 +447,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         } else {
             ImageButton c = makeCommentSpacer();
-
             c.setBackgroundColor(getResources().getColor(color));
-
             rowLayout.addView(c);
         }
 
@@ -447,24 +463,37 @@ public class ShowWarActivity extends ActionBarActivity {
             rowLayout.addView(num);
         } else {
             Button n = makeNumberSpacer();
-
-            // Set the background color
-            if (row % 2 == 0)
-                n.setBackgroundColor(getResources().getColor(R.color.light_grey));
-
+            n.setBackgroundColor(getResources().getColor(color));
             rowLayout.addView(n);
         }
 
+
+        // Add the star button for the user
+        if (width >= MIN_WIDTH_FOR_STAR) {
+            if (member == null) {
+                ImageButton s = makeStarSpacer();
+                s.setBackgroundColor(getResources().getColor(color));
+                rowLayout.addView(s);
+            } else {
+                ImageButton uStar = makeUserStarButton(row, member);
+                uStar.setBackgroundColor(getResources().getColor(color));
+                rowLayout.addView(uStar);
+            }
+        }
+
+        // TODO add comment button for user comment for call
+
+
         // Add Clan members
         if (member == null) {
-            Button m = makeMemberSpacer();
+            Button mem = makeMemberSpacer();
             ImageButton x = makeXSpacer();
 
             // Set the background color
-            m.setBackgroundColor(getResources().getColor(color));
+            mem.setBackgroundColor(getResources().getColor(color));
             x.setBackgroundColor(getResources().getColor(color));
 
-            rowLayout.addView(m);
+            rowLayout.addView(mem);
             rowLayout.addView(x);
 
         } else {
@@ -502,16 +531,23 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
+    private ImageButton makeStarSpacer() {
+        ImageButton star = new ImageButton(this);
+        star.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
+
+        return star;
+    }
+
     private ImageButton makeCommentSpacer() {
         ImageButton commentButton = new ImageButton(this);
-        commentButton.setLayoutParams(new TableRow.LayoutParams(COMMENT_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        commentButton.setLayoutParams(new TableRow.LayoutParams(dptopx(COMMENT_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
         return commentButton;
     }
 
     private Button makeNumberSpacer() {
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(NUMBER_WIDTH, TableRow.LayoutParams.WRAP_CONTENT, 0));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(dptopx(NUMBER_WIDTH), TableRow.LayoutParams.WRAP_CONTENT, 0));
 
         return numberButton;
     }
@@ -525,17 +561,42 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private ImageButton makeXSpacer() {
         ImageButton xButton = new ImageButton(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(X_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(dptopx(X_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
         return xButton;
     }
 
     private ImageButton makePlusSpacer() {
         ImageButton plusButton = new ImageButton(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(PLUS_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
 
         return plusButton;
+    }
+
+
+    private ImageButton makeStarButton(final int row) {
+
+        final ImageButton starButton = new ImageButton(this);
+
+        // Get the first clan member at the row
+        ArrayList<ClanMember> mems = getMembersAtRow(row);
+
+        // Find the maximum number of stars for the target
+        int stars = 1;
+        for (ClanMember mem : mems)
+            if (mem.getStars() > stars)
+                stars = mem.getStars();
+
+        setStarImage(starButton, stars);
+
+        starButton.setScaleType(ImageView.ScaleType.CENTER);
+
+        starButton.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
+
+
+        return starButton;
     }
 
 
@@ -551,6 +612,8 @@ public class ShowWarActivity extends ActionBarActivity {
             commentButton.setImageResource(R.drawable.chaticon);
         else
             commentButton.setImageResource(R.drawable.litechaticon);
+
+        commentButton.setScaleType(ImageView.ScaleType.CENTER);
 
         commentButton.setLayoutParams(new TableRow.LayoutParams(dptopx(COMMENT_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
@@ -651,6 +714,158 @@ public class ShowWarActivity extends ActionBarActivity {
         // TODO set a listener here
 
         return numberButton;
+    }
+
+
+    private ImageButton makeUserStarButton(final int row, final ClanMember member) {
+
+        final ImageButton starButton = new ImageButton(this);
+
+        // Get the first clan member at the row
+        ArrayList<ClanMember> mems = getMembersAtRow(row);
+
+        // Find the maximum number of stars for the target
+        int stars = 1;
+        for (ClanMember mem : mems)
+            if (mem.getStars() > stars)
+                stars = mem.getStars();
+
+        setUserStarImage(starButton, stars);
+
+        starButton.setScaleType(ImageView.ScaleType.CENTER);
+
+        starButton.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
+
+        // Set the listener and alertdialog popup
+        starButton.setOnClickListener(new View.OnClickListener() {
+
+            // Sets the stars on button click
+            private void setStars(int stars) {
+
+                // Set the image for the starButton
+                setUserStarImage(starButton, stars);
+
+                // Call the api
+                updateMemberStars(clanInfo.getGeneral().getWarcode(),
+                        String.valueOf(member.getPosy()),
+                        String.valueOf(member.getPosx()),
+                        String.valueOf(stars));
+
+                // Set the stars for the member (Member is never null btw)
+                int ind = clanInfo.getCalls().indexOf(member);
+                clanInfo.getCalls().get(ind).setStars(stars);
+
+                // Set the max stars for the row
+                ArrayList<ClanMember> mems = getMembersAtRow(row);
+                ClanMember fst = mems.get(0);
+
+                TableRow row = (TableRow) callLayout.findViewWithTag(fst);
+                ImageButton maxButton = (ImageButton) row.getChildAt(0);
+
+                int maxStars = 2;
+                for (ClanMember mem : mems)
+                    if (mem.getStars() > maxStars)
+                        maxStars = mem.getStars();
+
+                setStarImage(maxButton, maxStars);
+            }
+
+            @Override
+            public void onClick(View v) {
+
+                final EditText input = new EditText(ShowWarActivity.this);
+                input.setHint("New Call");
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+
+                AlertDialog.Builder a = new AlertDialog.Builder(ShowWarActivity.this)
+                        .setTitle("Set Result for Attack by " + member.getPlayername());
+
+                final AlertDialog alert = a.create();
+
+                ImageButton called = new ImageButton(ShowWarActivity.this);
+                called.setImageResource(R.drawable.calledbig);
+                called.setBackgroundColor(getResources().getColor(R.color.white));
+                called.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        setStars(1);
+                        alert.cancel();
+                    }
+                });
+
+                ImageButton zeroStar = new ImageButton(ShowWarActivity.this);
+                zeroStar.setImageResource(R.drawable.zerostarbig);
+                zeroStar.setBackgroundColor(getResources().getColor(R.color.white));
+                zeroStar.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        setStars(2);
+                        alert.cancel();
+                    }
+                });
+
+                ImageButton oneStar = new ImageButton(ShowWarActivity.this);
+                oneStar.setImageResource(R.drawable.onestarbig);
+                oneStar.setBackgroundColor(getResources().getColor(R.color.white));
+                oneStar.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        setStars(3);
+                        alert.cancel();
+                    }
+                });
+
+                ImageButton twoStar = new ImageButton(ShowWarActivity.this);
+                twoStar.setImageResource(R.drawable.twostarbig);
+                twoStar.setBackgroundColor(getResources().getColor(R.color.white));
+                twoStar.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        setStars(4);
+                        alert.cancel();
+                    }
+                });
+
+                ImageButton threeStar = new ImageButton(ShowWarActivity.this);
+                threeStar.setImageResource(R.drawable.threestarbig);
+                threeStar.setBackgroundColor(getResources().getColor(R.color.white));
+                threeStar.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        setStars(5);
+                        alert.cancel();
+                    }
+                });
+
+                ScrollView buttonScroll = new ScrollView(ShowWarActivity.this);
+
+                LinearLayout buttonLayout = new LinearLayout(ShowWarActivity.this);
+                buttonLayout.setOrientation(LinearLayout.VERTICAL);
+                buttonLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+                buttonLayout.addView(called);
+                buttonLayout.addView(zeroStar);
+                buttonLayout.addView(oneStar);
+                buttonLayout.addView(twoStar);
+                buttonLayout.addView(threeStar);
+
+                buttonScroll.addView(buttonLayout);
+
+                alert.setView(buttonScroll);
+                alert.show();
+            }
+        });
+
+
+        return starButton;
     }
 
 
@@ -936,9 +1151,55 @@ public class ShowWarActivity extends ActionBarActivity {
     private int dptopx(int dp) {
 
         DisplayMetrics m = getResources().getDisplayMetrics();
-        Log.i(SHOWTAG, "Current Device dpi: " + m.densityDpi);
+        Log.d(SHOWTAG, "Current Device size: "
+                + (m.widthPixels / m.densityDpi)
+                + "x" + (m.heightPixels / m.densityDpi));
+        Log.d(SHOWTAG, "Current Device dpi: " + m.densityDpi);
 
         return dp * (m.densityDpi / 160);
+    }
+
+
+    private void setUserStarImage(ImageButton starButton, int stars) {
+
+        switch(stars) {
+            case 1:
+                starButton.setImageResource(R.drawable.called);
+                break;
+            case 2:
+                starButton.setImageResource(R.drawable.zero_star);
+                break;
+            case 3:
+                starButton.setImageResource(R.drawable.one_star);
+                break;
+            case 4:
+                starButton.setImageResource(R.drawable.two_star);
+                break;
+            case 5:
+                starButton.setImageResource(R.drawable.three_star);
+                break;
+        }
+    }
+
+    private void setStarImage(ImageButton starButton, int stars) {
+
+        starButton.setId(stars);
+
+        switch(stars) {
+            case 1:
+            case 2:
+                starButton.setImageResource(R.drawable.zero_star);
+                break;
+            case 3:
+                starButton.setImageResource(R.drawable.one_star);
+                break;
+            case 4:
+                starButton.setImageResource(R.drawable.two_star);
+                break;
+            case 5:
+                starButton.setImageResource(R.drawable.three_star);
+                break;
+        }
     }
 
 
@@ -1106,5 +1367,30 @@ public class ShowWarActivity extends ActionBarActivity {
 
         Log.d(SHOWTAG, "<-- SET MEMBER NOTE -->");
         Log.d(SHOWTAG, msg);
+    }
+
+    private void updateMemberStars(String warUrl, String posx, String posy, String value) {
+
+        UrlParameterContainer<String, String> clanMessage =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posx", "posy", "value"});
+
+        clanMessage.put("REQUEST", "UPDATE_STARS");
+        clanMessage.put("warcode", warUrl);
+        clanMessage.put("posx", posx);
+        clanMessage.put("posy", posy);
+        clanMessage.put("value", value);
+
+        Log.d(SHOWTAG, "warId passed in updateMemberStars: " + warUrl);
+        Log.d(SHOWTAG, "posx passed in updateMemberStars: " + posx);
+        Log.d(SHOWTAG, "posy passed in updateMemberStars: " + posy);
+        Log.d(SHOWTAG, "value passed in updateMemberStars: " + value);
+
+        String msg = startWarController.updateMemberStars(getResources().getString(R.string.api_url),
+                clanMessage.getEncodeURIString());
+
+        Log.d(SHOWTAG, "<-- UPDATE MEMBER STARS -->");
+        Log.d(SHOWTAG, msg);
+
+
     }
 }
