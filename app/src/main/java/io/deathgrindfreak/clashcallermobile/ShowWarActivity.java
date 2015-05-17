@@ -35,6 +35,7 @@ import io.deathgrindfreak.controllers.StartWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
+import io.deathgrindfreak.model.Targets;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
@@ -416,7 +417,7 @@ public class ShowWarActivity extends ActionBarActivity {
         // Add Comment button
         if (member == null || member.getPosx() == 0) {
 
-            ImageButton comment = makeCommentButton(row, member);
+            ImageButton comment = makeCommentButton(row);
             comment.setBackgroundColor(getResources().getColor(color));
             rowLayout.addView(comment);
 
@@ -532,12 +533,15 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private ImageButton makeCommentButton(final int row, final ClanMember member) {
+    private ImageButton makeCommentButton(final int row) {
 
         final ImageButton commentButton = new ImageButton(this);
 
+        // Get the first clan member at the row
+        final Targets target = getTargetAtRow(row);
+
         // Set the image based on whether the note exists
-        if (member != null && member.getNote() != null)
+        if (target != null && target.getNote() != null)
             commentButton.setImageResource(R.drawable.chaticon);
         else
             commentButton.setImageResource(R.drawable.litechaticon);
@@ -551,7 +555,7 @@ public class ShowWarActivity extends ActionBarActivity {
             public void onClick(View v) {
 
                 final EditText input = new EditText(ShowWarActivity.this);
-                String note = member.getNote();
+                String note = target == null ? null : target.getNote();
 
                 // If the comment is set, set the text to the existing comment
                 if (note == null) {
@@ -582,12 +586,10 @@ public class ShowWarActivity extends ActionBarActivity {
                                     commentButton.setImageResource(R.drawable.chaticon);
 
                                     // Set the note in the clanInfo instance
-                                    ArrayList<ClanMember> mems = getMembersAtRow(row);
-
-                                    // Set the note for all members at posy
-                                    for (ClanMember mem : mems) {
-                                        int i = clanInfo.getCalls().indexOf(mem);
-                                        clanInfo.getCalls().get(i).setNote(note);
+                                    if (target != null) {
+                                        target.setNote(note);
+                                    } else {
+                                        // TODO Change targets to arraylist, similar to ClanMember.  Add new targets to master list
                                     }
 
                                 } else {
@@ -946,6 +948,21 @@ public class ShowWarActivity extends ActionBarActivity {
         }
 
         return rowMembers;
+    }
+
+
+    private Targets getTargetAtRow(int row) {
+
+        Targets[] tgts = clanInfo.getTargets();
+
+        Targets target = null;
+        for (Targets t : tgts)
+            if (t.getPosition() == row) {
+                target = t;
+                break;
+            }
+
+        return target;
     }
 
 
