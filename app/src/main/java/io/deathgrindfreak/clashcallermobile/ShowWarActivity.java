@@ -206,15 +206,6 @@ public class ShowWarActivity extends ActionBarActivity {
         // Clan and enemy text
         LinearLayout genLayout = new LinearLayout(this);
         genLayout.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL);
-
-
-        // Set the orientation of the title based on that of the device
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            genLayout.setOrientation(LinearLayout.HORIZONTAL);
-        else
-            genLayout.setOrientation(LinearLayout.VERTICAL);
-
-
         genLayout.setPadding(0, dpAsPixels, 0, dpAsPixels);
 
         TextView clanNameView = new TextView(this);
@@ -246,6 +237,24 @@ public class ShowWarActivity extends ActionBarActivity {
         clanNameView.setTypeface(clashFont);
         enemyNameView.setTypeface(clashFont);
         vs.setTypeface(clashFont);
+
+
+        // Set the orientation of the title based on the text width
+        DisplayMetrics m = getResources().getDisplayMetrics();
+        int width = m.widthPixels / m.densityDpi;
+
+        clanNameView.measure(0, 0);
+        vs.measure(0, 0);
+        enemyNameView.measure(0, 0);
+        int cWidth = clanNameView.getMeasuredWidth() / m.densityDpi;
+        int vWidth = vs.getMeasuredWidth() / m.densityDpi;
+        int eWidth = enemyNameView.getMeasuredWidth() / m.densityDpi;
+
+        if (width > cWidth + vWidth + eWidth)
+            genLayout.setOrientation(LinearLayout.HORIZONTAL);
+        else
+            genLayout.setOrientation(LinearLayout.VERTICAL);
+
 
         genLayout.addView(clanNameView);
         genLayout.addView(vs);
