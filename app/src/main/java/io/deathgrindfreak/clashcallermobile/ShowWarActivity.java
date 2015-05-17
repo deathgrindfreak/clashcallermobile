@@ -35,7 +35,7 @@ import io.deathgrindfreak.controllers.StartWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
-import io.deathgrindfreak.model.Targets;
+import io.deathgrindfreak.model.Target;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
@@ -432,11 +432,11 @@ public class ShowWarActivity extends ActionBarActivity {
 
         // If member is null, row hasn't been claimed yet (set to grey)
         if (member == null) {
-            Button num = makeNumberButton(row, NUMBER_COLOR.GREY);
+            Button num = makeNumberButton(row, NUMBER_COLOR.GOLD);
             num.setId(R.id.numButton);
             rowLayout.addView(num);
         } else if (member.getPosx() == 0) {
-            Button num = makeNumberButton(row, NUMBER_COLOR.GOLD);
+            Button num = makeNumberButton(row, NUMBER_COLOR.GREY);
             num.setId(R.id.numButton);
             rowLayout.addView(num);
         } else {
@@ -538,7 +538,7 @@ public class ShowWarActivity extends ActionBarActivity {
         final ImageButton commentButton = new ImageButton(this);
 
         // Get the first clan member at the row
-        final Targets target = getTargetAtRow(row);
+        final Target target = getTargetAtRow(row);
 
         // Set the image based on whether the note exists
         if (target != null && target.getNote() != null)
@@ -589,7 +589,11 @@ public class ShowWarActivity extends ActionBarActivity {
                                     if (target != null) {
                                         target.setNote(note);
                                     } else {
-                                        // TODO Change targets to arraylist, similar to ClanMember.  Add new targets to master list
+                                        Target tgt = new Target();
+                                        tgt.setPosition(row);
+                                        tgt.setNote(note);
+
+                                        clanInfo.getTargets().add(tgt);
                                     }
 
                                 } else {
@@ -951,12 +955,12 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private Targets getTargetAtRow(int row) {
+    private Target getTargetAtRow(int row) {
 
-        Targets[] tgts = clanInfo.getTargets();
+        ArrayList<Target> tgts = clanInfo.getTargets();
 
-        Targets target = null;
-        for (Targets t : tgts)
+        Target target = null;
+        for (Target t : tgts)
             if (t.getPosition() == row) {
                 target = t;
                 break;

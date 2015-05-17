@@ -6,12 +6,14 @@ import android.os.Parcelable;
 /**
  * Created by jcbell on 4/18/2015.
  */
-public class Targets implements Parcelable {
+public class Target implements Parcelable {
     private int position;
     private String name;
     private String note;
 
-    private Targets(Parcel in) {
+    public Target() {}
+
+    private Target(Parcel in) {
         position = in.readInt();
         name = in.readString();
         note = in.readString();
@@ -29,15 +31,15 @@ public class Targets implements Parcelable {
         dest.writeString(note);
     }
 
-    public static final Creator<Targets> CREATOR = new Creator<Targets>() {
+    public static final Creator<Target> CREATOR = new Creator<Target>() {
         @Override
-        public Targets createFromParcel(Parcel source) {
-            return new Targets(source);
+        public Target createFromParcel(Parcel source) {
+            return new Target(source);
         }
 
         @Override
-        public Targets[] newArray(int size) {
-            return new Targets[size];
+        public Target[] newArray(int size) {
+            return new Target[size];
         }
     };
 

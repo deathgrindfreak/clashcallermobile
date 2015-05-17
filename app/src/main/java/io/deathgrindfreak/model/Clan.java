@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Created by jcbell on 4/18/2015.
@@ -13,7 +12,7 @@ import java.util.Map;
 public class Clan implements Parcelable {
     private General general;
     private ArrayList<ClanMember> calls;
-    private Targets[] targets;
+    private ArrayList<Target> targets;
     private String[] log;
 
     private Clan(Parcel in) {
@@ -22,11 +21,12 @@ public class Clan implements Parcelable {
         int cSize = in.readInt();
         ClanMember[] c = new ClanMember[cSize];
         in.readTypedArray(c, ClanMember.CREATOR);
-        calls = new ArrayList<ClanMember>(Arrays.asList(c));
+        calls = new ArrayList<>(Arrays.asList(c));
 
         int tSize = in.readInt();
-        targets = new Targets[tSize];
-        in.readTypedArray(targets, Targets.CREATOR);
+        Target[] t = new Target[tSize];
+        in.readTypedArray(t, Target.CREATOR);
+        targets = new ArrayList<>(Arrays.asList(t));
 
         int lSize = in.readInt();
         log = new String[lSize];
@@ -46,8 +46,10 @@ public class Clan implements Parcelable {
         dest.writeInt(calls.size());
         dest.writeTypedArray(calls.toArray(c), flags);
 
-        dest.writeInt(targets.length);
-        dest.writeTypedArray(targets, flags);
+        Target[] t = new Target[targets.size()];
+        dest.writeInt(targets.size());
+        dest.writeTypedArray(targets.toArray(t), flags);
+
         dest.writeInt(log.length);
         dest.writeStringArray(log);
     }
@@ -76,7 +78,7 @@ public class Clan implements Parcelable {
             ret.append("\n");
         }
 
-        for (Targets tg : targets) {
+        for (Target tg : targets) {
             ret.append(tg);
             ret.append("\n");
         }
@@ -113,11 +115,11 @@ public class Clan implements Parcelable {
         this.calls = calls;
     }
 
-    public Targets[] getTargets() {
+    public ArrayList<Target> getTargets() {
         return targets;
     }
 
-    public void setTargets(Targets[] targets) {
+    public void setTargets(ArrayList<Target> targets) {
         this.targets = targets;
     }
 
