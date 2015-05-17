@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -56,6 +54,9 @@ public class ShowWarActivity extends ActionBarActivity {
     private enum NUMBER_COLOR { GOLD, GREY }
 
     private static final float MEMBER_WEIGHT = 20f;
+    private static final int X_WIDTH = 130;
+    private static final int NUMBER_WIDTH = 190;
+    private static final int PLUS_WIDTH = 110;
 
 
     @Override
@@ -381,6 +382,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private TableRow getMembersLayout(int row, ClanMember member) {
 
+
         final TableRow rowLayout = new TableRow(this);
         rowLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                 TableLayout.LayoutParams.WRAP_CONTENT));
@@ -388,9 +390,16 @@ public class ShowWarActivity extends ActionBarActivity {
         // Set the tag with the clan member
         rowLayout.setTag(member == null ? row : member);
 
-        // Set the background color
+        // Alternate colors based on row
+        int color;
         if (row % 2 == 0)
-            rowLayout.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            color = R.color.light_grey;
+        else
+            color = R.color.white;
+
+
+        // Set the row color
+        rowLayout.setBackgroundColor(getResources().getColor(color));
 
 
         // TODO Add stars in front of comment (keep alignment the same)
@@ -408,7 +417,7 @@ public class ShowWarActivity extends ActionBarActivity {
             num.setId(R.id.numButton);
             rowLayout.addView(num);
         } else {
-            Button n = makeSpacer(0);
+            Button n = makeNumberSpacer();
 
             // Set the background color
             if (row % 2 == 0)
@@ -419,14 +428,12 @@ public class ShowWarActivity extends ActionBarActivity {
 
         // Add Clan members
         if (member == null) {
-            Button m = makeSpacer(MEMBER_WEIGHT);
-            Button x = makeSpacer(0);
+            Button m = makeMemberSpacer();
+            ImageButton x = makeXSpacer();
 
             // Set the background color
-            if (row % 2 == 0) {
-                m.setBackgroundColor(getResources().getColor(R.color.light_grey));
-                x.setBackgroundColor(getResources().getColor(R.color.light_grey));
-            }
+            m.setBackgroundColor(getResources().getColor(color));
+            x.setBackgroundColor(getResources().getColor(color));
 
             rowLayout.addView(m);
             rowLayout.addView(x);
@@ -438,10 +445,7 @@ public class ShowWarActivity extends ActionBarActivity {
             ImageButton x = makeXButton(member);
 
             // Set the background color
-            if (row % 2 == 0)
-                x.setBackgroundColor(getResources().getColor(R.color.light_grey));
-            else
-                x.setBackgroundColor(getResources().getColor(R.color.white));
+            x.setBackgroundColor(getResources().getColor(color));
 
             rowLayout.addView(memB);
             rowLayout.addView(x);
@@ -453,19 +457,14 @@ public class ShowWarActivity extends ActionBarActivity {
             ImageButton plus = makePlusButton(row, member);
 
             // Set the background color
-            if (row % 2 == 0)
-                plus.setBackgroundColor(getResources().getColor(R.color.light_grey));
-            else
-                plus.setBackgroundColor(getResources().getColor(R.color.white));
+            plus.setBackgroundColor(getResources().getColor(color));
 
             rowLayout.addView(plus);
 
         } else {
-            Button s = makeSpacer(0);
+            ImageButton s = makePlusSpacer();
 
-            // Set the background color
-            if (row % 2 == 0)
-                s.setBackgroundColor(getResources().getColor(R.color.light_grey));
+            s.setBackgroundColor(getResources().getColor(color));
 
             rowLayout.addView(s);
         }
@@ -474,10 +473,40 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
+    private Button makeNumberSpacer() {
+        Button numberButton = new Button(this);
+        numberButton.setLayoutParams(new TableRow.LayoutParams(NUMBER_WIDTH, TableRow.LayoutParams.WRAP_CONTENT, 0));
+
+        return numberButton;
+    }
+
+    private Button makeMemberSpacer() {
+        Button memButton = new Button(this);
+        memButton.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
+
+        return memButton;
+    }
+
+    private ImageButton makeXSpacer() {
+        ImageButton xButton = new ImageButton(this);
+        xButton.setLayoutParams(new TableRow.LayoutParams(X_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+
+        return xButton;
+    }
+
+    private ImageButton makePlusSpacer() {
+        ImageButton plusButton = new ImageButton(this);
+        plusButton.setLayoutParams(new TableRow.LayoutParams(PLUS_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+
+
+        return plusButton;
+    }
+
+
     private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
 
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(190, TableRow.LayoutParams.WRAP_CONTENT, 0));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(NUMBER_WIDTH, TableRow.LayoutParams.WRAP_CONTENT, 0));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((callNumber + 1) + ".");
         numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -497,16 +526,6 @@ public class ShowWarActivity extends ActionBarActivity {
         // TODO set a listener here
 
         return numberButton;
-    }
-
-
-    private Button makeSpacer(float weight) {
-
-        Button butt = new Button(this);
-        butt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT, weight));
-
-        return butt;
     }
 
 
@@ -594,7 +613,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         ImageButton plusButton = new ImageButton(this);
         plusButton.setImageResource(R.drawable.add);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(110, TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(PLUS_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
         //plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         //plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
         //plusButton.setWidth(10);
@@ -693,7 +712,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ImageButton xButton = new ImageButton(this);
         xButton.setImageResource(R.drawable.x_grey);
         xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        xButton.setLayoutParams(new TableRow.LayoutParams(40, TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(X_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
         //xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
         //xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
 
