@@ -54,9 +54,11 @@ public class ShowWarActivity extends ActionBarActivity {
     private enum NUMBER_COLOR { GOLD, GREY }
 
     private static final float MEMBER_WEIGHT = 20f;
+    private static final int COMMENT_WIDTH = 180;
     private static final int X_WIDTH = 130;
-    private static final int NUMBER_WIDTH = 190;
+    private static final int NUMBER_WIDTH = 200;
     private static final int PLUS_WIDTH = 110;
+
 
 
     @Override
@@ -253,7 +255,7 @@ public class ShowWarActivity extends ActionBarActivity {
         idLayout.setPadding(0, dpAsPixels, 0, dpAsPixels);
 
         TextView idText = new TextView(this);
-        TextView clanID = new TextView(this);
+        final TextView clanID = new TextView(this);
 
         // Set text
         idText.setText("Your clan's unique ID: ");
@@ -320,9 +322,19 @@ public class ShowWarActivity extends ActionBarActivity {
                                 // Get the value from the input field
                                 final String note = input.getText().toString();
 
-                                // Set the value of the button in the app and call API to update
-                                setClanMessage(clanInfo.getGeneral().getWarcode(), note);
-                                clanMessage.setText(note);
+                                if (note != null && !note.isEmpty()) {
+
+                                    // Set the value of the button in the app and call API to update
+                                    setClanMessage(clanInfo.getGeneral().getWarcode(), note);
+                                    clanMessage.setText(note);
+
+                                    clanInfo.getGeneral().setClanmessage(note);
+                                } else {
+                                    Toast tst = Toast.makeText(ShowWarActivity.this,
+                                            "The clan message cannot be blank.", Toast.LENGTH_SHORT);
+                                    tst.setGravity(Gravity.CENTER, 0, 0);
+                                    tst.show();
+                                }
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -391,11 +403,7 @@ public class ShowWarActivity extends ActionBarActivity {
         rowLayout.setTag(member == null ? row : member);
 
         // Alternate colors based on row
-        int color;
-        if (row % 2 == 0)
-            color = R.color.light_grey;
-        else
-            color = R.color.white;
+        int color = row % 2 == 0 ? R.color.light_grey : R.color.white;
 
 
         // Set the row color
@@ -404,7 +412,21 @@ public class ShowWarActivity extends ActionBarActivity {
 
         // TODO Add stars in front of comment (keep alignment the same)
 
-        // TODO Then add Comment button
+
+        // Add Comment button
+        if (member == null || member.getPosx() == 0) {
+
+            ImageButton comment = makeCommentButton(row, member);
+            comment.setBackgroundColor(getResources().getColor(color));
+            rowLayout.addView(comment);
+
+        } else {
+            ImageButton c = makeCommentSpacer();
+
+            c.setBackgroundColor(getResources().getColor(color));
+
+            rowLayout.addView(c);
+        }
 
 
         // If member is null, row hasn't been claimed yet (set to grey)
@@ -473,6 +495,13 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
+    private ImageButton makeCommentSpacer() {
+        ImageButton commentButton = new ImageButton(this);
+        commentButton.setLayoutParams(new TableRow.LayoutParams(COMMENT_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+
+        return commentButton;
+    }
+
     private Button makeNumberSpacer() {
         Button numberButton = new Button(this);
         numberButton.setLayoutParams(new TableRow.LayoutParams(NUMBER_WIDTH, TableRow.LayoutParams.WRAP_CONTENT, 0));
@@ -500,6 +529,88 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
         return plusButton;
+    }
+
+
+    private ImageButton makeCommentButton(final int row, final ClanMember member) {
+
+        final ImageButton commentButton = new ImageButton(this);
+
+        // Set the image based on whether the note exists
+        if (member != null && member.getNote() != null)
+            commentButton.setImageResource(R.drawable.chaticon);
+        else
+            commentButton.setImageResource(R.drawable.litechaticon);
+
+        commentButton.setLayoutParams(new TableRow.LayoutParams(COMMENT_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
+
+        // Add the listener and alertdialog popup
+        commentButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                final EditText input = new EditText(ShowWarActivity.this);
+                String note = member.getNote();
+
+                // If the comment is set, set the text to the existing comment
+                if (note == null) {
+                    input.setHint("Comment");
+                } else {
+                    input.setText(note);
+                }
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                        .setTitle("Target #" + (row + 1) + " Note:")
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // Get the value from the input field
+                                final String note = input.getText().toString();
+
+                                if (note != null && !note.isEmpty()) {
+
+                                    // Set the value of the button in the app and call API to update
+                                    setMemberNote(clanInfo.getGeneral().getWarcode(), String.valueOf(row), note);
+
+                                    // Set the icon of the comment button
+                                    commentButton.setImageResource(R.drawable.chaticon);
+
+                                    // Set the note in the clanInfo instance
+                                    ArrayList<ClanMember> mems = getMembersAtRow(row);
+
+                                    // Set the note for all members at posy
+                                    for (ClanMember mem : mems) {
+                                        int i = clanInfo.getCalls().indexOf(mem);
+                                        clanInfo.getCalls().get(i).setNote(note);
+                                    }
+
+                                } else {
+                                    Toast tst = Toast.makeText(ShowWarActivity.this,
+                                            "The comment for a target cannot be blank.", Toast.LENGTH_SHORT);
+                                    tst.setGravity(Gravity.CENTER, 0, 0);
+                                    tst.show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        });
+
+                alert.setView(input);
+
+                alert.show();
+            }
+        });
+
+        return commentButton;
     }
 
 
@@ -576,7 +687,6 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                     // Find the table row
                                     TableRow row = (TableRow) callLayout.findViewWithTag(mem);
-                                    int index = callLayout.indexOfChild(row);
 
                                     Button memB = (Button) row.findViewById(R.id.memButton);
                                     memB.setText(newName);
@@ -605,18 +715,9 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private ImageButton makePlusButton(final int row, final ClanMember member) {
 
-        // Create the button
-        //Drawable plus = getResources().getDrawable(R.drawable.add);
-        //plus.setBounds(0, 0, (int) (plus.getIntrinsicWidth() * 0.8),
-        //        (int) (plus.getIntrinsicHeight() * 0.8));
-        //ScaleDrawable sd = new ScaleDrawable(plus, Gravity.RIGHT, 1f, .8f);
-
         ImageButton plusButton = new ImageButton(this);
         plusButton.setImageResource(R.drawable.add);
         plusButton.setLayoutParams(new TableRow.LayoutParams(PLUS_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
-        //plusButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
-        //plusButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
-        //plusButton.setWidth(10);
 
         // Add the listener and alertdialog popup
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -704,27 +805,10 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private ImageButton makeXButton(final ClanMember member) {
 
-        //Drawable x = getResources().getDrawable(R.drawable.x_grey);
-        //x.setBounds(0, 0, (int) (x.getIntrinsicWidth() * 0.6),
-        //        (int) (x.getIntrinsicHeight() * 0.6));
-        //ScaleDrawable sd = new ScaleDrawable(x, Gravity.RIGHT, .8f, .8f);
-
         ImageButton xButton = new ImageButton(this);
         xButton.setImageResource(R.drawable.x_grey);
         xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         xButton.setLayoutParams(new TableRow.LayoutParams(X_WIDTH, TableRow.LayoutParams.WRAP_CONTENT));
-        //xButton.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);
-        //xButton.setCompoundDrawables(sd.getDrawable(), null, null, null);
-
-/*        Button xButton = new Button(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(40, TableRow.LayoutParams.WRAP_CONTENT));
-        xButton.setGravity(Gravity.LEFT);
-        xButton.setText("X");
-        xButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
-        xButton.setTypeface(clashFont);
-        xButton.setBackgroundDrawable(null);
-        xButton.setTextColor(getResources().getColor(R.color.number_grey));*/
 
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -960,6 +1044,27 @@ public class ShowWarActivity extends ActionBarActivity {
                 clanMessage.getEncodeURIString());
 
         Log.d(SHOWTAG, "<-- DELETE MEMBER -->");
+        Log.d(SHOWTAG, msg);
+    }
+
+    private void setMemberNote(String warUrl, String posy, String value) {
+
+        UrlParameterContainer<String, String> clanMessage =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
+
+        clanMessage.put("REQUEST", "UPDATE_TARGET_NOTE");
+        clanMessage.put("warcode", warUrl);
+        clanMessage.put("posy", posy);
+        clanMessage.put("value", value);
+
+        Log.d(SHOWTAG, "warId passed in setMemberNote: " + warUrl);
+        Log.d(SHOWTAG, "posy passed in setMemberNote: " + posy);
+        Log.d(SHOWTAG, "value passed in setMemberNote: " + value);
+
+        String msg = startWarController.setMemberNote(getResources().getString(R.string.api_url),
+                clanMessage.getEncodeURIString());
+
+        Log.d(SHOWTAG, "<-- SET MEMBER NOTE -->");
         Log.d(SHOWTAG, msg);
     }
 }

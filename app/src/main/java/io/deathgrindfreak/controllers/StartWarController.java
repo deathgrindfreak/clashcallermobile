@@ -69,6 +69,10 @@ public class StartWarController {
         return getReturnString(url, parms);
     }
 
+    public String setMemberNote(String url, String parms) {
+        return getReturnString(url, parms);
+    }
+
 
     private String getReturnString(String url , String parms) {
         String returnStr = "";
