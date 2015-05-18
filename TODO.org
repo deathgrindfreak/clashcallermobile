@@ -1,4 +1,4 @@
-* TODO/CHANGELOG
+* TODO
 ** TODO Add buttons for position call list
 ** TODO Disable submit button on click for start/join war activities
 ** TODO Add a logo to activity bar
