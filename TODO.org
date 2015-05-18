@@ -3,7 +3,7 @@
 ** TODO Disable submit button on click for start/join war activities
 ** TODO Add a logo to activity bar
 ** TODO Add refresh button on show war activity
-** TODO Add search activity
+** TODO [Feature] Add search activity
 ** TODO Add about activity
 ** TODO Add tabbed layout to show war activity 
 ** DONE Make the start war activity scrollable
@@ -14,3 +14,4 @@ CLOSED: [2015-05-02 Sat 17:46]
 ** DONE When deleting the highest level member for a call, lower member needs to move up (it's left empty atm)
 CLOSED: [2015-05-09 Sat 13:47]
 ** TODO Align x and + buttons to the far right at fixed width in table layout.
+** TODO [Feature] Add push notifications for clan calls
