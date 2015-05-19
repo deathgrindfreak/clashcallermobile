@@ -39,6 +39,10 @@
             android:name=".AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
+        <activity
+            android:name=".JoinWarLoadingActivity"
+            android:label="@string/title_activity_show_war_loading" >
+        </activity>
     </application>
 
 </manifest>

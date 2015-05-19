@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,14 +12,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import io.deathgrindfreak.controllers.StartWarController;
-import io.deathgrindfreak.model.Clan;
-import io.deathgrindfreak.util.UrlParameterContainer;
+import io.deathgrindfreak.controllers.ShowWarController;
 
 public class JoinWarActivity extends ActionBarActivity {
 
     private Typeface clashFont;
-    private StartWarController startWarController;
 
     private static final String JOINTAG = "Join War Activity";
 
@@ -29,8 +24,6 @@ public class JoinWarActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_war);
-
-        startWarController = new StartWarController(this);
 
         // Set the Clash of Clans font
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
@@ -81,36 +74,11 @@ public class JoinWarActivity extends ActionBarActivity {
         // TODO check for length requirements for warID
         if (warId != null && !warId.isEmpty()) {
 
-            Intent showWarIntent = new Intent(this, ShowWarActivity.class);
+            // Initialize the war view
+            Intent showWarIntent = new Intent(this, JoinWarLoadingActivity.class);
 
-            UrlParameterContainer<String, String> clanInfoUrl =
-                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
-
-            clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-            clanInfoUrl.put("warcode", warId);
-
-            Log.i(JOINTAG, "warId passed in join: " + warId);
-
-            try {
-                Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
-                        clanInfoUrl.getEncodeURIString());
-
-                Log.d(JOINTAG, "<-- CLANINFO -->");
-                Log.d(JOINTAG, clanInfo.toString());
-
-                if (clanInfo != null) {
-                    showWarIntent.putExtra("clan", clanInfo);
-                    startActivity(showWarIntent);
-                } else {
-                    // TODO handle empty Clan
-                }
-            } catch (Exception ex) {
-                Toast errorToast = Toast.makeText(this,
-                        "Unable to join war, please check the War ID and try again.", Toast.LENGTH_SHORT);
-
-                errorToast.setGravity(Gravity.CENTER, 0, 0);
-                errorToast.show();
-            }
+            showWarIntent.putExtra("warId", warId);
+            startActivity(showWarIntent);
 
         } else {
             Toast.makeText(this, "Please enter a valid War ID!", Toast.LENGTH_SHORT).show();

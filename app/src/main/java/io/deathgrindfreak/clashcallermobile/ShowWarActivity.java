@@ -3,7 +3,6 @@ package io.deathgrindfreak.clashcallermobile;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,7 +31,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import io.deathgrindfreak.controllers.StartWarController;
+import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
@@ -49,7 +48,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private Clan clanInfo;
 
-    private StartWarController startWarController;
+    private ShowWarController showWarController;
 
     private static final String SHOWTAG = "Show War Activity";
 
@@ -76,7 +75,7 @@ public class ShowWarActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_war);
 
         // Create the controller
-        startWarController = new StartWarController(this);
+        showWarController = new ShowWarController(this);
 
         clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
 
@@ -151,28 +150,19 @@ public class ShowWarActivity extends ActionBarActivity {
         clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
         clanInfoUrl.put("warcode", clanInfo.getGeneral().getWarcode());
 
-        try {
-            clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
-                    clanInfoUrl.getEncodeURIString());
 
-            Log.d(SHOWTAG, "<-- CLANINFO -->");
-            Log.d(SHOWTAG, clanInfo.toString());
+        Clan nfo = showWarController.getClanInfo(this, getResources().getString(R.string.api_url),
+                clanInfoUrl.getEncodeURIString());
 
+        Log.d(SHOWTAG, "<-- CLANINFO -->");
+        Log.d(SHOWTAG, nfo == null ? "null" : nfo.toString());
 
-            if (clanInfo != null) {
-                showWarIntent.putExtra("clan", clanInfo);
+        if (nfo != null) {
+            clanInfo = nfo;
+            showWarIntent.putExtra("clan", clanInfo);
 
-                finish();
-                startActivity(showWarIntent);
-            } else {
-                    // TODO handle empty Clan
-            }
-        } catch (Exception ex) {
-            Toast errorToast = Toast.makeText(this,
-                    "Unable to join war, please check the War ID and try again.", Toast.LENGTH_SHORT);
-
-            errorToast.setGravity(Gravity.CENTER, 0, 0);
-            errorToast.show();
+            startActivity(showWarIntent);
+            finish();
         }
     }
 
@@ -343,10 +333,17 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (note != null && !note.isEmpty()) {
 
                                     // Set the value of the button in the app and call API to update
-                                    setClanMessage(clanInfo.getGeneral().getWarcode(), note);
-                                    clanMessage.setText(note);
+                                    String msg = showWarController.setClanMessage(getApplicationContext(),
+                                            clanInfo.getGeneral().getWarcode(), note);
 
-                                    clanInfo.getGeneral().setClanmessage(note);
+
+                                    // If msg is empty, then an error occurred
+                                    if (!msg.isEmpty()) {
+                                        clanMessage.setText(note);
+
+                                        clanInfo.getGeneral().setClanmessage(note);
+                                    }
+
                                 } else {
                                     Toast tst = Toast.makeText(ShowWarActivity.this,
                                             "The clan message cannot be blank.", Toast.LENGTH_SHORT);
@@ -659,20 +656,28 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (note != null && !note.isEmpty()) {
 
                                     // Set the value of the button in the app and call API to update
-                                    setMemberNote(clanInfo.getGeneral().getWarcode(), String.valueOf(row), note);
+                                    String msg = showWarController.setMemberNote(getApplicationContext(),
+                                            clanInfo.getGeneral().getWarcode(),
+                                            String.valueOf(row), note);
 
-                                    // Set the icon of the comment button
-                                    commentButton.setImageResource(R.drawable.chaticon);
 
-                                    // Set the note in the clanInfo instance
-                                    if (target != null) {
-                                        target.setNote(note);
-                                    } else {
-                                        Target tgt = new Target();
-                                        tgt.setPosition(row);
-                                        tgt.setNote(note);
+                                    // If msg is empty, then an error occurred
+                                    if (!msg.isEmpty()) {
 
-                                        clanInfo.getTargets().add(tgt);
+                                        // Set the icon of the comment button
+                                        commentButton.setImageResource(R.drawable.chaticon);
+
+                                        // Set the note in the clanInfo instance
+                                        if (target != null) {
+                                            target.setNote(note);
+                                        } else {
+                                            Target tgt = new Target();
+                                            tgt.setPosition(row);
+                                            tgt.setNote(note);
+
+                                            clanInfo.getTargets().add(tgt);
+                                        }
+
                                     }
 
                                 } else {
@@ -756,28 +761,34 @@ public class ShowWarActivity extends ActionBarActivity {
                 setUserStarImage(starButton, stars);
 
                 // Call the api
-                updateMemberStars(clanInfo.getGeneral().getWarcode(),
+                String msg = showWarController.updateMemberStars(getApplicationContext(),
+                        clanInfo.getGeneral().getWarcode(),
                         String.valueOf(member.getPosy()),
                         String.valueOf(member.getPosx()),
                         String.valueOf(stars));
 
-                // Set the stars for the member (Member is never null btw)
-                int ind = clanInfo.getCalls().indexOf(member);
-                clanInfo.getCalls().get(ind).setStars(stars);
 
-                // Set the max stars for the row
-                ArrayList<ClanMember> mems = getMembersAtRow(row);
-                ClanMember fst = mems.get(0);
+                // If msg is empty, an error occurred elsewhere
+                if (!msg.isEmpty()) {
 
-                TableRow row = (TableRow) callLayout.findViewWithTag(fst);
-                ImageButton maxButton = (ImageButton) row.getChildAt(0);
+                    // Set the stars for the member (Member is never null btw)
+                    int ind = clanInfo.getCalls().indexOf(member);
+                    clanInfo.getCalls().get(ind).setStars(stars);
 
-                int maxStars = 2;
-                for (ClanMember mem : mems)
-                    if (mem.getStars() > maxStars)
-                        maxStars = mem.getStars();
+                    // Set the max stars for the row
+                    ArrayList<ClanMember> mems = getMembersAtRow(row);
+                    ClanMember fst = mems.get(0);
 
-                setStarImage(maxButton, maxStars);
+                    TableRow row = (TableRow) callLayout.findViewWithTag(fst);
+                    ImageButton maxButton = (ImageButton) row.getChildAt(0);
+
+                    int maxStars = 2;
+                    for (ClanMember mem : mems)
+                        if (mem.getStars() > maxStars)
+                            maxStars = mem.getStars();
+
+                    setStarImage(maxButton, maxStars);
+                }
             }
 
             @Override
@@ -916,18 +927,25 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (newName != null && !newName.isEmpty()) {
 
                                     // Call the api
-                                    submitClanName(clanInfo.getGeneral().getWarcode(),
-                                            String.valueOf(mem.getPosy()), String.valueOf(mem.getPosx()), newName);
+                                    String msg = showWarController.submitClanName(getApplicationContext(),
+                                            clanInfo.getGeneral().getWarcode(),
+                                            String.valueOf(mem.getPosy()),
+                                            String.valueOf(mem.getPosx()),
+                                            newName);
 
-                                    // Set the name of the clan member
-                                    int ind = clanInfo.getCalls().indexOf(mem);
-                                    clanInfo.getCalls().get(ind).setPlayername(newName);
 
-                                    // Find the table row
-                                    TableRow row = (TableRow) callLayout.findViewWithTag(mem);
+                                    // If msg is empty, an error occurred
+                                    if (!msg.isEmpty()) {
+                                        // Set the name of the clan member
+                                        int ind = clanInfo.getCalls().indexOf(mem);
+                                        clanInfo.getCalls().get(ind).setPlayername(newName);
 
-                                    Button memB = (Button) row.findViewById(R.id.memButton);
-                                    memB.setText(newName);
+                                        // Find the table row
+                                        TableRow row = (TableRow) callLayout.findViewWithTag(mem);
+
+                                        Button memB = (Button) row.findViewById(R.id.memButton);
+                                        memB.setText(newName);
+                                    }
 
                                 } else {
                                     Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
@@ -983,42 +1001,49 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (name != null && !name.isEmpty()) {
 
                                     // Call the api
-                                    appendCall(clanInfo.getGeneral().getWarcode(), String.valueOf(row), name);
-
-                                    // Set the new player name
-                                    ClanMember mem = new ClanMember();
-                                    mem.setPlayername(name);
-                                    mem.setPosy(row);
+                                    String msg = showWarController.appendCall(getApplicationContext(),
+                                            clanInfo.getGeneral().getWarcode(),
+                                            String.valueOf(row),
+                                            name);
 
 
-                                    if (member != null) {
+                                    // If msg is empty, an error occurred
+                                    if (!msg.isEmpty()) {
+                                        // Set the new player name
+                                        ClanMember mem = new ClanMember();
+                                        mem.setPlayername(name);
+                                        mem.setPosy(row);
 
-                                        // Find the table row for the call number
-                                        TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
-                                        int index = callLayout.indexOfChild(rowL);
 
-                                        // Set the member index to the last for that call number
-                                        mem.setPosx(getLastMemberIndex(index));
+                                        if (member != null) {
 
-                                        // Add to the clan view
-                                        Log.d(SHOWTAG, "row: " + index + " New Row: " + getLastMemberIndex(index));
-                                        callLayout.addView(getMembersLayout(index, mem), index + getLastMemberIndex(index));
+                                            // Find the table row for the call number
+                                            TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
+                                            int index = callLayout.indexOfChild(rowL);
 
-                                    } else {
+                                            // Set the member index to the last for that call number
+                                            mem.setPosx(getLastMemberIndex(index));
 
-                                        // Find the table row
-                                        TableRow rowL = (TableRow) callLayout.findViewWithTag(row);
-                                        int index = callLayout.indexOfChild(rowL);
+                                            // Add to the clan view
+                                            Log.d(SHOWTAG, "row: " + index + " New Row: " + getLastMemberIndex(index));
+                                            callLayout.addView(getMembersLayout(index, mem), index + getLastMemberIndex(index));
 
-                                        mem.setPosx(0);
+                                        } else {
 
-                                        // Add to the clan view
-                                        callLayout.removeView(rowL);
-                                        callLayout.addView(getMembersLayout(row, mem), index);
+                                            // Find the table row
+                                            TableRow rowL = (TableRow) callLayout.findViewWithTag(row);
+                                            int index = callLayout.indexOfChild(rowL);
+
+                                            mem.setPosx(0);
+
+                                            // Add to the clan view
+                                            callLayout.removeView(rowL);
+                                            callLayout.addView(getMembersLayout(row, mem), index);
+                                        }
+
+                                        // Add the clan member to the clan array
+                                        clanInfo.addClanMember(mem);
                                     }
-
-                                    // Add the clan member to the clan array
-                                    clanInfo.addClanMember(mem);
 
                                 } else {
                                     Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
@@ -1060,40 +1085,47 @@ public class ShowWarActivity extends ActionBarActivity {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 // Call the api
-                                deleteCall(clanInfo.getGeneral().getWarcode(),
-                                        String.valueOf(member.getPosy()), String.valueOf(member.getPosx()));
+                                String msg = showWarController.deleteCall(getApplicationContext(),
+                                        clanInfo.getGeneral().getWarcode(),
+                                        String.valueOf(member.getPosy()),
+                                        String.valueOf(member.getPosx()));
 
-                                // Find the table row
-                                TableRow row = (TableRow) callLayout.findViewWithTag(member);
-                                int index = callLayout.indexOfChild(row);
 
-                                // Delete from layout
-                                callLayout.removeView(row);
+                                // If msg is empty, an error occurred
+                                if (!msg.isEmpty()) {
 
-                                // Get all the clan members belonging to PosY of member
-                                ArrayList<ClanMember> rowMembers = getMembersAtRow(member.getPosy());
+                                    // Find the table row
+                                    TableRow row = (TableRow) callLayout.findViewWithTag(member);
+                                    int index = callLayout.indexOfChild(row);
 
-                                // Remove the deleted member
-                                rowMembers.remove(member);
+                                    // Delete from layout
+                                    callLayout.removeView(row);
 
-                                // Decrement the x position of all lower members
-                                for (ClanMember mem : rowMembers)
-                                    if (mem.getPosx() > member.getPosx())
-                                        mem.setPosx(mem.getPosx() - 1);
+                                    // Get all the clan members belonging to PosY of member
+                                    ArrayList<ClanMember> rowMembers = getMembersAtRow(member.getPosy());
 
-                                // If member was the top call, add a new row back with appropriate member (empty if it was the last)
-                                if (member.getPosx() == 0) {
-                                    if (!rowMembers.isEmpty()) {
-                                        TableRow nextMemRow = (TableRow) callLayout.findViewWithTag(rowMembers.get(0));
-                                        callLayout.removeView(nextMemRow);
-                                        callLayout.addView(getMembersLayout(member.getPosy(), rowMembers.get(0)), index);
-                                    } else {
-                                        callLayout.addView(getMembersLayout(member.getPosy(), null), index);
+                                    // Remove the deleted member
+                                    rowMembers.remove(member);
+
+                                    // Decrement the x position of all lower members
+                                    for (ClanMember mem : rowMembers)
+                                        if (mem.getPosx() > member.getPosx())
+                                            mem.setPosx(mem.getPosx() - 1);
+
+                                    // If member was the top call, add a new row back with appropriate member (empty if it was the last)
+                                    if (member.getPosx() == 0) {
+                                        if (!rowMembers.isEmpty()) {
+                                            TableRow nextMemRow = (TableRow) callLayout.findViewWithTag(rowMembers.get(0));
+                                            callLayout.removeView(nextMemRow);
+                                            callLayout.addView(getMembersLayout(member.getPosy(), rowMembers.get(0)), index);
+                                        } else {
+                                            callLayout.addView(getMembersLayout(member.getPosy(), null), index);
+                                        }
                                     }
-                                }
 
-                                // Remove from clan calls
-                                clanInfo.removeClanMember(member);
+                                    // Remove from clan calls
+                                    clanInfo.removeClanMember(member);
+                                }
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -1259,147 +1291,11 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private void submitClanName(String warUrl, String posy, String posx, String name) {
-
-        if (name != null && !name.isEmpty()) {
-
-            UrlParameterContainer<String, String> clanNameUrl =
-                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx", "value"});
-
-            clanNameUrl.put("REQUEST", "UPDATE_NAME");
-            clanNameUrl.put("warcode", warUrl);
-            clanNameUrl.put("posy", posy);
-            clanNameUrl.put("posx", posx);
-            clanNameUrl.put("value", name);
-
-            Log.d(SHOWTAG, "warId passed in submitClanName: " + warUrl);
-            Log.d(SHOWTAG, "posy passed in submitClanName: " + posy);
-            Log.d(SHOWTAG, "posx passed in submitClanName: " + posx);
-            Log.d(SHOWTAG, "name passed in submitClanName: " + name);
-
-            String clanName = startWarController.submitCallName(getResources().getString(R.string.api_url),
-                    clanNameUrl.getEncodeURIString());
-
-            Log.d(SHOWTAG, "<-- SUBMIT CLAN NAME -->");
-            Log.d(SHOWTAG, clanName);
-
-        } else {
-            Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
-        }
+    public void displaySubmitClanNameToast() {
+        Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
     }
 
-    private void appendCall(String warUrl, String posy, String name) {
-
-        if (name != null && !name.isEmpty()) {
-
-            UrlParameterContainer<String, String> appendUrl =
-                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
-
-            appendUrl.put("REQUEST", "APPEND_CALL");
-            appendUrl.put("warcode", warUrl);
-            appendUrl.put("posy", posy);
-            appendUrl.put("value", name);
-
-            Log.d(SHOWTAG, "warId passed in appendCall: " + warUrl);
-            Log.d(SHOWTAG, "posy passed in appendCall: " + posy);
-            Log.d(SHOWTAG, "name passed in appendCall: " + name);
-
-            String appendCall = startWarController.appendCall(getResources().getString(R.string.api_url),
-                    appendUrl.getEncodeURIString());
-
-            Log.d(SHOWTAG, "<-- APPEND CALL -->");
-            Log.d(SHOWTAG, appendCall);
-
-        } else {
-            Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void setClanMessage(String warUrl, String note) {
-
-
-        UrlParameterContainer<String, String> clanMessage =
-                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
-
-        clanMessage.put("REQUEST", "UPDATE_CLAN_MESSAGE");
-        clanMessage.put("warcode", warUrl);
-        clanMessage.put("value", note);
-
-        Log.d(SHOWTAG, "warId passed in setClanMessage: " + warUrl);
-        Log.d(SHOWTAG, "name passed in setClanMessage: " + note);
-
-        String msg = startWarController.setClanMessage(getResources().getString(R.string.api_url),
-                clanMessage.getEncodeURIString());
-
-        Log.d(SHOWTAG, "<-- CLAN MESSAGE -->");
-        Log.d(SHOWTAG, msg);
-    }
-
-    private void deleteCall(String warUrl, String posy, String posx) {
-
-
-        UrlParameterContainer<String, String> clanMessage =
-                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx"});
-
-        clanMessage.put("REQUEST", "DELETE_CALL");
-        clanMessage.put("warcode", warUrl);
-        clanMessage.put("posy", posy);
-        clanMessage.put("posx", posx);
-
-        Log.d(SHOWTAG, "warId passed in deleteCall: " + warUrl);
-        Log.d(SHOWTAG, "posy passed in deleteCall: " + posy);
-        Log.d(SHOWTAG, "posx passed in deleteCall: " + posx);
-
-        String msg = startWarController.deleteCall(getResources().getString(R.string.api_url),
-                clanMessage.getEncodeURIString());
-
-        Log.d(SHOWTAG, "<-- DELETE MEMBER -->");
-        Log.d(SHOWTAG, msg);
-    }
-
-    private void setMemberNote(String warUrl, String posy, String value) {
-
-        UrlParameterContainer<String, String> clanMessage =
-                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
-
-        clanMessage.put("REQUEST", "UPDATE_TARGET_NOTE");
-        clanMessage.put("warcode", warUrl);
-        clanMessage.put("posy", posy);
-        clanMessage.put("value", value);
-
-        Log.d(SHOWTAG, "warId passed in setMemberNote: " + warUrl);
-        Log.d(SHOWTAG, "posy passed in setMemberNote: " + posy);
-        Log.d(SHOWTAG, "value passed in setMemberNote: " + value);
-
-        String msg = startWarController.setMemberNote(getResources().getString(R.string.api_url),
-                clanMessage.getEncodeURIString());
-
-        Log.d(SHOWTAG, "<-- SET MEMBER NOTE -->");
-        Log.d(SHOWTAG, msg);
-    }
-
-    private void updateMemberStars(String warUrl, String posx, String posy, String value) {
-
-        UrlParameterContainer<String, String> clanMessage =
-                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posx", "posy", "value"});
-
-        clanMessage.put("REQUEST", "UPDATE_STARS");
-        clanMessage.put("warcode", warUrl);
-        clanMessage.put("posx", posx);
-        clanMessage.put("posy", posy);
-        clanMessage.put("value", value);
-
-        Log.d(SHOWTAG, "warId passed in updateMemberStars: " + warUrl);
-        Log.d(SHOWTAG, "posx passed in updateMemberStars: " + posx);
-        Log.d(SHOWTAG, "posy passed in updateMemberStars: " + posy);
-        Log.d(SHOWTAG, "value passed in updateMemberStars: " + value);
-
-        String msg = startWarController.updateMemberStars(getResources().getString(R.string.api_url),
-                clanMessage.getEncodeURIString());
-
-        Log.d(SHOWTAG, "<-- UPDATE MEMBER STARS -->");
-        Log.d(SHOWTAG, msg);
-
-
+    public void displayAppendCallToast() {
+        Toast.makeText(this, "Call name cannot be empty!", Toast.LENGTH_SHORT).show();
     }
 }

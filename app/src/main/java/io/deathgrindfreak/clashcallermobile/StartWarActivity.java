@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import io.deathgrindfreak.controllers.StartWarController;
+import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
@@ -24,7 +24,7 @@ public class StartWarActivity extends ActionBarActivity {
 
     private Typeface clashFont;
     private UrlParameterContainer<String, String> urlMap;
-    private StartWarController startWarController;
+    private ShowWarController showWarController;
 
 
     @Override
@@ -32,7 +32,7 @@ public class StartWarActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_war);
 
-        startWarController = new StartWarController(this);
+        showWarController = new ShowWarController();
 
         setWarSizeCombo();
         setTimerCombo();
@@ -136,23 +136,24 @@ public class StartWarActivity extends ActionBarActivity {
         } else {
             Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-            String warId = startWarController.getWarId(getResources().getString(R.string.api_url),
+            String warId = showWarController.getWarId(getApplicationContext(), getResources().getString(R.string.api_url),
                     urlMap.getEncodeURIString());
 
-            UrlParameterContainer<String, String> clanInfoUrl =
-                    new UrlParameterContainer<>(new String[] {"REQUEST", "warcode"});
 
-            clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-            clanInfoUrl.put("warcode", warId.substring(4));
+            // If warId is empty, then an error occurred
+            if (!warId.isEmpty()) {
 
-            Clan clanInfo = startWarController.getClanInfo(getResources().getString(R.string.api_url),
-                    clanInfoUrl.getEncodeURIString());
+                UrlParameterContainer<String, String> clanInfoUrl =
+                        new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
 
-            if (warId != null && !warId.isEmpty()) {
+                clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+                clanInfoUrl.put("warcode", warId.substring(4));
+
+                Clan clanInfo = showWarController.getClanInfo(getApplicationContext(), getResources().getString(R.string.api_url),
+                        clanInfoUrl.getEncodeURIString());
+
                 showWarIntent.putExtra("clan", clanInfo);
                 startActivity(showWarIntent);
-            } else {
-                // TODO handle empty warId
             }
         }
     }

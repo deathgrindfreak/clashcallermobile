@@ -1,7 +1,10 @@
 package io.deathgrindfreak.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +19,15 @@ import java.net.URL;
  */
 public class ApiClassConnector extends AsyncTask<String, Integer, String>{
 
+    private Context context;
+
     private static final String APITAG = "ApiClassConnector";
+
+
+    public ApiClassConnector(Context context) {
+        this.context = context;
+    }
+
 
     @Override
     protected String doInBackground(String... params) {
@@ -58,6 +69,24 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
             }
         }
 
-        return sb.toString();
+        if (sb == null) {
+            return "";
+        } else {
+            return sb.toString();
+        }
+    }
+
+    @Override
+    protected void onPostExecute(String returnStr) {
+
+        Log.d(APITAG, "Return string: " + returnStr);
+
+        if (returnStr.isEmpty()) {
+            Toast tst = Toast.makeText(context,
+                    "An unexpected network error occured.  Please check your connection and try again later.",
+                    Toast.LENGTH_SHORT);
+            tst.setGravity(Gravity.CENTER, 0, 0);
+            tst.show();
+        }
     }
 }

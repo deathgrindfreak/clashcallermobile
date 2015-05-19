@@ -79,4 +79,5 @@
     <string name="title_activity_join_war">Join War</string>
     <string name="title_activity_search_clan">Search Archives</string>
     <string name="title_activity_about">About</string>
+    <string name="title_activity_show_war_loading">ShowWarLoadingActivity</string>
 </resources>
