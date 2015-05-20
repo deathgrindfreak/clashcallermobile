@@ -2,6 +2,7 @@ package io.deathgrindfreak.clashcallermobile;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -31,6 +32,9 @@ public class StartWarActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_war);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
         showWarController = new ShowWarController();
 
@@ -136,7 +140,7 @@ public class StartWarActivity extends ActionBarActivity {
         } else {
             Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-            String warId = showWarController.getWarId(getApplicationContext(), getResources().getString(R.string.api_url),
+            String warId = showWarController.getWarId(this, getResources().getString(R.string.api_url),
                     urlMap.getEncodeURIString());
 
 
@@ -149,7 +153,7 @@ public class StartWarActivity extends ActionBarActivity {
                 clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
                 clanInfoUrl.put("warcode", warId.substring(4));
 
-                Clan clanInfo = showWarController.getClanInfo(getApplicationContext(), getResources().getString(R.string.api_url),
+                Clan clanInfo = showWarController.getClanInfo(this, getResources().getString(R.string.api_url),
                         clanInfoUrl.getEncodeURIString());
 
                 showWarIntent.putExtra("clan", clanInfo);

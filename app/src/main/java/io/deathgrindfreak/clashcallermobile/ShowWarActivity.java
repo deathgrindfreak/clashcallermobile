@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -73,6 +74,9 @@ public class ShowWarActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_war);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
         // Create the controller
         showWarController = new ShowWarController(this);
@@ -333,7 +337,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (note != null && !note.isEmpty()) {
 
                                     // Set the value of the button in the app and call API to update
-                                    String msg = showWarController.setClanMessage(getApplicationContext(),
+                                    String msg = showWarController.setClanMessage(ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(), note);
 
 
@@ -656,7 +660,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (note != null && !note.isEmpty()) {
 
                                     // Set the value of the button in the app and call API to update
-                                    String msg = showWarController.setMemberNote(getApplicationContext(),
+                                    String msg = showWarController.setMemberNote(ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(row), note);
 
@@ -761,7 +765,7 @@ public class ShowWarActivity extends ActionBarActivity {
                 setUserStarImage(starButton, stars);
 
                 // Call the api
-                String msg = showWarController.updateMemberStars(getApplicationContext(),
+                String msg = showWarController.updateMemberStars(ShowWarActivity.this,
                         clanInfo.getGeneral().getWarcode(),
                         String.valueOf(member.getPosy()),
                         String.valueOf(member.getPosx()),
@@ -927,7 +931,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (newName != null && !newName.isEmpty()) {
 
                                     // Call the api
-                                    String msg = showWarController.submitClanName(getApplicationContext(),
+                                    String msg = showWarController.submitClanName(ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(mem.getPosy()),
                                             String.valueOf(mem.getPosx()),
@@ -1001,7 +1005,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (name != null && !name.isEmpty()) {
 
                                     // Call the api
-                                    String msg = showWarController.appendCall(getApplicationContext(),
+                                    String msg = showWarController.appendCall(ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(row),
                                             name);
@@ -1085,7 +1089,7 @@ public class ShowWarActivity extends ActionBarActivity {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 // Call the api
-                                String msg = showWarController.deleteCall(getApplicationContext(),
+                                String msg = showWarController.deleteCall(ShowWarActivity.this,
                                         clanInfo.getGeneral().getWarcode(),
                                         String.valueOf(member.getPosy()),
                                         String.valueOf(member.getPosx()));

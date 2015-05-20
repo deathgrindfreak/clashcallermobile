@@ -2,15 +2,11 @@ package io.deathgrindfreak.controllers;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
-import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
-import io.deathgrindfreak.clashcallermobile.JoinWarLoadingActivity;
 import io.deathgrindfreak.clashcallermobile.R;
 import io.deathgrindfreak.clashcallermobile.ShowWarActivity;
-import io.deathgrindfreak.clashcallermobile.StartWarActivity;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.ApiClassConnector;
 import io.deathgrindfreak.util.JsonParse;

@@ -1,9 +1,11 @@
 package io.deathgrindfreak.util;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -14,18 +16,32 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
+
 /**
  * Created by jcbell on 4/19/2015.
  */
 public class ApiClassConnector extends AsyncTask<String, Integer, String>{
 
     private Context context;
+    private ProgressDialog progress;
 
     private static final String APITAG = "ApiClassConnector";
 
 
     public ApiClassConnector(Context context) {
         this.context = context;
+        progress = new ProgressDialog(context);
+    }
+
+
+    @Override
+    protected void onPreExecute() {
+
+        // Show the progress dialog while api is connecting
+        progress.setMessage("Loading...");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.show();
     }
 
 
@@ -78,6 +94,9 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
 
     @Override
     protected void onPostExecute(String returnStr) {
+
+        // Dismiss the progress dialog
+        progress.dismiss();
 
         Log.d(APITAG, "Return string: " + returnStr);
 
