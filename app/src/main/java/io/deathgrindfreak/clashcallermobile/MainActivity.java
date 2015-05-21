@@ -34,13 +34,16 @@ public class MainActivity extends ActionBarActivity {
         Button search = (Button) findViewById(R.id.searchButton);
         search.setVisibility(View.GONE);
 
-
+        Button histButton = (Button) findViewById(R.id.historyButton);
         Button about = (Button) findViewById(R.id.aboutButton);
 
         swarButton.setTypeface(clashFont);
         jwarButton.setTypeface(clashFont);
+        histButton.setTypeface(clashFont);
         search.setTypeface(clashFont);
         about.setTypeface(clashFont);
+
+        //addSettingsListener();
     }
 
 
@@ -81,8 +84,24 @@ public class MainActivity extends ActionBarActivity {
         startActivity(searchIntent);
     }
 
+    public void historyButtonClicked(View view) {
+        startActivity(new Intent(this, HistoryActivity.class));
+    }
+
     public void aboutButtonClicked(View view) {
         Intent aboutIntent = new Intent(this, AboutActivity.class);
         startActivity(aboutIntent);
     }
+
+/*    public void addSettingsListener() {
+
+        Button settingButton = (Button) findViewById(R.id.action_settings);
+        settingButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            }
+        });
+    }*/
 }

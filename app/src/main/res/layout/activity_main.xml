@@ -45,6 +45,16 @@
             android:onClick="searchButtonClicked" />
 
         <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="War History"
+            android:id="@+id/historyButton"
+            android:textColor="@color/button_blue"
+            android:textSize="25sp"
+            android:onClick="historyButtonClicked" />
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="About"
@@ -53,5 +63,6 @@
             android:textSize="25sp"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="aboutButtonClicked" />
+
     </LinearLayout>
 </RelativeLayout>

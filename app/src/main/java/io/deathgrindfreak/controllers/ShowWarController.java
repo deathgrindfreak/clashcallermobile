@@ -181,7 +181,7 @@ public class ShowWarController {
     }
 
 
-    public String updateMemberStars(Context context, String warUrl, String posx, String posy, String value) {
+    public String updateMemberStars(Context context, String warUrl, String posy, String posx, String value) {
 
         UrlParameterContainer<String, String> clanMessage =
                 new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posx", "posy", "value"});
