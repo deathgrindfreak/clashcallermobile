@@ -68,11 +68,11 @@ public class HistoryActivity extends ActionBarActivity {
 
         // Display the main view
         try {
-            //histMap = historyController.loadHistory();
 
+            histMap = historyController.loadHistory(this);
 
             // TODO remove test data
-            histMap = getExampleData();
+            //histMap = getExampleData();
 
             Log.d(HISTTAG, "histMap: " + histMap);
 
@@ -83,9 +83,10 @@ public class HistoryActivity extends ActionBarActivity {
                 displayHistoryLayout(histMap);
             }
 
-            //} catch (IOException e) {
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e(HISTTAG, "IOException: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(HISTTAG, "Exception: " + e.getMessage());
 
             Toast tst = Toast.makeText(this, "There was an error loading the history file.", Toast.LENGTH_SHORT);
             tst.setGravity(Gravity.CENTER, 0, 0);

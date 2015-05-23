@@ -1,6 +1,7 @@
 package io.deathgrindfreak.controllers;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import io.deathgrindfreak.clashcallermobile.HistoryActivity;
+import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
 import io.deathgrindfreak.clashcallermobile.R;
 
 /**
@@ -26,12 +29,17 @@ import io.deathgrindfreak.clashcallermobile.R;
 public class HistoryController {
 
     private HistoryActivity historyActivity;
+    private JoinWarActivity joinWarActivity;
 
     private static final String HCTAG = "History Controller";
 
 
     public HistoryController(HistoryActivity historyActivity) {
         this.historyActivity = historyActivity;
+    }
+
+    public HistoryController(JoinWarActivity joinWarActivity) {
+        this.joinWarActivity = joinWarActivity;
     }
 
 
@@ -41,8 +49,8 @@ public class HistoryController {
      * @param histMap  The history map to be saved
      * @throws IOException  If write was unsuccessful
      */
-    public void saveHistory(LinkedHashMap<String, HashMap<String, String>> histMap) throws IOException {
-        writeJsonFile(mapToJson(histMap));
+    public void saveHistory(Context context, LinkedHashMap<String, HashMap<String, String>> histMap) throws IOException {
+        writeJsonFile(context, mapToJson(histMap));
     }
 
 
@@ -52,8 +60,13 @@ public class HistoryController {
      * @return  the history map
      * @throws IOException  If the read was unsuccessful
      */
-    public LinkedHashMap<String, HashMap<String, String>> loadHistory() throws IOException {
-        LinkedHashMap<String, HashMap<String, String>> histMap = jsonToMap(readJsonFile());
+    public LinkedHashMap<String, HashMap<String, String>> loadHistory(Context context) throws IOException {
+
+        String json = readJsonFile(context);
+
+        LinkedHashMap<String, HashMap<String, String>> histMap =
+                json.isEmpty() ? new LinkedHashMap<String, HashMap<String, String>>() : jsonToMap(json);
+
         return  histMap;
     }
 
@@ -79,37 +92,55 @@ public class HistoryController {
     }
 
 
-    private void writeJsonFile(String historyStr) throws IOException {
+    private void writeJsonFile(Context context, String historyStr) throws IOException {
 
-        FileOutputStream stream
-                = historyActivity.openFileOutput(historyActivity.getResources()
-                    .getString(R.string.history_file), Context.MODE_PRIVATE);
+        FileOutputStream stream = context.openFileOutput(context
+                .getResources()
+                .getString(R.string.history_file), Context.MODE_PRIVATE);
 
         stream.write(historyStr.getBytes());
         stream.close();
     }
 
 
-    private String readJsonFile() throws IOException {
+    private String readJsonFile(Context context) throws IOException {
 
-        FileInputStream stream
-                = historyActivity.openFileInput(historyActivity.getResources()
-                .getString(R.string.history_file));
+        String historyFile = context.getResources().getString(R.string.history_file);
 
-        InputStreamReader isr = new InputStreamReader (stream) ;
-        BufferedReader buffreader = new BufferedReader (isr) ;
+        if (fileExists(context, historyFile)) {
 
-        String readString;
-        StringBuilder strBuild = new StringBuilder();
-        while ((readString = buffreader.readLine()) != null) {
-            strBuild.append(readString);
+            FileInputStream stream = context.openFileInput(historyFile);
+
+            InputStreamReader isr = new InputStreamReader (stream) ;
+            BufferedReader buffreader = new BufferedReader (isr) ;
+
+            String readString;
+            StringBuilder strBuild = new StringBuilder();
+            while ((readString = buffreader.readLine()) != null) {
+                strBuild.append(readString);
+            }
+
+            isr.close() ;
+            stream.close();
+
+            return strBuild.toString();
+
+        } else {
+            return "";
         }
-
-        isr.close() ;
-        stream.close();
-
-        return strBuild.toString();
     }
+
+
+    private boolean fileExists(Context context, String filename) {
+
+        File file = context.getFileStreamPath(filename);
+
+        if(file == null || !file.exists()) {
+            return false;
+        }
+        return true;
+    }
+
 
     public int dptopx(int dp) {
         DisplayMetrics m =

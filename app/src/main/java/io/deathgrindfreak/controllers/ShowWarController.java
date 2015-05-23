@@ -35,7 +35,7 @@ public class ShowWarController {
     public Clan getClanInfo(Context context, String url, String parms) {
         String jsonStr = getReturnString(context, url, parms);
 
-        if (jsonStr.isEmpty()) {
+        if (jsonStr.isEmpty() || jsonStr.contains("Invalid War ID")) {
             return null;
         } else {
             return JsonParse.parseWarJson(jsonStr);
