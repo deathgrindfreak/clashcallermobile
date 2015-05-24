@@ -63,7 +63,13 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            startActivity(homeIntent);
+        }
+
+        if (id == R.id.home) {
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            startActivity(homeIntent);
         }
 
         return super.onOptionsItemSelected(item);

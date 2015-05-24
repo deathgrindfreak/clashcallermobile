@@ -134,10 +134,18 @@ public class ShowWarActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.refresh_button) {
+            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            startActivity(homeIntent);
+        }
+
+        if (id == R.id.refresh_button) {
             refreshPage();
             return true;
+        }
+
+        if (id == R.id.home) {
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            startActivity(homeIntent);
         }
 
         return super.onOptionsItemSelected(item);
