@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import io.deathgrindfreak.clashcallermobile.HistoryActivity;
 import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
 import io.deathgrindfreak.clashcallermobile.R;
+import io.deathgrindfreak.clashcallermobile.StartWarActivity;
 
 /**
  * Created by deathgrindfreak on 5/20/15.
@@ -30,6 +31,7 @@ public class HistoryController {
 
     private HistoryActivity historyActivity;
     private JoinWarActivity joinWarActivity;
+    private StartWarActivity startWarActivity;
 
     private static final String HCTAG = "History Controller";
 
@@ -42,6 +44,9 @@ public class HistoryController {
         this.joinWarActivity = joinWarActivity;
     }
 
+    public HistoryController(StartWarActivity startWarActivity) {
+        this.startWarActivity = startWarActivity;
+    }
 
     /**
      * Saves the history map to a file for later use.

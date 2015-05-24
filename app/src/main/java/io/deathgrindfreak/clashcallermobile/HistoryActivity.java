@@ -1,11 +1,16 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -14,6 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -22,9 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.deathgrindfreak.controllers.HistoryController;
@@ -41,6 +50,8 @@ public class HistoryActivity extends ActionBarActivity {
 
     private HistoryController historyController;
     private ShowWarController showWarController;
+
+    private LinearLayout histHolder;
 
     private LinkedHashMap<String, HashMap<String, String>> histMap;
 
@@ -146,12 +157,19 @@ public class HistoryActivity extends ActionBarActivity {
 
         mainView.addView(scrollLayout);
 
-        LinearLayout histHolder = new LinearLayout(this);
+        scrollLayout.addView(makeHistoryLayout(histMap));
+
+    }
+
+
+    private LinearLayout makeHistoryLayout(LinkedHashMap<String, HashMap<String, String>> histMap) {
+
+        histHolder = new LinearLayout(this);
         histHolder.setOrientation(LinearLayout.VERTICAL);
         histHolder.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
+                LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        scrollLayout.addView(histHolder);
+        histHolder.setBackgroundColor(getResources().getColor(R.color.white));
 
         // Set the main title
         TextView histTitle = new TextView(this);
@@ -164,86 +182,46 @@ public class HistoryActivity extends ActionBarActivity {
         histTitle.setText("War History");
 
         histHolder.addView(histTitle);
-        histHolder.addView(makeHistoryTable(histMap));
-    }
 
 
-    private TableLayout makeHistoryTable(LinkedHashMap<String, HashMap<String, String>> histMap) {
+        // Add rows in reverse order
+        List<String> keys = new ArrayList<String>(histMap.keySet());
 
-        TableLayout historyTable = new TableLayout(this);
-        historyTable.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                TableLayout.LayoutParams.MATCH_PARENT));
-        historyTable.setGravity(Gravity.TOP);
-        historyTable.setOrientation(TableLayout.VERTICAL);
-
-        // Add the header row
-        historyTable.addView(makeTableHeader());
-
-        int color, row = 0;
-        for (Map.Entry<String, HashMap<String, String>> entry : histMap.entrySet()) {
-
-            TableRow tblRow = makeTableRow(entry.getKey(), entry.getValue());
-
-            // Set the row color
-            color = row % 2 == 0 ? R.color.light_grey : R.color.white;
-            tblRow.setBackgroundColor(getResources().getColor(color));
-            row++;
-
-            historyTable.addView(tblRow);
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            System.out.println("key: " + keys.get(i));
+            histHolder.addView(makeTableRow(keys.get(i), histMap.get(keys.get(i))));
         }
 
-        return historyTable;
+        return histHolder;
     }
 
 
-    private TableRow makeTableHeader() {
+    private LinearLayout makeTableRow(final String warId, HashMap<String, String> attrs) {
 
-        TableRow headers = new TableRow(this);
-        headers.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-        for (String header : tableHeaders) {
-            TextView hdr = new TextView(this);
-
-            if (header.equals("warId")) {
-                hdr.setLayoutParams(new TableRow.LayoutParams(historyController.dptopx(LINK_WIDTH),
-                        TableRow.LayoutParams.WRAP_CONTENT));
-            } else {
-                hdr.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-            }
-
-            hdr.setTypeface(clashFont);
-            hdr.setTextColor(getResources().getColor(R.color.button_blue));
-            hdr.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimension(R.dimen.abc_text_size_small_material));
-            hdr.setText(header);
-
-            headers.addView(hdr);
-        }
-
-        return headers;
-    }
+        Log.d(HISTTAG, "warID: " + warId);
+        Log.d(HISTTAG, "enemy: " + attrs.get("enemy"));
+        Log.d(HISTTAG, "clan: " + attrs.get("clan"));
+        Log.d(HISTTAG, "date: " + attrs.get("date"));
 
 
-    private TableRow makeTableRow(final String warId, HashMap<String, String> attrs) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(historyController.dptopx(10), 0,
+                historyController.dptopx(10), historyController.dptopx(10));
 
-        TableRow row = new TableRow(this);
-        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, historyController.dptopx(10), 0, historyController.dptopx(10));
+        row.setLayoutParams(params);
 
+        // Set the tag
+        row.setTag(warId);
 
-        Button warIdLink = new Button(this);
-        warIdLink.setLayoutParams(new TableRow.LayoutParams(historyController.dptopx(LINK_WIDTH),
-                TableRow.LayoutParams.WRAP_CONTENT));
-        warIdLink.setTypeface(clashFont);
-        warIdLink.setBackgroundColor(getResources().getColor(R.color.button_blue));
-        warIdLink.setTextColor(getResources().getColor(R.color.white));
-        warIdLink.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
-        warIdLink.setText(warId);
+        // Set the background color
+        row.setBackgroundColor(getResources().getColor(R.color.light_grey));
 
         // Set the click listener
-        warIdLink.setOnClickListener(new View.OnClickListener() {
+        row.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
@@ -269,35 +247,121 @@ public class HistoryActivity extends ActionBarActivity {
                 if (clanInfo != null) {
                     showWarIntent.putExtra("clan", clanInfo);
                     startActivity(showWarIntent);
-                    finish();
                 }
             }
         });
 
 
+        LinearLayout buttonLayout = new LinearLayout(this);
+        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        buttonLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+
+        TextView warIdLink = new TextView(this);
+        warIdLink.setPadding(0, historyController.dptopx(10), 0, historyController.dptopx(10));
+        warIdLink.setTypeface(clashFont);
+        warIdLink.setGravity(Gravity.LEFT);
+        warIdLink.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 10f));
+        warIdLink.setTextColor(getResources().getColor(R.color.button_blue));
+        warIdLink.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen.abc_text_size_small_material));
+
+        Spannable warStr = new SpannableString("WarID: " + warId);
+        warStr.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                0, "WarID: ".length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        warStr.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.button_blue)),
+                "WarID: ".length(), warStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        warIdLink.setText(warStr);
+
+        buttonLayout.addView(warIdLink);
+
+
+        LinearLayout xLayout = new LinearLayout(this);
+        xLayout.setOrientation(LinearLayout.HORIZONTAL);
+        xLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        xLayout.setGravity(Gravity.RIGHT);
+
+        ImageButton xButton = new ImageButton(this);
+        xButton.setImageResource(R.drawable.x_grey);
+        xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        xButton.setLayoutParams(new LinearLayout.LayoutParams(historyController.dptopx(50),
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        xButton.setBackgroundColor(getResources().getColor(R.color.light_grey));
+
+        xButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(HistoryActivity.this)
+                        .setTitle("Delete War with ID \"" + warId + "\" from history?")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                LinearLayout row = (LinearLayout) histHolder.findViewWithTag(warId);
+                                histHolder.removeView(row);
+
+                                histMap.remove(warId);
+
+                                try {
+                                    historyController.saveHistory(HistoryActivity.this, histMap);
+                                } catch (IOException e) {
+                                    Log.e(HISTTAG, "Couldn't save histMap: " + e.getMessage());
+
+                                    Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
+                                    tst.setGravity(Gravity.CENTER, 0, 0);
+                                    tst.show();
+                                }
+
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        });
+
+                alert.show();
+            }
+        });
+
+        //xLayout.addView(xButton);
+
+        buttonLayout.addView(xButton);
+
+
         TextView enemy = new TextView(this);
-        enemy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
         enemy.setTypeface(clashFont);
         enemy.setTextColor(getResources().getColor(R.color.number_grey));
         enemy.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
-        enemy.setText(attrs.get("enemy"));
+        enemy.setText(attrs.get("clan") + " vs " + attrs.get("enemy"));
         enemy.setEllipsize(TextUtils.TruncateAt.END);
         enemy.setSingleLine(true);
 
 
         TextView date = new TextView(this);
-        date.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
         date.setTypeface(clashFont);
         date.setTextColor(getResources().getColor(R.color.number_grey));
         date.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
-        date.setText(attrs.get("date"));
+        date.setText("Start Date: " + attrs.get("date"));
+
+        TextView size = new TextView(this);
+        size.setTypeface(clashFont);
+        size.setTextColor(getResources().getColor(R.color.number_grey));
+        size.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        size.setText("Size: " + attrs.get("size") + " x " + attrs.get("size"));
 
 
-        row.addView(warIdLink);
+        row.addView(buttonLayout);
         row.addView(enemy);
         row.addView(date);
+        row.addView(size);
 
         return row;
     }

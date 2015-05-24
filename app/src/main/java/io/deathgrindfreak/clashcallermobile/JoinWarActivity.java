@@ -148,7 +148,6 @@ public class JoinWarActivity extends ActionBarActivity {
                 // Show the war
                 showWarIntent.putExtra("clan", clanInfo);
                 startActivity(showWarIntent);
-                finish();
             } else {
                 Toast tst = Toast.makeText(this, "Invalid WarID.  Please try again.", Toast.LENGTH_SHORT);
                 tst.setGravity(Gravity.CENTER, 0, 0);
