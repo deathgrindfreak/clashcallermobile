@@ -16,3 +16,4 @@ CLOSED: [2015-05-09 Sat 13:47]
 ** TODO Align x and + buttons to the far right at fixed width in table layout.
 ** TODO [Feature] Add push notifications for clan calls
 ** TODO Remove all references to pixels, replace with dp.
+** TODO add period to vs in history.  Trim all strings in dialog boxes.  Fix truncation in history delete dialog
