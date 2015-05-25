@@ -1,6 +1,8 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -74,6 +76,17 @@ public class StartWarActivity extends ActionBarActivity {
         urlMap.put("size", "50");
         urlMap.put("timer", "0");
         urlMap.put("searchable", "0");
+
+
+        // Set the clan text field if clan name is set
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.clan_name), Context.MODE_PRIVATE);
+        String clanName = sharedPref.getString(getResources().getString(R.string.clan_name), "");
+
+        if (!clanName.isEmpty()) {
+            EditText cNameField = (EditText) findViewById(R.id.clanNameField);
+            cNameField.setText(clanName);
+        }
+
     }
 
 
@@ -93,7 +106,7 @@ public class StartWarActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
             startActivity(homeIntent);
         }
 

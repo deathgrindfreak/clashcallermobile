@@ -17,24 +17,19 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
@@ -124,7 +119,7 @@ public class HistoryActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
             startActivity(homeIntent);
         }
 
@@ -378,7 +373,7 @@ public class HistoryActivity extends ActionBarActivity {
         enemy.setTextColor(getResources().getColor(R.color.number_grey));
         enemy.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
-        enemy.setText(attrs.get("clan") + " vs " + attrs.get("enemy"));
+        enemy.setText(attrs.get("clan") + " vs. " + attrs.get("enemy"));
         enemy.setEllipsize(TextUtils.TruncateAt.END);
         enemy.setSingleLine(true);
 

@@ -7,6 +7,13 @@
 
     <string name="history_file">history_file</string>
 
+    <string name="clan_name_info">Clan Name</string>
+    <string name="village_name_info">Village Name</string>
+
+    <string name="clan_name">clan_name</string>
+    <string name="village_name">village_name</string>
+
+
     <string name="clan_message">Update Clan Message</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
@@ -82,4 +89,5 @@
     <string name="title_activity_search_clan">Search Archives</string>
     <string name="title_activity_about">About</string>
     <string name="title_activity_history">War History</string>
+    <string name="title_activity_clash_settings">Settings</string>
 </resources>

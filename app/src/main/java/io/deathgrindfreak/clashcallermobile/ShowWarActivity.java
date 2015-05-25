@@ -1,8 +1,10 @@
 package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -134,7 +136,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
             startActivity(homeIntent);
         }
 
@@ -814,7 +816,7 @@ public class ShowWarActivity extends ActionBarActivity {
                 input.setLayoutParams(lp);
 
                 AlertDialog.Builder a = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Set Result for Attack by " + member.getPlayername());
+                        .setTitle("Set Result for Attack by " + member.getPlayername().trim());
 
                 final AlertDialog alert = a.create();
 
@@ -994,8 +996,21 @@ public class ShowWarActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+                SharedPreferences sharedPref = ShowWarActivity.this.getSharedPreferences(
+                        getString(R.string.village_name), Context.MODE_PRIVATE);
+
+                String villageName = sharedPref.getString(getResources().getString(R.string.village_name), "");
+
+
                 final EditText input = new EditText(ShowWarActivity.this);
-                input.setHint("Your Name");
+
+                // Set the village name if it exists
+                if (villageName.isEmpty()) {
+                    input.setHint("Your Name");
+                } else {
+                    input.setText(villageName);
+                }
+
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
@@ -1092,7 +1107,7 @@ public class ShowWarActivity extends ActionBarActivity {
             public void onClick(View v) {
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
-                        .setTitle("Delete " + member.getPlayername() + "'s Call?")
+                        .setTitle("Delete " + member.getPlayername().trim() + "'s Call?")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 

@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, SettingsActivity.class);
+            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
             startActivity(homeIntent);
         }
 
