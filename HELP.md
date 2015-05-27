@@ -64,6 +64,10 @@ To set the stars gained during an attack, click the button next to the member bu
 <img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetstar.png">
 <img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetstar2.png">
 
+If you've made a mistake in spelling, you can alter the name of the call by clicking on the name.
+
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetclan.png">
+
 ## History View
 
 After a war has been either successfully created or joined, its information will be saved to the history view for quick viewing.  Simply click the button with appropriate information in order to visit the war.
@@ -73,10 +77,6 @@ After a war has been either successfully created or joined, its information will
 To delete a war from your history, press the "X" button.
 
 <img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/historyactivitydelete.png">
-
-If you've made a mistake in spelling, you can alter the name of the call by clicking on the name.
-
-<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetclan.png">
 
 ## Settings
 
