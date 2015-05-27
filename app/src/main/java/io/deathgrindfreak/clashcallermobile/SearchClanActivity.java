@@ -1,5 +1,6 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -32,6 +33,14 @@ public class SearchClanActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
+        if (id == R.id.action_help) {
+            startActivity(new Intent(this, HelpActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

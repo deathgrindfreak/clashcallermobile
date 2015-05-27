@@ -61,6 +61,10 @@
             android:name=".ClashSettingsActivity"
             android:label="@string/title_activity_clash_settings" >
         </activity>
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help" >
+        </activity>
     </application>
 
 </manifest>

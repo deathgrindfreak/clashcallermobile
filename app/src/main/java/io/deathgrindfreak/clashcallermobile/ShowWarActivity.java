@@ -150,6 +150,10 @@ public class ShowWarActivity extends ActionBarActivity {
             startActivity(homeIntent);
         }
 
+        if (id == R.id.action_help) {
+            startActivity(new Intent(this, HelpActivity.class));
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

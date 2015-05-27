@@ -3,6 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_help">Help</string>
     <string name="title_activity_start_war">Start War</string>
 
     <string name="history_file">history_file</string>
@@ -90,4 +91,5 @@
     <string name="title_activity_about">About</string>
     <string name="title_activity_history">War History</string>
     <string name="title_activity_clash_settings">Settings</string>
+    <string name="title_activity_help">Help</string>
 </resources>

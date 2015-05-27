@@ -3,6 +3,7 @@ package io.deathgrindfreak.clashcallermobile;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
@@ -74,7 +75,7 @@ public class ClashSettingsActivity extends ActionBarActivity {
                 getString(R.string.village_name), Context.MODE_PRIVATE);
 
         String villageName = sharedPrefv.getString(getResources().getString(R.string.village_name), "");
-        String vText = getResources().getString(R.string.clan_name_info)
+        String vText = getResources().getString(R.string.village_name_info)
                 +  "\n" + (villageName.isEmpty() ? "Set Village Name" : villageName);
 
         Spannable vSpan = new SpannableString(vText);
@@ -107,6 +108,14 @@ public class ClashSettingsActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
+        if (id == R.id.action_help) {
+            startActivity(new Intent(this, HelpActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

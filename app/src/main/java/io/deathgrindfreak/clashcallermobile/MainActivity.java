@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.Button;
 public class MainActivity extends ActionBarActivity {
 
     private Typeface clashFont;
+
+    private static final String MAINTAG = "Main Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        Log.d(MAINTAG, "id: " + id);
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
@@ -70,6 +75,10 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.home) {
             Intent homeIntent = new Intent(this, MainActivity.class);
             startActivity(homeIntent);
+        }
+
+        if (id == R.id.action_help) {
+            startActivity(new Intent(this, HelpActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
