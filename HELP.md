@@ -42,8 +42,8 @@ You can also set a comment for a particular enemy village (this can help others 
 
 Admins can also set the clan message for the war as well (technically any user can, but since every member will be able to view it, most clans leave this duty to leaders and co-leaders).
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivityclanmessage2.png">
 <img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivityclanmessage1.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetmessage.png">
 
 Turning your phone sideways will show the star view (tablets should have this view regardless).
 
