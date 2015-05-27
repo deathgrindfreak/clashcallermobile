@@ -753,14 +753,8 @@ public class ShowWarActivity extends ActionBarActivity {
 
         final ImageButton starButton = new ImageButton(this);
 
-        // Get the first clan member at the row
-        ArrayList<ClanMember> mems = getMembersAtRow(row);
-
         // Find the maximum number of stars for the target
-        int stars = 1;
-        for (ClanMember mem : mems)
-            if (mem.getStars() > stars)
-                stars = mem.getStars();
+        int stars = member.getStars();
 
         setUserStarImage(starButton, stars);
 
@@ -1235,6 +1229,7 @@ public class ShowWarActivity extends ActionBarActivity {
     private void setUserStarImage(ImageButton starButton, int stars) {
 
         switch(stars) {
+            case 0:
             case 1:
                 starButton.setImageResource(R.drawable.called);
                 break;

@@ -10,9 +10,11 @@
 
     <string name="clan_name_info">Clan Name</string>
     <string name="village_name_info">Village Name</string>
+    <string name="id_info">Clan ID</string>
 
     <string name="clan_name">clan_name</string>
     <string name="village_name">village_name</string>
+    <string name="id_name">id_name</string>
 
 
     <string name="clan_message">Update Clan Message</string>

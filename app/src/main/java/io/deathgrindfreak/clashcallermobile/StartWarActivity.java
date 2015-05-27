@@ -87,6 +87,15 @@ public class StartWarActivity extends ActionBarActivity {
             cNameField.setText(clanName);
         }
 
+
+        // Set the clan id field if clan id is set
+        SharedPreferences sharedPrefid = this.getSharedPreferences(getString(R.string.id_name), Context.MODE_PRIVATE);
+        String clanid = sharedPrefid.getString(getResources().getString(R.string.id_name), "");
+
+        if (!clanid.isEmpty()) {
+            EditText cIdField = (EditText) findViewById(R.id.clanId);
+            cIdField.setText(clanid);
+        }
     }
 
 

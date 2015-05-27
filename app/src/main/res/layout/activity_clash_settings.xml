@@ -45,4 +45,19 @@
         android:paddingBottom="10dp"
         android:onClick="villageNameClicked" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Village Name\nSet Village Name"
+        android:id="@+id/idButton"
+        android:gravity="left"
+        android:background="@color/white"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:onClick="idClicked"
+        android:layout_below="@+id/memberNameButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
