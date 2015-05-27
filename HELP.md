@@ -37,14 +37,14 @@ To make a call simply click the plus button next to the number of the village yo
 
 You can also set a comment for a particular enemy village (this can help others who may wish to attack the same base later on).
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitycomment1.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitycomment2.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitycomment1.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitycomment2.png">
 
 Admins can also set the clan message for the war as well (technically any user can, but since every member will be able to view it, most clans leave this duty to leaders and co-leaders).
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitysetmessage.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivityclanmessage1.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivityclanmessage2.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetmessage.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivityclanmessage1.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivityclanmessage2.png">
 
 Turning your phone sideways will show the star view (tablets should have this view regardless).
 
@@ -52,25 +52,28 @@ Turning your phone sideways will show the star view (tablets should have this vi
 
 Any number of members can call a single enemy base.  To add another call for a base, simply click the plus button again (the call will appear inline, below the last call for the target).
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitysecondcall.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitysecondcall2.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysecondcall.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysecondcall2.png">
 
 In order to delete a call, simply click the "X" button.
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitydeletecall.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitydeletecall2.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitydeletecall.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitydeletecall2.png">
 
 To set the stars gained during an attack, click the button next to the member button.
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitysetstar.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/waractivitysetstar2.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetstar.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetstar2.png">
 
 ## History View
 
 After a war has been either successfully created or joined, its information will be saved to the history view for quick viewing.  Simply click the button with appropriate information in order to visit the war.
 
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/historyactivity.png">
-<img src="https://github.com/deathgrindfreak/clashcallermobile/img/blob/master/historyactivity.png">
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/historyactivity.png">
+
+To delete a war from your history, press the "X" button.
+
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/historyactivitydelete.png">
 
 ## Settings
 

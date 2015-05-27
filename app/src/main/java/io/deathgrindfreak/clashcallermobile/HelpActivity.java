@@ -26,7 +26,7 @@ public class HelpActivity extends ActionBarActivity {
 /*        WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);*/
         myWebView.setWebViewClient(new WebViewClient());
-        myWebView.loadUrl("http://github.com/deathgrindfreak/clashcallermobile/master/HELP.md");
+        myWebView.loadUrl("http://github.com/deathgrindfreak/clashcallermobile/blob/master/HELP.md");
     }
 
 
