@@ -74,6 +74,10 @@ To delete a war from your history, press the "X" button.
 
 <img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/historyactivitydelete.png">
 
+If you've made a mistake in spelling, you can alter the name of the call by clicking on the name.
+
+<img src="https://github.com/deathgrindfreak/clashcallermobile/blob/master/img/waractivitysetclan.png">
+
 ## Settings
 
 Since both your clan, clan id and village name are unlikely to change very often, you can save this information in the settings view (this is accessible from the navigation drop down).  That way everytime you start a war or add your name to a call, the saved information will automatically be filled in.
