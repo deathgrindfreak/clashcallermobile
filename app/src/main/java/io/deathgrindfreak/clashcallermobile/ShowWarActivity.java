@@ -1137,6 +1137,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                         if (mem.getPosx() > member.getPosx())
                                             mem.setPosx(mem.getPosx() - 1);
 
+
                                     // If member was the top call, add a new row back with appropriate member (empty if it was the last)
                                     if (member.getPosx() == 0) {
                                         if (!rowMembers.isEmpty()) {
@@ -1150,6 +1151,23 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                     // Remove from clan calls
                                     clanInfo.removeClanMember(member);
+
+
+                                    // TODO Fix this
+                                    // Set the max star for the call
+                                    ArrayList<ClanMember> mems = getMembersAtRow(member.getPosy());
+                                    ClanMember fst = mems.get(0);
+
+                                    TableRow starRow = (TableRow) callLayout.findViewWithTag(fst);
+                                    ImageButton maxButton = (ImageButton) starRow.getChildAt(0);
+
+                                    int maxStars = 2;
+                                    for (ClanMember mem : mems)
+                                        if (mem.getStars() > maxStars)
+                                            maxStars = mem.getStars();
+
+                                    setStarImage(maxButton, maxStars);
+
                                 }
                             }
                         })
