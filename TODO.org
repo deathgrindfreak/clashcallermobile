@@ -17,3 +17,6 @@ CLOSED: [2015-05-09 Sat 13:47]
 ** TODO [Feature] Add push notifications for clan calls
 ** TODO Remove all references to pixels, replace with dp.
 ** TODO add period to vs in history.  Trim all strings in dialog boxes.  Fix truncation in history delete dialog
+
+** TODO fix stars when deleting member.   Set on pause and on resume for showwaractivity
+** TODO need more validation on fields, need to auto insert # in id fields 
