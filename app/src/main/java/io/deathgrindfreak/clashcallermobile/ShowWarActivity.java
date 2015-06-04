@@ -70,6 +70,10 @@ public class ShowWarActivity extends ActionBarActivity {
     // The minimum width required to display the star buttons
     private static final int MIN_WIDTH_FOR_STAR = 3;
 
+    // Indexes for certain buttons
+    private static final int MAX_STAR_BUTTON_INDEX = 0;
+    private static final int STAR_BUTTON_INDEX = 4;
+
 
 
     @Override
@@ -499,9 +503,18 @@ public class ShowWarActivity extends ActionBarActivity {
                 s.setBackgroundColor(getResources().getColor(color));
                 rowLayout.addView(s);
             } else {
-                ImageButton uStar = makeUserStarButton(row, member);
+                ImageButton uStar = makeUserStarButton(row, member,
+                        getResources().getColor(color));
                 uStar.setBackgroundColor(getResources().getColor(color));
                 rowLayout.addView(uStar);
+
+                // Set the review button if note is present
+                if (member.getNote() != null && !member.getNote().isEmpty()) {
+
+                    ImageButton attack = makeAttackCommentButton(member);
+                    attack.setBackgroundColor(getResources().getColor(color));
+                    rowLayout.addView(attack);
+                }
             }
         }
 
@@ -749,7 +762,7 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private ImageButton makeUserStarButton(final int row, final ClanMember member) {
+    private ImageButton makeUserStarButton(final int row, final ClanMember member, final int color) {
 
         final ImageButton starButton = new ImageButton(this);
 
@@ -792,7 +805,7 @@ public class ShowWarActivity extends ActionBarActivity {
                     ClanMember fst = mems.get(0);
 
                     TableRow row = (TableRow) callLayout.findViewWithTag(fst);
-                    ImageButton maxButton = (ImageButton) row.getChildAt(0);
+                    ImageButton maxButton = (ImageButton) row.getChildAt(MAX_STAR_BUTTON_INDEX);
 
                     int maxStars = 2;
                     for (ClanMember mem : mems)
@@ -878,6 +891,92 @@ public class ShowWarActivity extends ActionBarActivity {
                     }
                 });
 
+                TextView or = new TextView(ShowWarActivity.this);
+                or.setGravity(Gravity.CENTER_HORIZONTAL);
+                or.setTypeface(clashFont);
+                or.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.abc_text_size_large_material));
+                or.setTextColor(getResources().getColor(R.color.button_blue));
+                or.setText("- or -");
+
+                ImageButton reviewAttack = new ImageButton(ShowWarActivity.this);
+                reviewAttack.setImageResource(R.drawable.reviewbutton);
+                reviewAttack.setBackgroundColor(getResources().getColor(R.color.white));
+                reviewAttack.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+
+                        // Close the current alert
+                        alert.cancel();
+
+                        // Open a new alert dialog
+                        final EditText input = new EditText(ShowWarActivity.this);
+
+                        if (member.getNote() == null) {
+                            input.setHint("Review ...");
+                        } else {
+                            input.setText(member.getNote());
+                        }
+
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.MATCH_PARENT);
+                        input.setLayoutParams(lp);
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                                .setTitle("Review for " + member.getPlayername().trim() + "'s Attack.")
+                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        // Get the value from the input field
+                                        final String note = input.getText().toString();
+
+                                        if (note != null && !note.isEmpty()) {
+
+                                            // Set the value of the button in the app and call API to update
+                                            String msg = showWarController.setAttackNote(ShowWarActivity.this,
+                                                    clanInfo.getGeneral().getWarcode(),
+                                                    String.valueOf(row),
+                                                    String.valueOf(member.getPosx()),
+                                                    note);
+
+
+                                            // If msg is empty, then an error occurred
+                                            if (!msg.isEmpty()) {
+
+                                                int i = clanInfo.getCalls().indexOf(member);
+                                                clanInfo.getCalls().get(i).setNote(note);
+                                                member.setNote(note);
+
+                                                ImageButton reviewButton = makeAttackCommentButton(member);
+                                                reviewButton.setBackgroundColor(color);
+
+                                                // Add the review button for the member
+                                                TableRow starRow = (TableRow) callLayout.findViewWithTag(member);
+                                                starRow.addView(reviewButton, STAR_BUTTON_INDEX);
+                                            }
+
+                                        } else {
+                                            Toast tst = Toast.makeText(ShowWarActivity.this,
+                                                    "The comment for an attack cannot be blank.", Toast.LENGTH_SHORT);
+                                            tst.setGravity(Gravity.CENTER, 0, 0);
+                                            tst.show();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do nothing
+                                    }
+                                });
+
+                        alert.setView(input);
+                        alert.show();
+                    }
+                });
+
+
                 ScrollView buttonScroll = new ScrollView(ShowWarActivity.this);
 
                 LinearLayout buttonLayout = new LinearLayout(ShowWarActivity.this);
@@ -888,6 +987,8 @@ public class ShowWarActivity extends ActionBarActivity {
                 buttonLayout.addView(oneStar);
                 buttonLayout.addView(twoStar);
                 buttonLayout.addView(threeStar);
+                buttonLayout.addView(or);
+                buttonLayout.addView(reviewAttack);
 
                 buttonScroll.addView(buttonLayout);
 
@@ -898,6 +999,39 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
         return starButton;
+    }
+
+
+    private ImageButton makeAttackCommentButton(final ClanMember member) {
+
+        ImageButton reviewButton = new ImageButton(this);
+        reviewButton.setImageResource(R.drawable.review);
+        reviewButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH),
+                TableRow.LayoutParams.WRAP_CONTENT));
+
+        final TextView text = new TextView(ShowWarActivity.this);
+        text.setText(member.getNote());
+
+        reviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                    .setTitle("Review for " + member.getPlayername().trim() + "'s Attack.")
+                    .setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing
+                        }
+                    });
+
+                alert.setView(text);
+
+                alert.show();
+
+            }
+        });
+
+        return reviewButton;
     }
 
 
@@ -1159,7 +1293,7 @@ public class ShowWarActivity extends ActionBarActivity {
                                     ClanMember fst = mems.get(0);
 
                                     TableRow starRow = (TableRow) callLayout.findViewWithTag(fst);
-                                    ImageButton maxButton = (ImageButton) starRow.getChildAt(0);
+                                    ImageButton maxButton = (ImageButton) starRow.getChildAt(MAX_STAR_BUTTON_INDEX);
 
                                     int maxStars = 2;
                                     for (ClanMember mem : mems)

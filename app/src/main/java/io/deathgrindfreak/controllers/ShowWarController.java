@@ -180,6 +180,31 @@ public class ShowWarController {
         return msg;
     }
 
+    public String setAttackNote(Context context, String warUrl, String posy, String posx, String value) {
+
+        UrlParameterContainer<String, String> clanMessage =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx", "value"});
+
+        clanMessage.put("REQUEST", "UPDATE_CALL_NOTE");
+        clanMessage.put("warcode", warUrl);
+        clanMessage.put("posy", posy);
+        clanMessage.put("posx", posx);
+        clanMessage.put("value", value);
+
+        Log.d(SWCTAG, "warId passed in setAttackNote: " + warUrl);
+        Log.d(SWCTAG, "posy passed in setAttackNote: " + posy);
+        Log.d(SWCTAG, "posx passed in setAttackNote: " + posx);
+        Log.d(SWCTAG, "value passed in setAttackNote: " + value);
+
+        String msg = getReturnString(context, showWarActivity
+                        .getResources().getString(R.string.api_url),
+                clanMessage.getEncodeURIString());
+
+        Log.d(SWCTAG, "<-- SET ATTACK NOTE -->");
+        Log.d(SWCTAG, msg);
+
+        return msg;
+    }
 
     public String updateMemberStars(Context context, String warUrl, String posy, String posx, String value) {
 
