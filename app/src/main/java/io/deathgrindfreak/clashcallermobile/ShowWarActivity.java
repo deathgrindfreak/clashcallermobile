@@ -168,8 +168,14 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
         TaskCallback callback = new TaskCallback() {
+
             @Override
-            public void onTaskCompleted(String jsonStr) {
+            public String getProgressMessage() {
+                return "Refreshing page ...";
+            }
+
+            @Override
+            public void onTaskCompleted(ProgressDialog progress, String jsonStr) {
 
                 Intent showWarIntent = getIntent();
 
@@ -184,6 +190,9 @@ public class ShowWarActivity extends ActionBarActivity {
                     if (nfo != null) {
                         clanInfo = nfo;
                         showWarIntent.putExtra("clan", clanInfo);
+
+                        if (progress.isShowing)
+                            progress.dismiss();
 
                         startActivity(showWarIntent);
                         finish();
@@ -364,7 +373,12 @@ public class ShowWarActivity extends ActionBarActivity {
                                     TaskCallback callback = new TaskCallback() {
 
                                         @Override
-                                        public void onTaskCompleted(String msg) {
+                                        public String getProgressMessage() {
+                                            return "Setting Clan Message ...";
+                                        }
+
+                                        @Override
+                                        public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                                             // If msg is empty, then an error occurred
                                             if (!msg.isEmpty()) {
@@ -372,6 +386,9 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                                 clanInfo.getGeneral().setClanmessage(note);
                                             }
+
+                                            if (progress.isShowing())
+                                                progress.dismiss();
                                         }
                                     };
 
@@ -701,9 +718,14 @@ public class ShowWarActivity extends ActionBarActivity {
                                 if (note != null && !note.isEmpty()) {
 
                                     TaskCallback callback = new TaskCallback() {
-                                        @Override
-                                        public void onTaskCompleted(String msg) {
 
+                                        @Override
+                                        public String getProgressMessage() {
+                                            return "Setting Comment ...";
+                                        }
+
+                                        @Override
+                                        public void onTaskCompleted(ProgressDialog progress, String msg) {
                                             // If msg is empty, then an error occurred
                                             if (!msg.isEmpty()) {
 
@@ -720,8 +742,10 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                                     clanInfo.getTargets().add(tgt);
                                                 }
-
                                             }
+
+                                            if (progress.isShowing())
+                                                progress.dismiss();
                                         }
                                     };
 
@@ -802,8 +826,14 @@ public class ShowWarActivity extends ActionBarActivity {
             private void setStars(final int stars) {
 
                 TaskCallback callback = new TaskCallback() {
+
                     @Override
-                    public void onTaskCompleted(String msg) {
+                    public String getProgressMessage() {
+                        return "Setting Stars ...";
+                    }
+
+                    @Override
+                    public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                         // If msg is empty, an error occurred elsewhere
                         if (!msg.isEmpty()) {
@@ -829,6 +859,9 @@ public class ShowWarActivity extends ActionBarActivity {
 
                             setStarImage(maxButton, maxStars);
                         }
+
+                        if (progress.isShowing())
+                            progress.dismiss();
                     }
                 };
 
@@ -959,8 +992,13 @@ public class ShowWarActivity extends ActionBarActivity {
                                         if (note != null && !note.isEmpty()) {
 
                                             TaskCallback callback = new TaskCallback() {
+
                                                 @Override
-                                                public void onTaskCompleted(String msg) {
+                                                public String getProgressMessage() {
+                                                    return "Setting Attack Review ...";
+                                                }
+                                                @Override
+                                                public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                                                     // If msg is empty, then an error occurred
                                                     if (!msg.isEmpty()) {
@@ -976,6 +1014,9 @@ public class ShowWarActivity extends ActionBarActivity {
                                                         TableRow starRow = (TableRow) callLayout.findViewWithTag(member);
                                                         starRow.addView(reviewButton, STAR_BUTTON_INDEX);
                                                     }
+
+                                                    if (progress.isShowing())
+                                                        progress.dismiss();
                                                 }
                                             };
 
@@ -1104,7 +1145,12 @@ public class ShowWarActivity extends ActionBarActivity {
                                     TaskCallback callback = new TaskCallback() {
 
                                         @Override
-                                        public void onTaskCompleted(String msg) {
+                                        public String getProgressMessage() {
+                                            return "Changing Call ...";
+                                        }
+
+                                        @Override
+                                        public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                                             // If msg is empty, an error occurred
                                             if (!msg.isEmpty()) {
@@ -1118,6 +1164,9 @@ public class ShowWarActivity extends ActionBarActivity {
                                                 Button memB = (Button) row.findViewById(R.id.memButton);
                                                 memB.setText(newName);
                                             }
+
+                                            if (progress.isShowing())
+                                                progress.dismiss();
                                         }
                                     };
 
@@ -1197,7 +1246,12 @@ public class ShowWarActivity extends ActionBarActivity {
                                     TaskCallback callback = new TaskCallback() {
 
                                         @Override
-                                        public void onTaskCompleted(String msg) {
+                                        public String getProgressMessage() {
+                                            return "Calling Target ...";
+                                        }
+
+                                        @Override
+                                        public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                                             // If msg is empty, an error occurred
                                             if (!msg.isEmpty()) {
@@ -1236,6 +1290,9 @@ public class ShowWarActivity extends ActionBarActivity {
                                                 // Add the clan member to the clan array
                                                 clanInfo.addClanMember(mem);
                                             }
+
+                                            if (progress.isShowing())
+                                                progress.dismiss();
                                         }
                                     };
 
@@ -1287,7 +1344,12 @@ public class ShowWarActivity extends ActionBarActivity {
                                 TaskCallback callback = new TaskCallback() {
 
                                     @Override
-                                    public void onTaskCompleted(String msg) {
+                                    public String getProgressMessage() {
+                                        return "Deleting Call ...";
+                                    }
+
+                                    @Override
+                                    public void onTaskCompleted(ProgressDialog progress, String msg) {
 
                                         // If msg is empty, an error occurred
                                         if (!msg.isEmpty()) {
@@ -1336,6 +1398,9 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                             setStarImage(maxButton, maxStars);
                                         }
+
+                                        if (progress.isShowing())
+                                            progress.dismiss();
                                     }
                                 };
 

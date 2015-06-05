@@ -234,8 +234,14 @@ public class HistoryActivity extends ActionBarActivity {
             public void onClick(View view) {
 
                 TaskCallback callback = new TaskCallback() {
+
                     @Override
-                    public void onTaskCompleted(String jsonStr) {
+                    public String getProgressMessage() {
+                        return "Retrieving War ...";
+                    }
+
+                    @Override
+                    public void onTaskCompleted(ProgressDialog progress, String jsonStr) {
 
                         if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
@@ -287,6 +293,10 @@ public class HistoryActivity extends ActionBarActivity {
                                 alert.show();
                             }
                         }
+
+                        // Dismiss the progress dialog
+                        if (progress.isShowing())
+                            progress.dismiss();
                     }
                 };
 

@@ -1,5 +1,6 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -22,11 +23,31 @@ public class HelpActivity extends ActionBarActivity {
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
         // Open the wiki
-        WebView myWebView = (WebView) findViewById(R.id.helpWebView);
-/*        WebSettings webSettings = myWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);*/
+        final WebView myWebView = (WebView) findViewById(R.id.helpWebView);
         myWebView.setWebViewClient(new WebViewClient());
-        myWebView.loadUrl("http://github.com/deathgrindfreak/clashcallermobile/blob/master/HELP.md");
+
+        // Start an AsyncTask so that the progress dialog shows up
+        new AsyncTask<String, Void, Void> {
+
+            @Override
+            protected onPreExecute() {
+                ProgressDialog progress = new ProgressDialog(HelpActivity.this);
+                progress.setMessage("Loading Help ...");
+                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progress.show();
+            }
+
+            @Override
+            protected void doInBackground(String... url) {
+                myWebView.loadUrl(url[0]);
+            }
+
+            @Override
+            protected void onPostExecute() {
+                if (progress.isShowing())
+                    progress.dismiss();
+            }
+        }.execute("http://github.com/deathgrindfreak/clashcallermobile/blob/master/HELP.md")
     }
 
 

@@ -114,8 +114,14 @@ public class JoinWarActivity extends ActionBarActivity {
             final Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
             TaskCallback callback = new TaskCallback() {
+
                 @Override
-                public void onTaskCompleted(String jsonStr) {
+                public String getProgressMessage() {
+                    return "Joining War ...";
+                }
+
+                @Override
+                public void onTaskCompleted(ProgressDialog progress, String jsonStr) {
 
                     if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
@@ -164,6 +170,9 @@ public class JoinWarActivity extends ActionBarActivity {
                         tst.show();
                     }
 
+                    // Dismiss the progress dialog
+                    if (progress.isShowing())
+                        progress.dismiss();
                 }
             };
 

@@ -42,7 +42,7 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
     protected void onPreExecute() {
 
         // Show the progress dialog while api is connecting
-        progress.setMessage("Loading...");
+        progress.setMessage(callback.getProgressMessage());
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.show();
     }
@@ -101,6 +101,11 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
         Log.d(APITAG, "Return string: " + returnStr);
 
         if (returnStr.isEmpty()) {
+
+            // Dismiss the progress dialog
+            if (progress.isShowing())
+                progress.dismiss();
+
             Toast tst = Toast.makeText(context,
                     "An unexpected network error occured.  Please check your connection and try again later.",
                     Toast.LENGTH_SHORT);
@@ -108,11 +113,7 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
             tst.show();
         } else {
             if (callback != null)
-                callback.onTaskCompleted(returnStr);
+                callback.onTaskCompleted(progress, returnStr);
         }
-
-        // Dismiss the progress dialog
-        if (progress.isShowing())
-            progress.dismiss();
     }
 }

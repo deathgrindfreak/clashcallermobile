@@ -179,15 +179,31 @@ public class StartWarActivity extends ActionBarActivity {
             final Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
             TaskCallback callback = new TaskCallback() {
+
                 @Override
-                public void onTaskCompleted(String warId) {
+                public String getProgressMessage() {
+                    return "Retrieving WarId ...";
+                }
+
+                @Override
+                public void onTaskCompleted(ProgressDialog progress, String warId) {
+
+                    // Dismiss the progress dialog
+                    if (progress.isShowing())
+                        progress.dismiss();
 
                     // If warId is empty, then an error occurred
                     if (!warId.isEmpty()) {
 
                         TaskCallback clanCallback = new TaskCallback() {
+
                             @Override
-                            public void onTaskCompleted(String jsonStr) {
+                            public String getProgressMessage() {
+                                return "Starting War ..."
+                            }
+
+                            @Override
+                            public void onTaskCompleted(ProgressDialog progress, String jsonStr) {
 
                                 if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
@@ -226,17 +242,25 @@ public class StartWarActivity extends ActionBarActivity {
                                         tst.show();
                                     }
 
+                                    // Dismiss the progress dialog
+                                    if (progress.isShowing())
+                                        progress.dismiss();
+
                                     // Show the war
                                     showWarIntent.putExtra("clan", clanInfo);
                                     startActivity(showWarIntent);
 
                                 } else {
+
+                                    // Dismiss the progress dialog
+                                    if (progress.isShowing())
+                                        progress.dismiss();
+
                                     Toast tst = Toast.makeText(StartWarActivity.this, "Invalid WarID.  Please try again.",
                                             Toast.LENGTH_SHORT);
                                     tst.setGravity(Gravity.CENTER, 0, 0);
                                     tst.show();
                                 }
-                            }
                         };
 
                         // Call the api to get the Clan object
