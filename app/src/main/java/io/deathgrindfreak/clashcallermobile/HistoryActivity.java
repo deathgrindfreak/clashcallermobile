@@ -34,6 +34,8 @@ import java.util.List;
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.JsonParse;
+import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
@@ -231,62 +233,64 @@ public class HistoryActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                // Initialize the war view
-                Intent showWarIntent = new Intent(HistoryActivity.this, ShowWarActivity.class);
+                TaskCallback callback = new TaskCallback() {
+                    @Override
+                    public void onTaskCompleted(String jsonStr) {
 
-                UrlParameterContainer<String, String> clanInfoUrl =
-                        new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+                        if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
-                clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-                clanInfoUrl.put("warcode", warId);
+                            // Initialize the war view
+                            Intent showWarIntent = new Intent(HistoryActivity.this, ShowWarActivity.class);
 
-                Log.i(HISTTAG, "warId passed in join: " + warId);
+                            // Get the clanInfo object from the JSON string
+                            Clan clanInfo = JsonParse.parseWarJson(jsonStr);
 
-                Clan clanInfo = showWarController.getClanInfo(HistoryActivity.this,
-                        getResources().getString(R.string.api_url),
-                        clanInfoUrl.getEncodeURIString());
+                            Log.d(HISTTAG, "<-- CLANINFO -->");
+                            Log.d(HISTTAG, clanInfo == null ? "null" : clanInfo.toString());
 
-                Log.d(HISTTAG, "<-- CLANINFO -->");
-                Log.d(HISTTAG, clanInfo == null ? "null" : clanInfo.toString());
+                            if (clanInfo != null) {
+                                showWarIntent.putExtra("clan", clanInfo);
+                                startActivity(showWarIntent);
+                            } else {
 
-                if (clanInfo != null) {
-                    showWarIntent.putExtra("clan", clanInfo);
-                    startActivity(showWarIntent);
-                } else {
+                                String errorStr = "The War with ID \"" + warId + "\" could not be loaded." +
+                                        "The war may have simply expired, would you like to delete it from your history?";
 
-                    String errorStr = "The War with ID \"" + warId + "\" could not be loaded." +
-                            "The war may have simply expired, would you like to delete it from your history?";
+                                AlertDialog.Builder alert = new AlertDialog.Builder(HistoryActivity.this)
+                                        .setTitle(errorStr)
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
 
-                    AlertDialog.Builder alert = new AlertDialog.Builder(HistoryActivity.this)
-                            .setTitle(errorStr)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                                                LinearLayout row = (LinearLayout) histHolder.findViewWithTag(warId);
+                                                histHolder.removeView(row);
 
-                                    LinearLayout row = (LinearLayout) histHolder.findViewWithTag(warId);
-                                    histHolder.removeView(row);
+                                                histMap.remove(warId);
 
-                                    histMap.remove(warId);
+                                                try {
+                                                    historyController.saveHistory(HistoryActivity.this, histMap);
+                                                } catch (IOException e) {
+                                                    Log.e(HISTTAG, "Couldn't save histMap: " + e.getMessage());
 
-                                    try {
-                                        historyController.saveHistory(HistoryActivity.this, histMap);
-                                    } catch (IOException e) {
-                                        Log.e(HISTTAG, "Couldn't save histMap: " + e.getMessage());
+                                                    Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
+                                                    tst.setGravity(Gravity.CENTER, 0, 0);
+                                                    tst.show();
+                                                }
 
-                                        Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
-                                        tst.setGravity(Gravity.CENTER, 0, 0);
-                                        tst.show();
-                                    }
+                                            }
+                                        })
+                                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // do nothing
+                                            }
+                                        });
 
-                                }
-                            })
-                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                }
-                            });
+                                alert.show();
+                            }
+                        }
+                    }
+                };
 
-                    alert.show();
-                }
+                showWarController.getClanInfo(callback, HistoryActivity.this, warId);
             }
         });
 

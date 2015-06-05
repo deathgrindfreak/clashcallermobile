@@ -25,12 +25,15 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
 
     private Context context;
     private ProgressDialog progress;
+    private TaskCallback callback;
 
     private static final String APITAG = "ApiClassConnector";
 
 
-    public ApiClassConnector(Context context) {
+    public ApiClassConnector(TaskCallback callback, Context context) {
+        this.callback = callback;
         this.context = context;
+
         progress = new ProgressDialog(context);
     }
 
@@ -95,9 +98,6 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
     @Override
     protected void onPostExecute(String returnStr) {
 
-        // Dismiss the progress dialog
-        progress.dismiss();
-
         Log.d(APITAG, "Return string: " + returnStr);
 
         if (returnStr.isEmpty()) {
@@ -106,6 +106,13 @@ public class ApiClassConnector extends AsyncTask<String, Integer, String>{
                     Toast.LENGTH_SHORT);
             tst.setGravity(Gravity.CENTER, 0, 0);
             tst.show();
+        } else {
+            if (callback != null)
+                callback.onTaskCompleted(returnStr);
         }
+
+        // Dismiss the progress dialog
+        if (progress.isShowing())
+            progress.dismiss();
     }
 }

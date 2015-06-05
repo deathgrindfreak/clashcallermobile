@@ -1,15 +1,19 @@
 package io.deathgrindfreak.controllers;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.Log;
 
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 
+import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
 import io.deathgrindfreak.clashcallermobile.R;
 import io.deathgrindfreak.clashcallermobile.ShowWarActivity;
+import io.deathgrindfreak.clashcallermobile.StartWarActivity;
 import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.util.ApiClassConnector;
 import io.deathgrindfreak.util.JsonParse;
+import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 /**
@@ -18,6 +22,8 @@ import io.deathgrindfreak.util.UrlParameterContainer;
 public class ShowWarController {
 
     private ShowWarActivity showWarActivity;
+    private JoinWarActivity joinWarActivity;
+    private StartWarActivity startWarActivity;
 
     private static final String SWCTAG = "Show War Controller";
 
@@ -27,25 +33,52 @@ public class ShowWarController {
         this.showWarActivity = showWarActivity;
     }
 
-    public String getWarId(Context context, String url, String parms) {
-        return getReturnString(context, url, parms);
+    public ShowWarController(JoinWarActivity joinWarActivity) {
+        this.joinWarActivity = joinWarActivity;
+    }
+
+    public ShowWarController(StartWarActivity startWarActivity) {
+        this.startWarActivity = startWarActivity;
+    }
+
+    public void getWarId(TaskCallback callback, Context context, Map<String, String> params) {
+
+        // Create url for http param string
+        UrlParameterContainer<String, String> urlMap =
+            new UrlParameterContainer<>(new String[] {
+                "REQUEST", "cname", "ename", "size", "timer",
+                "clanid", "enemyid", "searchable"
+        });
+
+        urlMap.put("cname", params.get("cname"));
+        urlMap.put("ename", params.get("ename"));
+        urlMap.put("size", params.get("size"));
+        urlMap.put("timer", params.get("timer"));
+        urlMap.put("clanid", params.get("clanid"));
+        urlMap.put("enemyid", params.get("enemyid"));
+        urlMap.put("searchable", params.get("searchable"));
+
+        callApi(callback, context, context.getResources().getString(R.string.api_url),
+                urlMap.getEncodeURIString());
     }
 
 
-    public Clan getClanInfo(Context context, String url, String parms) {
-        String jsonStr = getReturnString(context, url, parms);
+    public void getClanInfo(TaskCallback callback, Context context, String warId) {
 
-        if (jsonStr.isEmpty() || jsonStr.contains("Invalid War ID")) {
-            return null;
-        } else {
-            return JsonParse.parseWarJson(jsonStr);
-        }
+        Log.d(SWCTAG, "warId passed in getClanInfo: " + warId);
+
+        UrlParameterContainer<String, String> clanInfoUrl =
+                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+
+        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+        clanInfoUrl.put("warcode", warId);
+
+        callApi(callback, context, context.getResources().getString(R.string.api_url),
+                clanInfoUrl.getEncodeURIString());
     }
 
 
-    public String submitClanName(Context context, String warUrl, String posy, String posx, String name) {
-
-        String clanName = "";
+    public void submitClanName(TaskCallback callback, Context context, String warUrl, String posy, String posx, String name) {
 
         if (name != null && !name.isEmpty()) {
 
@@ -63,23 +96,15 @@ public class ShowWarController {
             Log.d(SWCTAG, "posx passed in submitClanName: " + posx);
             Log.d(SWCTAG, "name passed in submitClanName: " + name);
 
-            clanName = getReturnString(context, showWarActivity
+            callApi(callback, context, showWarActivity
                             .getResources().getString(R.string.api_url),
                     clanNameUrl.getEncodeURIString());
-
-            Log.d(SWCTAG, "<-- SUBMIT CLAN NAME -->");
-            Log.d(SWCTAG, clanName);
-
         } else {
             showWarActivity.displaySubmitClanNameToast();
         }
-
-        return clanName;
     }
 
-    public String appendCall(Context context, String warUrl, String posy, String name) {
-
-        String appendCall = "";
+    public void appendCall(TaskCallback callback, Context context, String warUrl, String posy, String name) {
 
         if (name != null && !name.isEmpty()) {
 
@@ -95,21 +120,16 @@ public class ShowWarController {
             Log.d(SWCTAG, "posy passed in appendCall: " + posy);
             Log.d(SWCTAG, "name passed in appendCall: " + name);
 
-            appendCall = getReturnString(context, showWarActivity
+            callApi(callback, context, showWarActivity
                             .getResources().getString(R.string.api_url),
                     appendUrl.getEncodeURIString());
-
-            Log.d(SWCTAG, "<-- APPEND CALL -->");
-            Log.d(SWCTAG, appendCall);
 
         } else {
             showWarActivity.displayAppendCallToast();
         }
-
-        return appendCall;
     }
 
-    public String setClanMessage(Context context, String warUrl, String note) {
+    public void setClanMessage(TaskCallback callback, Context context, String warUrl, String note) {
 
         UrlParameterContainer<String, String> clanMessage =
                 new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
@@ -121,17 +141,12 @@ public class ShowWarController {
         Log.d(SWCTAG, "warId passed in setClanMessage: " + warUrl);
         Log.d(SWCTAG, "name passed in setClanMessage: " + note);
 
-        String msg = getReturnString(context, showWarActivity
+        callApi(callback, context, showWarActivity
                         .getResources().getString(R.string.api_url),
                 clanMessage.getEncodeURIString());
-
-        Log.d(SWCTAG, "<-- CLAN MESSAGE -->");
-        Log.d(SWCTAG, msg);
-
-        return msg;
     }
 
-    public String deleteCall(Context context, String warUrl, String posy, String posx) {
+    public void deleteCall(TaskCallback callback, Context context, String warUrl, String posy, String posx) {
 
 
         UrlParameterContainer<String, String> clanMessage =
@@ -146,17 +161,12 @@ public class ShowWarController {
         Log.d(SWCTAG, "posy passed in deleteCall: " + posy);
         Log.d(SWCTAG, "posx passed in deleteCall: " + posx);
 
-        String msg = getReturnString(context, showWarActivity
+        callApi(callback, context, showWarActivity
                         .getResources().getString(R.string.api_url),
                 clanMessage.getEncodeURIString());
-
-        Log.d(SWCTAG, "<-- DELETE MEMBER -->");
-        Log.d(SWCTAG, msg);
-
-        return msg;
     }
 
-    public String setMemberNote(Context context, String warUrl, String posy, String value) {
+    public void setMemberNote(TaskCallback callback, Context context, String warUrl, String posy, String value) {
 
         UrlParameterContainer<String, String> clanMessage =
                 new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "value"});
@@ -170,17 +180,12 @@ public class ShowWarController {
         Log.d(SWCTAG, "posy passed in setMemberNote: " + posy);
         Log.d(SWCTAG, "value passed in setMemberNote: " + value);
 
-        String msg = getReturnString(context, showWarActivity
+        callApi(callback, context, showWarActivity
                         .getResources().getString(R.string.api_url),
                 clanMessage.getEncodeURIString());
-
-        Log.d(SWCTAG, "<-- SET MEMBER NOTE -->");
-        Log.d(SWCTAG, msg);
-
-        return msg;
     }
 
-    public String setAttackNote(Context context, String warUrl, String posy, String posx, String value) {
+    public void setAttackNote(TaskCallback callback, Context context, String warUrl, String posy, String posx, String value) {
 
         UrlParameterContainer<String, String> clanMessage =
                 new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posy", "posx", "value"});
@@ -196,17 +201,11 @@ public class ShowWarController {
         Log.d(SWCTAG, "posx passed in setAttackNote: " + posx);
         Log.d(SWCTAG, "value passed in setAttackNote: " + value);
 
-        String msg = getReturnString(context, showWarActivity
-                        .getResources().getString(R.string.api_url),
+        callApi(callback, context, showWarActivity .getResources().getString(R.string.api_url),
                 clanMessage.getEncodeURIString());
-
-        Log.d(SWCTAG, "<-- SET ATTACK NOTE -->");
-        Log.d(SWCTAG, msg);
-
-        return msg;
     }
 
-    public String updateMemberStars(Context context, String warUrl, String posy, String posx, String value) {
+    public void updateMemberStars(TaskCallback callback, Context context, String warUrl, String posy, String posx, String value) {
 
         UrlParameterContainer<String, String> clanMessage =
                 new UrlParameterContainer<>(new String[]{"REQUEST", "warcode", "posx", "posy", "value"});
@@ -222,25 +221,12 @@ public class ShowWarController {
         Log.d(SWCTAG, "posy passed in updateMemberStars: " + posy);
         Log.d(SWCTAG, "value passed in updateMemberStars: " + value);
 
-        String msg = getReturnString(context, showWarActivity.getResources().getString(R.string.api_url),
+        callApi(callback, context, showWarActivity.getResources().getString(R.string.api_url),
                 clanMessage.getEncodeURIString());
-
-        Log.d(SWCTAG, "<-- UPDATE MEMBER STARS -->");
-        Log.d(SWCTAG, msg);
-
-        return msg;
     }
 
 
-    private String getReturnString(Context context, String url , String parms) {
-        String returnStr = "";
-        try {
-            returnStr = new ApiClassConnector(context).execute(url, parms).get();
-        } catch (InterruptedException e) {
-            Log.e(SWCTAG, e.getMessage());
-        } catch (ExecutionException e) {
-            Log.e(SWCTAG, e.getMessage());
-        }
-        return returnStr;
+    private void callApi(TaskCallback callback, Context context, String url, String parms) {
+        new ApiClassConnector(callback, context).execute(url, parms);
     }
 }

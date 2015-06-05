@@ -21,3 +21,5 @@ CLOSED: [2015-05-09 Sat 13:47]
 ** TODO fix stars when deleting member.   Set on pause and on resume for showwaractivity
 ** TODO need more validation on fields, need to auto insert # in id fields 
 ** TODO Ensure that all return strings are checked before performing GUI actions.
+** TODO Refresh page when returning to the showwaractivity
+

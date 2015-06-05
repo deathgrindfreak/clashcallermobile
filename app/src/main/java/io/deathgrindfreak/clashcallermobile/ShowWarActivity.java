@@ -39,6 +39,8 @@ import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
 import io.deathgrindfreak.model.Target;
+import io.deathgrindfreak.util.JsonParse;
+import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
@@ -164,28 +166,33 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private void refreshPage() {
 
-        Intent showWarIntent = getIntent();
 
-        UrlParameterContainer<String, String> clanInfoUrl =
-                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+        TaskCallback callback = new TaskCallback() {
+            @Override
+            public void onTaskCompleted(String jsonStr) {
 
-        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-        clanInfoUrl.put("warcode", clanInfo.getGeneral().getWarcode());
+                Intent showWarIntent = getIntent();
 
+                if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
-        Clan nfo = showWarController.getClanInfo(this, getResources().getString(R.string.api_url),
-                clanInfoUrl.getEncodeURIString());
+                    // Get the clanInfo object from the JSON string
+                    Clan nfo = JsonParse.parseWarJson(jsonStr);
 
-        Log.d(SHOWTAG, "<-- CLANINFO -->");
-        Log.d(SHOWTAG, nfo == null ? "null" : nfo.toString());
+                    Log.d(SHOWTAG, "<-- CLANINFO -->");
+                    Log.d(SHOWTAG, nfo == null ? "null" : nfo.toString());
 
-        if (nfo != null) {
-            clanInfo = nfo;
-            showWarIntent.putExtra("clan", clanInfo);
+                    if (nfo != null) {
+                        clanInfo = nfo;
+                        showWarIntent.putExtra("clan", clanInfo);
 
-            startActivity(showWarIntent);
-            finish();
-        }
+                        startActivity(showWarIntent);
+                        finish();
+                    }
+                }
+            }
+        };
+
+        showWarController.getClanInfo(callback, this, clanInfo.getGeneral().getWarcode());
     }
 
 
@@ -354,17 +361,24 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                 if (note != null && !note.isEmpty()) {
 
+                                    TaskCallback callback = new TaskCallback() {
+
+                                        @Override
+                                        public void onTaskCompleted(String msg) {
+
+                                            // If msg is empty, then an error occurred
+                                            if (!msg.isEmpty()) {
+                                                clanMessage.setText(note);
+
+                                                clanInfo.getGeneral().setClanmessage(note);
+                                            }
+                                        }
+                                    };
+
                                     // Set the value of the button in the app and call API to update
-                                    String msg = showWarController.setClanMessage(ShowWarActivity.this,
+                                    showWarController.setClanMessage(callback, ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(), note);
 
-
-                                    // If msg is empty, then an error occurred
-                                    if (!msg.isEmpty()) {
-                                        clanMessage.setText(note);
-
-                                        clanInfo.getGeneral().setClanmessage(note);
-                                    }
 
                                 } else {
                                     Toast tst = Toast.makeText(ShowWarActivity.this,
@@ -686,30 +700,35 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                 if (note != null && !note.isEmpty()) {
 
+                                    TaskCallback callback = new TaskCallback() {
+                                        @Override
+                                        public void onTaskCompleted(String msg) {
+
+                                            // If msg is empty, then an error occurred
+                                            if (!msg.isEmpty()) {
+
+                                                // Set the icon of the comment button
+                                                commentButton.setImageResource(R.drawable.chaticon);
+
+                                                // Set the note in the clanInfo instance
+                                                if (target != null) {
+                                                    target.setNote(note);
+                                                } else {
+                                                    Target tgt = new Target();
+                                                    tgt.setPosition(row);
+                                                    tgt.setNote(note);
+
+                                                    clanInfo.getTargets().add(tgt);
+                                                }
+
+                                            }
+                                        }
+                                    };
+
                                     // Set the value of the button in the app and call API to update
-                                    String msg = showWarController.setMemberNote(ShowWarActivity.this,
+                                    showWarController.setMemberNote(callback, ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(row), note);
-
-
-                                    // If msg is empty, then an error occurred
-                                    if (!msg.isEmpty()) {
-
-                                        // Set the icon of the comment button
-                                        commentButton.setImageResource(R.drawable.chaticon);
-
-                                        // Set the note in the clanInfo instance
-                                        if (target != null) {
-                                            target.setNote(note);
-                                        } else {
-                                            Target tgt = new Target();
-                                            tgt.setPosition(row);
-                                            tgt.setNote(note);
-
-                                            clanInfo.getTargets().add(tgt);
-                                        }
-
-                                    }
 
                                 } else {
                                     Toast tst = Toast.makeText(ShowWarActivity.this,
@@ -780,40 +799,45 @@ public class ShowWarActivity extends ActionBarActivity {
         starButton.setOnClickListener(new View.OnClickListener() {
 
             // Sets the stars on button click
-            private void setStars(int stars) {
+            private void setStars(final int stars) {
 
-                // Set the image for the starButton
-                setUserStarImage(starButton, stars);
+                TaskCallback callback = new TaskCallback() {
+                    @Override
+                    public void onTaskCompleted(String msg) {
+
+                        // If msg is empty, an error occurred elsewhere
+                        if (!msg.isEmpty()) {
+
+                            // Set the image for the starButton
+                            setUserStarImage(starButton, stars);
+
+                            // Set the stars for the member (Member is never null btw)
+                            int ind = clanInfo.getCalls().indexOf(member);
+                            clanInfo.getCalls().get(ind).setStars(stars);
+
+                            // Set the max stars for the row
+                            ArrayList<ClanMember> mems = getMembersAtRow(row);
+                            ClanMember fst = mems.get(0);
+
+                            TableRow row = (TableRow) callLayout.findViewWithTag(fst);
+                            ImageButton maxButton = (ImageButton) row.getChildAt(MAX_STAR_BUTTON_INDEX);
+
+                            int maxStars = 2;
+                            for (ClanMember mem : mems)
+                                if (mem.getStars() > maxStars)
+                                    maxStars = mem.getStars();
+
+                            setStarImage(maxButton, maxStars);
+                        }
+                    }
+                };
 
                 // Call the api
-                String msg = showWarController.updateMemberStars(ShowWarActivity.this,
+                showWarController.updateMemberStars(callback, ShowWarActivity.this,
                         clanInfo.getGeneral().getWarcode(),
                         String.valueOf(member.getPosy()),
                         String.valueOf(member.getPosx()),
                         String.valueOf(stars));
-
-
-                // If msg is empty, an error occurred elsewhere
-                if (!msg.isEmpty()) {
-
-                    // Set the stars for the member (Member is never null btw)
-                    int ind = clanInfo.getCalls().indexOf(member);
-                    clanInfo.getCalls().get(ind).setStars(stars);
-
-                    // Set the max stars for the row
-                    ArrayList<ClanMember> mems = getMembersAtRow(row);
-                    ClanMember fst = mems.get(0);
-
-                    TableRow row = (TableRow) callLayout.findViewWithTag(fst);
-                    ImageButton maxButton = (ImageButton) row.getChildAt(MAX_STAR_BUTTON_INDEX);
-
-                    int maxStars = 2;
-                    for (ClanMember mem : mems)
-                        if (mem.getStars() > maxStars)
-                            maxStars = mem.getStars();
-
-                    setStarImage(maxButton, maxStars);
-                }
             }
 
             @Override
@@ -934,28 +958,33 @@ public class ShowWarActivity extends ActionBarActivity {
 
                                         if (note != null && !note.isEmpty()) {
 
+                                            TaskCallback callback = new TaskCallback() {
+                                                @Override
+                                                public void onTaskCompleted(String msg) {
+
+                                                    // If msg is empty, then an error occurred
+                                                    if (!msg.isEmpty()) {
+
+                                                        int i = clanInfo.getCalls().indexOf(member);
+                                                        clanInfo.getCalls().get(i).setNote(note);
+                                                        member.setNote(note);
+
+                                                        ImageButton reviewButton = makeAttackCommentButton(member);
+                                                        reviewButton.setBackgroundColor(color);
+
+                                                        // Add the review button for the member
+                                                        TableRow starRow = (TableRow) callLayout.findViewWithTag(member);
+                                                        starRow.addView(reviewButton, STAR_BUTTON_INDEX);
+                                                    }
+                                                }
+                                            };
+
                                             // Set the value of the button in the app and call API to update
-                                            String msg = showWarController.setAttackNote(ShowWarActivity.this,
+                                            showWarController.setAttackNote(callback, ShowWarActivity.this,
                                                     clanInfo.getGeneral().getWarcode(),
                                                     String.valueOf(row),
                                                     String.valueOf(member.getPosx()),
                                                     note);
-
-
-                                            // If msg is empty, then an error occurred
-                                            if (!msg.isEmpty()) {
-
-                                                int i = clanInfo.getCalls().indexOf(member);
-                                                clanInfo.getCalls().get(i).setNote(note);
-                                                member.setNote(note);
-
-                                                ImageButton reviewButton = makeAttackCommentButton(member);
-                                                reviewButton.setBackgroundColor(color);
-
-                                                // Add the review button for the member
-                                                TableRow starRow = (TableRow) callLayout.findViewWithTag(member);
-                                                starRow.addView(reviewButton, STAR_BUTTON_INDEX);
-                                            }
 
                                         } else {
                                             Toast tst = Toast.makeText(ShowWarActivity.this,
@@ -1068,30 +1097,36 @@ public class ShowWarActivity extends ActionBarActivity {
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
-                                String newName = input.getText().toString();
+                                final String newName = input.getText().toString();
 
                                 if (newName != null && !newName.isEmpty()) {
 
+                                    TaskCallback callback = new TaskCallback() {
+
+                                        @Override
+                                        public void onTaskCompleted(String msg) {
+
+                                            // If msg is empty, an error occurred
+                                            if (!msg.isEmpty()) {
+                                                // Set the name of the clan member
+                                                int ind = clanInfo.getCalls().indexOf(mem);
+                                                clanInfo.getCalls().get(ind).setPlayername(newName);
+
+                                                // Find the table row
+                                                TableRow row = (TableRow) callLayout.findViewWithTag(mem);
+
+                                                Button memB = (Button) row.findViewById(R.id.memButton);
+                                                memB.setText(newName);
+                                            }
+                                        }
+                                    };
+
                                     // Call the api
-                                    String msg = showWarController.submitClanName(ShowWarActivity.this,
+                                    showWarController.submitClanName(callback, ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(mem.getPosy()),
                                             String.valueOf(mem.getPosx()),
                                             newName);
-
-
-                                    // If msg is empty, an error occurred
-                                    if (!msg.isEmpty()) {
-                                        // Set the name of the clan member
-                                        int ind = clanInfo.getCalls().indexOf(mem);
-                                        clanInfo.getCalls().get(ind).setPlayername(newName);
-
-                                        // Find the table row
-                                        TableRow row = (TableRow) callLayout.findViewWithTag(mem);
-
-                                        Button memB = (Button) row.findViewById(R.id.memButton);
-                                        memB.setText(newName);
-                                    }
 
                                 } else {
                                     Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
@@ -1154,55 +1189,61 @@ public class ShowWarActivity extends ActionBarActivity {
 
                             public void onClick(DialogInterface dialog, int which) {
 
-                                String name = input.getText().toString();
+                                final String name = input.getText().toString();
 
                                 // Name cannot be empty
                                 if (name != null && !name.isEmpty()) {
 
+                                    TaskCallback callback = new TaskCallback() {
+
+                                        @Override
+                                        public void onTaskCompleted(String msg) {
+
+                                            // If msg is empty, an error occurred
+                                            if (!msg.isEmpty()) {
+                                                // Set the new player name
+                                                ClanMember mem = new ClanMember();
+                                                mem.setPlayername(name);
+                                                mem.setPosy(row);
+
+
+                                                if (member != null) {
+
+                                                    // Find the table row for the call number
+                                                    TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
+                                                    int index = callLayout.indexOfChild(rowL);
+
+                                                    // Set the member index to the last for that call number
+                                                    mem.setPosx(getLastMemberIndex(index));
+
+                                                    // Add to the clan view
+                                                    Log.d(SHOWTAG, "row: " + index + " New Row: " + getLastMemberIndex(index));
+                                                    callLayout.addView(getMembersLayout(index, mem), index + getLastMemberIndex(index));
+
+                                                } else {
+
+                                                    // Find the table row
+                                                    TableRow rowL = (TableRow) callLayout.findViewWithTag(row);
+                                                    int index = callLayout.indexOfChild(rowL);
+
+                                                    mem.setPosx(0);
+
+                                                    // Add to the clan view
+                                                    callLayout.removeView(rowL);
+                                                    callLayout.addView(getMembersLayout(row, mem), index);
+                                                }
+
+                                                // Add the clan member to the clan array
+                                                clanInfo.addClanMember(mem);
+                                            }
+                                        }
+                                    };
+
                                     // Call the api
-                                    String msg = showWarController.appendCall(ShowWarActivity.this,
+                                    showWarController.appendCall(callback, ShowWarActivity.this,
                                             clanInfo.getGeneral().getWarcode(),
                                             String.valueOf(row),
                                             name);
-
-
-                                    // If msg is empty, an error occurred
-                                    if (!msg.isEmpty()) {
-                                        // Set the new player name
-                                        ClanMember mem = new ClanMember();
-                                        mem.setPlayername(name);
-                                        mem.setPosy(row);
-
-
-                                        if (member != null) {
-
-                                            // Find the table row for the call number
-                                            TableRow rowL = (TableRow) callLayout.findViewWithTag(member);
-                                            int index = callLayout.indexOfChild(rowL);
-
-                                            // Set the member index to the last for that call number
-                                            mem.setPosx(getLastMemberIndex(index));
-
-                                            // Add to the clan view
-                                            Log.d(SHOWTAG, "row: " + index + " New Row: " + getLastMemberIndex(index));
-                                            callLayout.addView(getMembersLayout(index, mem), index + getLastMemberIndex(index));
-
-                                        } else {
-
-                                            // Find the table row
-                                            TableRow rowL = (TableRow) callLayout.findViewWithTag(row);
-                                            int index = callLayout.indexOfChild(rowL);
-
-                                            mem.setPosx(0);
-
-                                            // Add to the clan view
-                                            callLayout.removeView(rowL);
-                                            callLayout.addView(getMembersLayout(row, mem), index);
-                                        }
-
-                                        // Add the clan member to the clan array
-                                        clanInfo.addClanMember(mem);
-                                    }
 
                                 } else {
                                     Toast.makeText(ShowWarActivity.this, "Please enter a valid name!", Toast.LENGTH_SHORT);
@@ -1243,66 +1284,67 @@ public class ShowWarActivity extends ActionBarActivity {
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
+                                TaskCallback callback = new TaskCallback() {
+
+                                    @Override
+                                    public void onTaskCompleted(String msg) {
+
+                                        // If msg is empty, an error occurred
+                                        if (!msg.isEmpty()) {
+
+                                            // Find the table row
+                                            TableRow row = (TableRow) callLayout.findViewWithTag(member);
+                                            int index = callLayout.indexOfChild(row);
+
+                                            // Delete from layout
+                                            callLayout.removeView(row);
+
+                                            // Get all the clan members belonging to PosY of member
+                                            ArrayList<ClanMember> rowMembers = getMembersAtRow(member.getPosy());
+
+                                            // Remove the deleted member
+                                            rowMembers.remove(member);
+
+                                            // Decrement the x position of all lower members
+                                            for (ClanMember mem : rowMembers)
+                                                if (mem.getPosx() > member.getPosx())
+                                                    mem.setPosx(mem.getPosx() - 1);
+
+
+                                            // If member was the top call, add a new row back with appropriate member (empty if it was the last)
+                                            if (member.getPosx() == 0) {
+                                                if (!rowMembers.isEmpty()) {
+                                                    TableRow nextMemRow = (TableRow) callLayout.findViewWithTag(rowMembers.get(0));
+                                                    callLayout.removeView(nextMemRow);
+                                                    callLayout.addView(getMembersLayout(member.getPosy(), rowMembers.get(0)), index);
+                                                } else {
+                                                    callLayout.addView(getMembersLayout(member.getPosy(), null), index);
+                                                }
+                                            }
+
+                                            // Remove from clan calls
+                                            clanInfo.removeClanMember(member);
+
+                                            // TODO Fix this
+                                            // Set the max star for the call
+                                            ImageButton maxButton = (ImageButton) row.getChildAt(MAX_STAR_BUTTON_INDEX);
+
+                                            int maxStars = 2;
+                                            for (ClanMember mem : getMembersAtRow(member.getPosy()))
+                                                if (mem.getStars() > maxStars)
+                                                    maxStars = mem.getStars();
+
+                                            setStarImage(maxButton, maxStars);
+                                        }
+                                    }
+                                };
+
                                 // Call the api
-                                String msg = showWarController.deleteCall(ShowWarActivity.this,
+                                showWarController.deleteCall(callback, ShowWarActivity.this,
                                         clanInfo.getGeneral().getWarcode(),
                                         String.valueOf(member.getPosy()),
                                         String.valueOf(member.getPosx()));
 
-
-                                // If msg is empty, an error occurred
-                                if (!msg.isEmpty()) {
-
-                                    // Find the table row
-                                    TableRow row = (TableRow) callLayout.findViewWithTag(member);
-                                    int index = callLayout.indexOfChild(row);
-
-                                    // Delete from layout
-                                    callLayout.removeView(row);
-
-                                    // Get all the clan members belonging to PosY of member
-                                    ArrayList<ClanMember> rowMembers = getMembersAtRow(member.getPosy());
-
-                                    // Remove the deleted member
-                                    rowMembers.remove(member);
-
-                                    // Decrement the x position of all lower members
-                                    for (ClanMember mem : rowMembers)
-                                        if (mem.getPosx() > member.getPosx())
-                                            mem.setPosx(mem.getPosx() - 1);
-
-
-                                    // If member was the top call, add a new row back with appropriate member (empty if it was the last)
-                                    if (member.getPosx() == 0) {
-                                        if (!rowMembers.isEmpty()) {
-                                            TableRow nextMemRow = (TableRow) callLayout.findViewWithTag(rowMembers.get(0));
-                                            callLayout.removeView(nextMemRow);
-                                            callLayout.addView(getMembersLayout(member.getPosy(), rowMembers.get(0)), index);
-                                        } else {
-                                            callLayout.addView(getMembersLayout(member.getPosy(), null), index);
-                                        }
-                                    }
-
-                                    // Remove from clan calls
-                                    clanInfo.removeClanMember(member);
-
-
-                                    // TODO Fix this
-                                    // Set the max star for the call
-                                    ArrayList<ClanMember> mems = getMembersAtRow(member.getPosy());
-                                    ClanMember fst = mems.get(0);
-
-                                    TableRow starRow = (TableRow) callLayout.findViewWithTag(fst);
-                                    ImageButton maxButton = (ImageButton) starRow.getChildAt(MAX_STAR_BUTTON_INDEX);
-
-                                    int maxStars = 2;
-                                    for (ClanMember mem : mems)
-                                        if (mem.getStars() > maxStars)
-                                            maxStars = mem.getStars();
-
-                                    setStarImage(maxButton, maxStars);
-
-                                }
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

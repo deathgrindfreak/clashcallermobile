@@ -1,6 +1,7 @@
 package io.deathgrindfreak.clashcallermobile;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -26,6 +27,8 @@ import java.util.Locale;
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.JsonParse;
+import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 public class JoinWarActivity extends ActionBarActivity {
@@ -45,7 +48,7 @@ public class JoinWarActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
-        showWarController = new ShowWarController();
+        showWarController = new ShowWarController(this);
         historyController = new HistoryController(this);
 
 
@@ -105,64 +108,67 @@ public class JoinWarActivity extends ActionBarActivity {
 
         String warId = getWarIdFromField();
 
-        // TODO check for length requirements for warID
-        if (warId != null && !warId.isEmpty()) {
+        if (warId != null && !warId.isEmpty() && warId.length() == 5) {
 
             // Initialize the war view
-            Intent showWarIntent = new Intent(this, ShowWarActivity.class);
+            final Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-            UrlParameterContainer<String, String> clanInfoUrl =
-                    new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+            TaskCallback callback = new TaskCallback() {
+                @Override
+                public void onTaskCompleted(String jsonStr) {
 
-            clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-            clanInfoUrl.put("warcode", warId);
+                    if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
-            Log.i(JOINTAG, "warId passed in join: " + warId);
+                        // Get the clanInfo object from the JSON string
+                        Clan clanInfo = JsonParse.parseWarJson(jsonStr);
 
-            Clan clanInfo = showWarController.getClanInfo(this, getResources().getString(R.string.api_url),
-                    clanInfoUrl.getEncodeURIString());
+                        Log.d(JOINTAG, "<-- CLANINFO -->");
+                        Log.d(JOINTAG, clanInfo == null ? "null" : clanInfo.toString());
 
-            Log.d(JOINTAG, "<-- CLANINFO -->");
-            Log.d(JOINTAG, clanInfo == null ? "null" : clanInfo.toString());
 
-            if (clanInfo != null) {
+                        // If clanInfo was loaded successfully, save to the history file
+                        LinkedHashMap<String, HashMap<String, String>> histMap;
+                        try {
 
-                // If clanInfo was loaded successfully, save to the history file
-                LinkedHashMap<String, HashMap<String, String>> histMap;
-                try {
+                            // Load the history map
+                            histMap = historyController.loadHistory(JoinWarActivity.this);
 
-                    // Load the history map
-                    histMap = historyController.loadHistory(this);
+                            // If the warId isn't already present, add to history
+                            if (histMap.get(clanInfo.getGeneral().getWarcode()) == null) {
 
-                    // If the warId isn't already present, add to history
-                    if (histMap.get(clanInfo.getGeneral().getWarcode()) == null) {
+                                HashMap<String, String> attr = new HashMap<>();
 
-                        HashMap<String, String> attr = new HashMap<>();
+                                SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
+                                attr.put("date", format.format(clanInfo.getGeneral().getStarttime()));
+                                attr.put("enemy", clanInfo.getGeneral().getEnemyname());
+                                attr.put("clan", clanInfo.getGeneral().getClanname());
+                                attr.put("size", String.valueOf(clanInfo.getGeneral().getSize()));
 
-                        SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
-                        attr.put("date", format.format(clanInfo.getGeneral().getStarttime()));
-                        attr.put("enemy", clanInfo.getGeneral().getEnemyname());
-                        attr.put("clan", clanInfo.getGeneral().getClanname());
-                        attr.put("size", String.valueOf(clanInfo.getGeneral().getSize()));
+                                histMap.put(clanInfo.getGeneral().getWarcode(), attr);
 
-                        histMap.put(clanInfo.getGeneral().getWarcode(), attr);
+                                historyController.saveHistory(JoinWarActivity.this, histMap);
+                            }
+                        } catch (IOException e) {
+                            Toast tst = Toast.makeText(JoinWarActivity.this, "Could not load history.", Toast.LENGTH_SHORT);
+                            tst.setGravity(Gravity.CENTER, 0, 0);
+                            tst.show();
+                        }
 
-                        historyController.saveHistory(this, histMap);
+                        // Show the war
+                        showWarIntent.putExtra("clan", clanInfo);
+                        startActivity(showWarIntent);
+
+                    } else {
+                        Toast tst = Toast.makeText(JoinWarActivity.this, "Invalid WarID.  Please try again.", Toast.LENGTH_SHORT);
+                        tst.setGravity(Gravity.CENTER, 0, 0);
+                        tst.show();
                     }
-                } catch (IOException e) {
-                    Toast tst = Toast.makeText(this, "Could not load history.", Toast.LENGTH_SHORT);
-                    tst.setGravity(Gravity.CENTER, 0, 0);
-                    tst.show();
-                }
 
-                // Show the war
-                showWarIntent.putExtra("clan", clanInfo);
-                startActivity(showWarIntent);
-            } else {
-                Toast tst = Toast.makeText(this, "Invalid WarID.  Please try again.", Toast.LENGTH_SHORT);
-                tst.setGravity(Gravity.CENTER, 0, 0);
-                tst.show();
-            }
+                }
+            };
+
+            // Call the api
+            showWarController.getClanInfo(callback, this, warId);
 
         } else {
             Toast.makeText(this, "Please enter a valid War ID!", Toast.LENGTH_SHORT).show();

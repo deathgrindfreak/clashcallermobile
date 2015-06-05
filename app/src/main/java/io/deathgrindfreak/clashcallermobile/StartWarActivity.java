@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,19 +24,23 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.JsonParse;
+import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 
 
 public class StartWarActivity extends ActionBarActivity {
 
     private Typeface clashFont;
-    private UrlParameterContainer<String, String> urlMap;
     private ShowWarController showWarController;
     private HistoryController historyController;
+
+    private static final String STARTAG = "Join War Activity";
 
 
     @Override
@@ -46,7 +51,7 @@ public class StartWarActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
-        showWarController = new ShowWarController();
+        showWarController = new ShowWarController(this);
         historyController = new HistoryController(this);
 
         setWarSizeCombo();
@@ -64,18 +69,6 @@ public class StartWarActivity extends ActionBarActivity {
         submit.setTextColor(getResources().getColor(R.color.white));
         startWar.setTypeface(clashFont);
         more.setTypeface(clashFont);
-
-        // Create url for http param string
-        urlMap = new UrlParameterContainer<>(new String[] {
-            "REQUEST", "cname", "ename", "size", "timer",
-                "clanid", "enemyid", "searchable"
-        });
-
-        // Set defaults for url parameter string
-        urlMap.put("REQUEST", "CREATE_WAR");
-        urlMap.put("size", "50");
-        urlMap.put("timer", "0");
-        urlMap.put("searchable", "0");
 
 
         // Set the clan text field if clan name is set
@@ -131,7 +124,10 @@ public class StartWarActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private UrlParameterContainer<String, String> getValuesFromScreen(UrlParameterContainer<String, String> params) {
+    private Map<String, String> getValuesFromScreen() {
+
+        Map<String, String> params = new HashMap<>();
+
         EditText cNameField = (EditText) findViewById(R.id.clanNameField);
         EditText eNameField = (EditText) findViewById(R.id.enemyNameField);
         EditText cIdField = (EditText) findViewById(R.id.clanId);
@@ -168,7 +164,7 @@ public class StartWarActivity extends ActionBarActivity {
     public void submitButtonClicked(View view) {
 
         // Get the values from the screen
-        urlMap = getValuesFromScreen(urlMap);
+        Map<String, String> urlMap = getValuesFromScreen();
 
         String clanName = urlMap.get("cname");
         String enemyClanName = urlMap.get("ename");
@@ -179,64 +175,84 @@ public class StartWarActivity extends ActionBarActivity {
         } else if (enemyClanName == null || enemyClanName.isEmpty()) {
             Toast.makeText(this, "Please fill out the Enemy Clan Name field", Toast.LENGTH_SHORT).show();
         } else {
-            Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
-            String warId = showWarController.getWarId(this, getResources().getString(R.string.api_url),
-                    urlMap.getEncodeURIString());
+            final Intent showWarIntent = new Intent(this, ShowWarActivity.class);
 
+            TaskCallback callback = new TaskCallback() {
+                @Override
+                public void onTaskCompleted(String warId) {
 
-            // If warId is empty, then an error occurred
-            if (!warId.isEmpty()) {
+                    // If warId is empty, then an error occurred
+                    if (!warId.isEmpty()) {
 
-                UrlParameterContainer<String, String> clanInfoUrl =
-                        new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
+                        UrlParameterContainer<String, String> clanInfoUrl =
+                                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
 
-                clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-                clanInfoUrl.put("warcode", warId.substring(4));
+                        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
+                        clanInfoUrl.put("warcode", warId.substring(4));
 
-                Clan clanInfo = showWarController.getClanInfo(this, getResources().getString(R.string.api_url),
-                        clanInfoUrl.getEncodeURIString());
+                        TaskCallback clanCallback = new TaskCallback() {
+                            @Override
+                            public void onTaskCompleted(String jsonStr) {
 
-                if (clanInfo != null) {
+                                if (!jsonStr.isEmpty() && !jsonStr.contains("Invalid War ID")) {
 
-                    // If clanInfo was loaded successfully, save to the history file
-                    LinkedHashMap<String, HashMap<String, String>> histMap;
-                    try {
+                                    // Get the clanInfo object from the JSON string
+                                    Clan clanInfo = JsonParse.parseWarJson(jsonStr);
 
-                        // Load the history map
-                        histMap = historyController.loadHistory(this);
+                                    Log.d(STARTAG, "<-- CLANINFO -->");
+                                    Log.d(STARTAG, clanInfo == null ? "null" : clanInfo.toString());
 
-                        // If the warId isn't already present, add to history
-                        if (histMap.get(clanInfo.getGeneral().getWarcode()) == null) {
+                                    // If clanInfo was loaded successfully, save to the history file
+                                    LinkedHashMap<String, HashMap<String, String>> histMap;
+                                    try {
 
-                            HashMap<String, String> attr = new HashMap<>();
+                                        // Load the history map
+                                        histMap = historyController.loadHistory(StartWarActivity.this);
 
-                            SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
-                            attr.put("date", format.format(clanInfo.getGeneral().getStarttime()));
-                            attr.put("enemy", clanInfo.getGeneral().getEnemyname());
-                            attr.put("clan", clanInfo.getGeneral().getClanname());
-                            attr.put("size", String.valueOf(clanInfo.getGeneral().getSize()));
+                                        // If the warId isn't already present, add to history
+                                        if (histMap.get(clanInfo.getGeneral().getWarcode()) == null) {
 
-                            histMap.put(clanInfo.getGeneral().getWarcode(), attr);
+                                            HashMap<String, String> attr = new HashMap<>();
 
-                            historyController.saveHistory(this, histMap);
-                        }
-                    } catch (IOException e) {
-                        Toast tst = Toast.makeText(this, "Could not load history.", Toast.LENGTH_SHORT);
-                        tst.setGravity(Gravity.CENTER, 0, 0);
-                        tst.show();
+                                            SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
+                                            attr.put("date", format.format(clanInfo.getGeneral().getStarttime()));
+                                            attr.put("enemy", clanInfo.getGeneral().getEnemyname());
+                                            attr.put("clan", clanInfo.getGeneral().getClanname());
+                                            attr.put("size", String.valueOf(clanInfo.getGeneral().getSize()));
+
+                                            histMap.put(clanInfo.getGeneral().getWarcode(), attr);
+
+                                            historyController.saveHistory(StartWarActivity.this, histMap);
+                                        }
+                                    } catch (IOException e) {
+                                        Toast tst = Toast.makeText(StartWarActivity.this, "Could not load history.",
+                                                Toast.LENGTH_SHORT);
+                                        tst.setGravity(Gravity.CENTER, 0, 0);
+                                        tst.show();
+                                    }
+
+                                    // Show the war
+                                    showWarIntent.putExtra("clan", clanInfo);
+                                    startActivity(showWarIntent);
+
+                                } else {
+                                    Toast tst = Toast.makeText(StartWarActivity.this, "Invalid WarID.  Please try again.",
+                                            Toast.LENGTH_SHORT);
+                                    tst.setGravity(Gravity.CENTER, 0, 0);
+                                    tst.show();
+                                }
+                            }
+                        };
+
+                        // Call the api to get the Clan object
+                        showWarController.getClanInfo(clanCallback, StartWarActivity.this, warId);
                     }
-
-                    // Show the war
-                    showWarIntent.putExtra("clan", clanInfo);
-                    startActivity(showWarIntent);
-
-                } else {
-                    Toast tst = Toast.makeText(this, "Invalid WarID.  Please try again.", Toast.LENGTH_SHORT);
-                    tst.setGravity(Gravity.CENTER, 0, 0);
-                    tst.show();
                 }
-            }
+            };
+
+            // Call the api to get the warId
+            showWarController.getWarId(callback, this, urlMap);
         }
     }
 
