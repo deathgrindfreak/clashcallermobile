@@ -185,12 +185,6 @@ public class StartWarActivity extends ActionBarActivity {
                     // If warId is empty, then an error occurred
                     if (!warId.isEmpty()) {
 
-                        UrlParameterContainer<String, String> clanInfoUrl =
-                                new UrlParameterContainer<>(new String[]{"REQUEST", "warcode"});
-
-                        clanInfoUrl.put("REQUEST", "GET_FULL_UPDATE");
-                        clanInfoUrl.put("warcode", warId.substring(4));
-
                         TaskCallback clanCallback = new TaskCallback() {
                             @Override
                             public void onTaskCompleted(String jsonStr) {
@@ -246,7 +240,7 @@ public class StartWarActivity extends ActionBarActivity {
                         };
 
                         // Call the api to get the Clan object
-                        showWarController.getClanInfo(clanCallback, StartWarActivity.this, warId);
+                        showWarController.getClanInfo(clanCallback, StartWarActivity.this, warId.substring(4));
                     }
                 }
             };

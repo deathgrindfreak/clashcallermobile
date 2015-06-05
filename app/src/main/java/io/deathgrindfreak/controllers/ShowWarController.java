@@ -50,6 +50,7 @@ public class ShowWarController {
                 "clanid", "enemyid", "searchable"
         });
 
+        urlMap.put("REQUEST", "CREATE_WAR");
         urlMap.put("cname", params.get("cname"));
         urlMap.put("ename", params.get("ename"));
         urlMap.put("size", params.get("size"));
