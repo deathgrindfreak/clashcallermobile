@@ -128,17 +128,20 @@ public class ClashSettingsActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
-        if (id == R.id.home) {
-            startActivity(new Intent(this, MainActivity.class));
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

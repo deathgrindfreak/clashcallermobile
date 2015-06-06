@@ -1,6 +1,7 @@
 package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -140,24 +141,25 @@ public class ShowWarActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
-        }
-
         if (id == R.id.refresh_button) {
             refreshPage();
             return true;
         }
 
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -191,7 +193,7 @@ public class ShowWarActivity extends ActionBarActivity {
                         clanInfo = nfo;
                         showWarIntent.putExtra("clan", clanInfo);
 
-                        if (progress.isShowing)
+                        if (progress.isShowing())
                             progress.dismiss();
 
                         startActivity(showWarIntent);
@@ -568,7 +570,7 @@ public class ShowWarActivity extends ActionBarActivity {
             Button memB = makeMemberButton(member);
             memB.setId(R.id.memButton);
 
-            ImageButton x = makeXButton(member);
+            ImageButton x = makeXButton(member, getResources().getColor(color));
 
             // Set the background color
             x.setBackgroundColor(getResources().getColor(color));
@@ -1324,7 +1326,7 @@ public class ShowWarActivity extends ActionBarActivity {
     }
 
 
-    private ImageButton makeXButton(final ClanMember member) {
+    private ImageButton makeXButton(final ClanMember member, final int color) {
 
         ImageButton xButton = new ImageButton(this);
         xButton.setImageResource(R.drawable.x_grey);
@@ -1387,18 +1389,36 @@ public class ShowWarActivity extends ActionBarActivity {
                                             // Remove from clan calls
                                             clanInfo.removeClanMember(member);
 
-                                            // TODO Fix this
-                                            // Set the max star for the call
-                                            ImageButton maxButton = (ImageButton) row.getChildAt(MAX_STAR_BUTTON_INDEX);
 
-                                            int maxStars = 2;
-                                            for (ClanMember mem : getMembersAtRow(member.getPosy()))
+                                            // Set the max star for the call
+                                            TableRow starRow;
+                                            ArrayList<ClanMember> mems = getMembersAtRow(member.getPosy());
+                                            if (member.getPosx() == 0) {
+                                                starRow = (TableRow) callLayout.getChildAt(index);
+                                            } else {
+                                                starRow = (TableRow) callLayout.findViewWithTag(mems.get(0));
+                                            }
+
+                                            ImageButton maxButton = (ImageButton) starRow.getChildAt(MAX_STAR_BUTTON_INDEX);
+
+                                            int maxStars = 1;
+                                            for (ClanMember mem : mems)
                                                 if (mem.getStars() > maxStars)
                                                     maxStars = mem.getStars();
 
-                                            setStarImage(maxButton, maxStars);
+                                            if (maxStars == 1) {
+                                                starRow.removeViewAt(MAX_STAR_BUTTON_INDEX);
+
+                                                ImageButton blank = makeStarSpacer();
+                                                blank.setBackgroundColor(color);
+                                                starRow.addView(blank, MAX_STAR_BUTTON_INDEX);
+                                            } else {
+                                                setStarImage(maxButton, maxStars);
+                                            }
                                         }
 
+
+                                        // Dismiss the progress dialog
                                         if (progress.isShowing())
                                             progress.dismiss();
                                     }
@@ -1513,6 +1533,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         switch(stars) {
             case 1:
+                starButton.setImageResource(0);
             case 2:
                 starButton.setImageResource(R.drawable.zero_star);
                 break;

@@ -1,5 +1,6 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -79,19 +80,20 @@ public class JoinWarActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -108,7 +110,7 @@ public class JoinWarActivity extends ActionBarActivity {
 
         String warId = getWarIdFromField();
 
-        if (warId != null && !warId.isEmpty() && warId.length() == 5) {
+        if (warId != null && !warId.isEmpty() && warId.trim().length() == 5) {
 
             // Initialize the war view
             final Intent showWarIntent = new Intent(this, ShowWarActivity.class);

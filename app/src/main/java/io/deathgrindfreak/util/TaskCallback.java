@@ -1,6 +1,7 @@
 package io.deathgrindfreak.util;
 
-import io.deathgrindfreak.model.Clan;
+import android.app.ProgressDialog;
+
 
 /**
  * Created by deathgrindfreak on 6/4/15.

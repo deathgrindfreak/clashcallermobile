@@ -1,13 +1,11 @@
 package io.deathgrindfreak.clashcallermobile;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -26,28 +24,7 @@ public class HelpActivity extends ActionBarActivity {
         final WebView myWebView = (WebView) findViewById(R.id.helpWebView);
         myWebView.setWebViewClient(new WebViewClient());
 
-        // Start an AsyncTask so that the progress dialog shows up
-        new AsyncTask<String, Void, Void> {
-
-            @Override
-            protected onPreExecute() {
-                ProgressDialog progress = new ProgressDialog(HelpActivity.this);
-                progress.setMessage("Loading Help ...");
-                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progress.show();
-            }
-
-            @Override
-            protected void doInBackground(String... url) {
-                myWebView.loadUrl(url[0]);
-            }
-
-            @Override
-            protected void onPostExecute() {
-                if (progress.isShowing())
-                    progress.dismiss();
-            }
-        }.execute("http://github.com/deathgrindfreak/clashcallermobile/blob/master/HELP.md")
+        myWebView.loadUrl("http://github.com/deathgrindfreak/clashcallermobile/blob/master/HELP.md");
     }
 
 
@@ -65,19 +42,20 @@ public class HelpActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
-        }
-
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
+        }
+
+        if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

@@ -1,5 +1,7 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +14,9 @@ public class AboutActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
     }
 
 
@@ -29,9 +34,20 @@ public class AboutActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
         if (id == R.id.action_settings) {
-            return true;
+            startActivity(new Intent(this, ClashSettingsActivity.class));
+        }
+
+        if (id == R.id.action_help) {
+            startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

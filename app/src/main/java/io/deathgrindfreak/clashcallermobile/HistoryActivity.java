@@ -1,6 +1,7 @@
 package io.deathgrindfreak.clashcallermobile;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -49,6 +50,7 @@ public class HistoryActivity extends ActionBarActivity {
     private ShowWarController showWarController;
 
     private LinearLayout histHolder;
+    private LinearLayout mainView;
 
     private LinkedHashMap<String, HashMap<String, String>> histMap;
 
@@ -119,19 +121,20 @@ public class HistoryActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -140,23 +143,24 @@ public class HistoryActivity extends ActionBarActivity {
 
     private void displayErrorView() {
 
-        LinearLayout mainView = (LinearLayout) findViewById(R.id.historyLayout);
+        mainView = (LinearLayout) findViewById(R.id.historyLayout);
 
         // Set the main title
         TextView errTitle = new TextView(this);
         errTitle.setGravity(Gravity.CENTER);
         errTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.abc_text_size_small_material));
-        errTitle.setTextColor(getResources().getColor(R.color.light_grey));
+        errTitle.setTextColor(getResources().getColor(R.color.number_grey));
         errTitle.setText("Nothing to display.");
 
         mainView.addView(errTitle);
+        mainView.setGravity(Gravity.CENTER);
     }
 
 
     private void displayHistoryLayout(LinkedHashMap<String, HashMap<String, String>> histMap) {
 
-        LinearLayout mainView = (LinearLayout) findViewById(R.id.historyLayout);
+        mainView = (LinearLayout) findViewById(R.id.historyLayout);
 
         ScrollView scrollLayout = new ScrollView(this);
         scrollLayout.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT,
@@ -367,6 +371,11 @@ public class HistoryActivity extends ActionBarActivity {
                                     Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
                                     tst.setGravity(Gravity.CENTER, 0, 0);
                                     tst.show();
+                                }
+
+                                if (histMap.isEmpty()) {
+                                    mainView.removeAllViews();
+                                    displayErrorView();
                                 }
 
                             }

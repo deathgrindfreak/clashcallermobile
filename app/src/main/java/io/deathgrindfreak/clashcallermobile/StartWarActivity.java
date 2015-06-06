@@ -1,5 +1,6 @@
 package io.deathgrindfreak.clashcallermobile;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -106,19 +107,20 @@ public class StartWarActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -199,7 +201,7 @@ public class StartWarActivity extends ActionBarActivity {
 
                             @Override
                             public String getProgressMessage() {
-                                return "Starting War ..."
+                                return "Starting War ...";
                             }
 
                             @Override
@@ -261,6 +263,7 @@ public class StartWarActivity extends ActionBarActivity {
                                     tst.setGravity(Gravity.CENTER, 0, 0);
                                     tst.show();
                                 }
+                            }
                         };
 
                         // Call the api to get the Clan object

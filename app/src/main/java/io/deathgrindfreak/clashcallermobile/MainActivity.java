@@ -38,13 +38,11 @@ public class MainActivity extends ActionBarActivity {
         search.setVisibility(View.GONE);
 
         Button histButton = (Button) findViewById(R.id.historyButton);
-        Button about = (Button) findViewById(R.id.aboutButton);
 
         swarButton.setTypeface(clashFont);
         jwarButton.setTypeface(clashFont);
         histButton.setTypeface(clashFont);
         search.setTypeface(clashFont);
-        about.setTypeface(clashFont);
 
         //addSettingsListener();
     }
@@ -66,19 +64,20 @@ public class MainActivity extends ActionBarActivity {
 
         Log.d(MAINTAG, "id: " + id);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent homeIntent = new Intent(this, ClashSettingsActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_home) {
+            startActivity(new Intent(this, MainActivity.class));
         }
 
-        if (id == R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            startActivity(homeIntent);
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, ClashSettingsActivity.class));
         }
 
         if (id == R.id.action_help) {
             startActivity(new Intent(this, HelpActivity.class));
+        }
+
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -102,21 +101,4 @@ public class MainActivity extends ActionBarActivity {
     public void historyButtonClicked(View view) {
         startActivity(new Intent(this, HistoryActivity.class));
     }
-
-    public void aboutButtonClicked(View view) {
-        Intent aboutIntent = new Intent(this, AboutActivity.class);
-        startActivity(aboutIntent);
-    }
-
-/*    public void addSettingsListener() {
-
-        Button settingButton = (Button) findViewById(R.id.action_settings);
-        settingButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            }
-        });
-    }*/
 }
