@@ -952,6 +952,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
                 TextView or = new TextView(ShowWarActivity.this);
                 or.setGravity(Gravity.CENTER_HORIZONTAL);
+                or.setBackgroundColor(getResources().getColor(R.color.white));
                 or.setTypeface(clashFont);
                 or.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.abc_text_size_large_material));
