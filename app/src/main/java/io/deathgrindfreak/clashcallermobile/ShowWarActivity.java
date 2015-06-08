@@ -551,8 +551,6 @@ public class ShowWarActivity extends ActionBarActivity {
             }
         }
 
-        // TODO add comment button for user comment for call
-
 
         // Add Clan members
         if (member == null) {
@@ -1082,14 +1080,11 @@ public class ShowWarActivity extends ActionBarActivity {
         reviewButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
-        final TextView text = new TextView(ShowWarActivity.this);
-        text.setText(member.getNote());
-
         reviewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-            AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
+                AlertDialog.Builder alert = new AlertDialog.Builder(ShowWarActivity.this)
                     .setTitle("Review for " + member.getPlayername().trim() + "'s Attack.")
                     .setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -1097,10 +1092,11 @@ public class ShowWarActivity extends ActionBarActivity {
                         }
                     });
 
+                TextView text = new TextView(ShowWarActivity.this);
+                text.setText(member.getNote());
+
                 alert.setView(text);
-
                 alert.show();
-
             }
         });
 
