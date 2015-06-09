@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,13 +56,13 @@ public class ClashSettingsActivity extends ActionBarActivity {
         String cText = getResources().getString(R.string.clan_name_info)
                 + "\n" + (clanName.isEmpty() ? "Set Clan Name" : clanName);
 
-        Spannable cSpan = new SpannableString(cText);
-        cSpan.setSpan(new RelativeSizeSpan(1.5f), 0,
+        SpannableString cSpan = new SpannableString(cText);
+        cSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
                 getResources().getString(R.string.clan_name_info).length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        cSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.light_grey)),
-                getResources().getString(R.string.clan_name_info).length(), cText.length() - 1,
+        cSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                getResources().getString(R.string.clan_name_info).length(), cText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         clanButton.setText(cSpan);
@@ -79,12 +80,12 @@ public class ClashSettingsActivity extends ActionBarActivity {
                 +  "\n" + (villageName.isEmpty() ? "Set Village Name" : villageName);
 
         Spannable vSpan = new SpannableString(vText);
-        vSpan.setSpan(new RelativeSizeSpan(1.5f), 0,
+        vSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
                 getResources().getString(R.string.village_name_info).length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        vSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.light_grey)),
-                getResources().getString(R.string.village_name_info).length(), vText.length() - 1,
+        vSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                getResources().getString(R.string.village_name_info).length(), vText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         villageButton.setText(vSpan);
@@ -102,12 +103,12 @@ public class ClashSettingsActivity extends ActionBarActivity {
                 +  "\n" + (idName.isEmpty() ? "Set Clan ID" : idName);
 
         Spannable idSpan = new SpannableString(idText);
-        vSpan.setSpan(new RelativeSizeSpan(1.5f), 0,
+        idSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
                 getResources().getString(R.string.id_info).length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        vSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.light_grey)),
-                getResources().getString(R.string.id_info).length(), idText.length() - 1,
+        idSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                getResources().getString(R.string.id_info).length(), idText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         idButton.setText(idSpan);
@@ -183,10 +184,20 @@ public class ClashSettingsActivity extends ActionBarActivity {
                             tst.show();
                         } else {
 
-                            String cText = getResources().getString(R.string.clan_name_info) + "\n" + in;
+                            String cText = getResources().getString(R.string.clan_name_info) + "\n" + (in.isEmpty() ? "Set Clan Name" : in);
 
                             Button clanButton = (Button) findViewById(R.id.clanNameButton);
-                            clanButton.setText(cText);
+
+                            Spannable cSpan = new SpannableString(cText);
+                            cSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
+                                    getResources().getString(R.string.clan_name_info).length(),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            cSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                                    getResources().getString(R.string.clan_name_info).length(), cText.length(),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            clanButton.setText(cSpan);
 
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString(getString(R.string.clan_name), in);
@@ -239,10 +250,20 @@ public class ClashSettingsActivity extends ActionBarActivity {
                             tst.show();
                         } else {
 
-                            String vText = getResources().getString(R.string.village_name_info) + "\n" + in;
+                            String vText = getResources().getString(R.string.village_name_info) + "\n" + (in.isEmpty() ? "Set Village Name" : in);
 
                             Button clanButton = (Button) findViewById(R.id.memberNameButton);
-                            clanButton.setText(vText);
+
+                            Spannable cSpan = new SpannableString(vText);
+                            cSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
+                                    getResources().getString(R.string.village_name_info).length(),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            cSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                                    getResources().getString(R.string.village_name_info).length(), vText.length(),
+
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            clanButton.setText(cSpan);
 
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString(getString(R.string.village_name), in);
@@ -297,10 +318,21 @@ public class ClashSettingsActivity extends ActionBarActivity {
                             tst.show();
                         } else {
 
-                            String idText = getResources().getString(R.string.id_info) + "\n" + in;
+                            String idText = getResources().getString(R.string.id_info) + "\n" + (in.isEmpty() ? "Set Clan ID" : in);
 
                             Button clanButton = (Button) findViewById(R.id.idButton);
-                            clanButton.setText(idText);
+
+                            Spannable cSpan = new SpannableString(idText);
+                            cSpan.setSpan(new RelativeSizeSpan(1.2f), 0,
+                                    getResources().getString(R.string.id_info).length(),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            cSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+                                    getResources().getString(R.string.id_info).length(), idText.length(),
+
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                            clanButton.setText(cSpan);
 
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString(getString(R.string.id_name), in);
