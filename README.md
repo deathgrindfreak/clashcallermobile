@@ -8,6 +8,6 @@ For the production release, you can download the app in the [Google Play Store](
 
 For the source, clone the repo:
 
-  git clone https://github.com/deathgrindfreak/clashcallermobile
+    git clone https://github.com/deathgrindfreak/clashcallermobile
   
 and import the project into the IDE of your choice (The app was developed in Android Studio).
