@@ -106,6 +106,15 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        // Refresh the page on restart
+        refreshPage();
+    }
+
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -1388,29 +1397,34 @@ public class ShowWarActivity extends ActionBarActivity {
 
 
                                             // Set the max star for the call
-                                            TableRow starRow;
-                                            ArrayList<ClanMember> mems = getMembersAtRow(member.getPosy());
-                                            if (member.getPosx() == 0) {
-                                                starRow = (TableRow) callLayout.getChildAt(index);
-                                            } else {
-                                                starRow = (TableRow) callLayout.findViewWithTag(mems.get(0));
-                                            }
+                                            DisplayMetrics m = getResources().getDisplayMetrics();
+                                            int width = m.widthPixels / m.densityDpi;
+                                            if (width >= MIN_WIDTH_FOR_STAR) {
 
-                                            ImageButton maxButton = (ImageButton) starRow.getChildAt(MAX_STAR_BUTTON_INDEX);
+                                                TableRow starRow;
+                                                ArrayList<ClanMember> mems = getMembersAtRow(member.getPosy());
+                                                if (member.getPosx() == 0) {
+                                                    starRow = (TableRow) callLayout.getChildAt(index);
+                                                } else {
+                                                    starRow = (TableRow) callLayout.findViewWithTag(mems.get(0));
+                                                }
 
-                                            int maxStars = 1;
-                                            for (ClanMember mem : mems)
-                                                if (mem.getStars() > maxStars)
-                                                    maxStars = mem.getStars();
+                                                ImageButton maxButton = (ImageButton) starRow.getChildAt(MAX_STAR_BUTTON_INDEX);
 
-                                            if (maxStars == 1) {
-                                                starRow.removeViewAt(MAX_STAR_BUTTON_INDEX);
+                                                int maxStars = -1;
+                                                for (ClanMember mem : mems)
+                                                    if (mem.getStars() > maxStars)
+                                                        maxStars = mem.getStars();
 
-                                                ImageButton blank = makeStarSpacer();
-                                                blank.setBackgroundColor(color);
-                                                starRow.addView(blank, MAX_STAR_BUTTON_INDEX);
-                                            } else {
-                                                setStarImage(maxButton, maxStars);
+                                                if (maxStars == -1) {
+                                                    starRow.removeViewAt(MAX_STAR_BUTTON_INDEX);
+
+                                                    ImageButton blank = makeStarSpacer();
+                                                    blank.setBackgroundColor(color);
+                                                    starRow.addView(blank, MAX_STAR_BUTTON_INDEX);
+                                                } else {
+                                                    setStarImage(maxButton, maxStars);
+                                                }
                                             }
                                         }
 

@@ -9,19 +9,25 @@
 ** DONE Make the start war activity scrollable
 ** DONE Make layout for show war activity table layout
 CLOSED: [2015-05-02 Sat 17:46]
-** TODO Make "vs" text in show war handle overflow (switch from horizontal to vertical)
+** DONE Make "vs" text in show war handle overflow (switch from horizontal to vertical)
+CLOSED: [2015-06-14 Sun 02:11]
 ** TODO Handle mistyped/invalid war ids in join war activity
 ** DONE When deleting the highest level member for a call, lower member needs to move up (it's left empty atm)
 CLOSED: [2015-05-09 Sat 13:47]
 ** TODO Align x and + buttons to the far right at fixed width in table layout.
 ** TODO [Feature] Add push notifications for clan calls
 ** TODO Remove all references to pixels, replace with dp.
-** TODO add period to vs in history.  Trim all strings in dialog boxes.  Fix truncation in history delete dialog
+** DONE add period to vs in history.  Trim all strings in dialog boxes.  Fix truncation in history delete dialog
+CLOSED: [2015-06-14 Sun 02:11]
 
 ** TODO fix stars when deleting member.   Set on pause and on resume for showwaractivity
 ** TODO need more validation on fields, need to auto insert # in id fields 
 ** TODO Ensure that all return strings are checked before performing GUI actions.
-** TODO Refresh page when returning to the showwaractivity
-** TODO When deleting member from portrait view, comment button dissapears
-** TODO No message pops up when war history no longer exists
+** DONE Refresh page when returning to the showwaractivity
+CLOSED: [2015-06-14 Sun 02:09]
+
+** DONE When deleting member from portrait view, comment button disappears
+CLOSED: [2015-06-14 Sun 02:09]
+** DONE No message pops up when war history no longer exists
+CLOSED: [2015-06-14 Sun 02:09]
 

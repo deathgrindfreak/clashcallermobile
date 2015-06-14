@@ -4,6 +4,113 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="io.deathgrindfreak.clashcallermobile.AboutActivity">
+    tools:context="io.deathgrindfreak.clashcallermobile.AboutActivity"
+    android:background="@color/white">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView2" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="About"
+                android:id="@+id/aboutTitle"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:linksClickable="false"
+                android:textColor="@color/button_blue"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Mobile application by deathgrindfreak from clan Ganja Jedi!"
+                android:id="@+id/small1"
+                android:layout_below="@+id/aboutTitle"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Website, API, art and original concept by RED from Clan Hot Sauce!"
+                android:id="@+id/small2"
+                android:layout_below="@+id/small1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Contact"
+                android:id="@+id/contactTitle"
+                android:layout_below="@+id/small2"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textColor="@color/button_blue"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Red&apos;s email: "
+                android:id="@+id/small3"
+                android:layout_below="@+id/contactTitle"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="red@clashcaller.com"
+                android:id="@+id/redemail"
+                android:background="@color/white"
+                android:layout_below="@+id/small3"
+                android:layout_alignLeft="@+id/small4"
+                android:layout_alignStart="@+id/small4"
+                android:layout_marginBottom="15dp"
+                android:onClick="redEmailClicked" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="deathgrindfreak&apos;s email:"
+                android:id="@+id/small4"
+                android:layout_below="@+id/redemail"
+                android:layout_alignLeft="@+id/small3"
+                android:layout_alignStart="@+id/small3" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="john.cooper.bell@gmail.com"
+                android:id="@+id/deemail"
+                android:background="@color/white"
+                android:layout_below="@+id/small4"
+                android:layout_alignLeft="@+id/small4"
+                android:layout_alignStart="@+id/small4"
+                android:onClick="deEmailClicked" />
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

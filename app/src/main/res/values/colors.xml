@@ -15,6 +15,8 @@
 <item name="number_grey" type="color">#bdbdbd</item>
 <item name="light_grey" type="color">#EEEEEE</item>
 <item name="white" type="color">#FFFFFF</item>
+<item name="clanred" type="color">#D30000</item>
+<item name="black" type="color">#000000</item>
 
 <integer-array name="androidcolors">
     <item>@color/blue</item>

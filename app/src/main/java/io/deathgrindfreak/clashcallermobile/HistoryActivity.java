@@ -263,39 +263,47 @@ public class HistoryActivity extends ActionBarActivity {
                                 startActivity(showWarIntent);
                             } else {
 
-                                String errorStr = "The War with ID \"" + warId + "\" could not be loaded." +
-                                        "The war may have simply expired, would you like to delete it from your history?";
-
-                                AlertDialog.Builder alert = new AlertDialog.Builder(HistoryActivity.this)
-                                        .setTitle(errorStr)
-                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-
-                                                LinearLayout row = (LinearLayout) histHolder.findViewWithTag(warId);
-                                                histHolder.removeView(row);
-
-                                                histMap.remove(warId);
-
-                                                try {
-                                                    historyController.saveHistory(HistoryActivity.this, histMap);
-                                                } catch (IOException e) {
-                                                    Log.e(HISTTAG, "Couldn't save histMap: " + e.getMessage());
-
-                                                    Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
-                                                    tst.setGravity(Gravity.CENTER, 0, 0);
-                                                    tst.show();
-                                                }
-
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // do nothing
-                                            }
-                                        });
-
-                                alert.show();
+                                Toast tst = Toast.makeText(HistoryActivity.this,
+                                        "An unexpected network error occured.  Please check your connection and try again later.",
+                                        Toast.LENGTH_SHORT);
+                                tst.setGravity(Gravity.CENTER, 0, 0);
+                                tst.show();
                             }
+
+                        } else {
+
+                            String errorStr = "The War with ID \"" + warId + "\" could not be loaded." +
+                                    "The war may have simply expired, would you like to delete it from your history?";
+
+                            AlertDialog.Builder alert = new AlertDialog.Builder(HistoryActivity.this)
+                                    .setTitle(errorStr)
+                                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            LinearLayout row = (LinearLayout) histHolder.findViewWithTag(warId);
+                                            histHolder.removeView(row);
+
+                                            histMap.remove(warId);
+
+                                            try {
+                                                historyController.saveHistory(HistoryActivity.this, histMap);
+                                            } catch (IOException e) {
+                                                Log.e(HISTTAG, "Couldn't save histMap: " + e.getMessage());
+
+                                                Toast tst = Toast.makeText(HistoryActivity.this, "Could not save history.", Toast.LENGTH_SHORT);
+                                                tst.setGravity(Gravity.CENTER, 0, 0);
+                                                tst.show();
+                                            }
+
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // do nothing
+                                        }
+                                    });
+
+                            alert.show();
                         }
 
                         // Dismiss the progress dialog
