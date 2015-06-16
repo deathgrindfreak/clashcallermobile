@@ -11,3 +11,9 @@ For the source, clone the repo:
     git clone https://github.com/deathgrindfreak/clashcallermobile
   
 and import the project into the IDE of your choice (The app was developed in Android Studio).
+
+## License
+
+Copyright © 2015 Cooper Bell
+
+Distributed under the [BSD 3 Clause](http://opensource.org/licenses/BSD-3-Clause) license
