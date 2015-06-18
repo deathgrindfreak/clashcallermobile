@@ -4,7 +4,7 @@
 An unofficial android app for Clash Caller (http://www.clashcaller.com)
 
 ## Installation
-For the production release, you can download the app in the [Google Play Store](https://play.google.com/store/apps/details?id=io.deathgrindfreak.clashcallermobile)
+For the production release, you can download the app in the [Google Play Store](https://play.google.com/store/apps/details?id=io.deathgrindfreak.clashcaller)
 
 For the source, clone the repo:
 
