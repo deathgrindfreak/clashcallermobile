@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

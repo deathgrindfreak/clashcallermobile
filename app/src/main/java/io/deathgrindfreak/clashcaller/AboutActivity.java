@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import io.deathgrindfreak.util.ClashUtil;
 
 
 public class AboutActivity extends ActionBarActivity {
@@ -31,7 +31,7 @@ public class AboutActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
         TextView aboutTitle = (TextView) findViewById(R.id.aboutTitle);
         aboutTitle.setTypeface(clashFont);
@@ -43,18 +43,17 @@ public class AboutActivity extends ActionBarActivity {
         Button redEmail = (Button) findViewById(R.id.redemail);
         redEmail.setTypeface(clashFont);
         redEmail.setTextColor(getResources().getColor(R.color.clanred));
-        redEmail.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        redEmail.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
 
         Button deEmail = (Button) findViewById(R.id.deemail);
         deEmail.setTypeface(clashFont);
         deEmail.setTextColor(getResources().getColor(R.color.black));
-        deEmail.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        deEmail.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
 
         TextView small1 = (TextView) findViewById(R.id.small1);
+        small1.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         small1.setTypeface(clashFont);
         String txt1 = small1.getText().toString();
 
@@ -72,6 +71,7 @@ public class AboutActivity extends ActionBarActivity {
 
 
         TextView small2 = (TextView) findViewById(R.id.small2);
+        small2.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         small2.setTypeface(clashFont);
         String txt2 = small2.getText().toString();
 
@@ -89,9 +89,11 @@ public class AboutActivity extends ActionBarActivity {
         small2.setText(cTxt2);
 
         TextView small3 = (TextView) findViewById(R.id.small3);
+        small3.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         small3.setTypeface(clashFont);
 
         TextView small4 = (TextView) findViewById(R.id.small4);
+        small4.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         small4.setTypeface(clashFont);
     }
 

@@ -1,7 +1,6 @@
 package io.deathgrindfreak.controllers;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -19,10 +18,10 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import io.deathgrindfreak.clashcallermobile.HistoryActivity;
-import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
-import io.deathgrindfreak.clashcallermobile.R;
-import io.deathgrindfreak.clashcallermobile.StartWarActivity;
+import io.deathgrindfreak.clashcaller.HistoryActivity;
+import io.deathgrindfreak.clashcaller.JoinWarActivity;
+import io.deathgrindfreak.clashcaller.R;
+import io.deathgrindfreak.clashcaller.StartWarActivity;
 
 /**
  * Created by deathgrindfreak on 5/20/15.

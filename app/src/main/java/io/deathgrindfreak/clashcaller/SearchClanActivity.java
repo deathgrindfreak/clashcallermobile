@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;

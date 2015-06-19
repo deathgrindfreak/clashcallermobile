@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.deathgrindfreak.clashcallermobile"
+    package="io.deathgrindfreak.clashcaller"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -23,7 +23,7 @@
         android:logo="@mipmap/ic_cclogo"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="io.deathgrindfreak.clashcaller.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,39 +32,35 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".StartWarActivity"
+            android:name="io.deathgrindfreak.clashcaller.StartWarActivity"
             android:label="@string/title_activity_start_war" >
         </activity>
         <activity
-            android:name=".ShowWarActivity"
+            android:name="io.deathgrindfreak.clashcaller.ShowWarActivity"
             android:label="@string/title_activity_show_war" >
         </activity>
         <activity
-            android:name=".JoinWarActivity"
+            android:name="io.deathgrindfreak.clashcaller.JoinWarActivity"
             android:label="@string/title_activity_join_war" >
         </activity>
         <activity
-            android:name=".SearchClanActivity"
+            android:name="io.deathgrindfreak.clashcaller.SearchClanActivity"
             android:label="@string/title_activity_search_clan" >
         </activity>
         <activity
-            android:name=".AboutActivity"
+            android:name="io.deathgrindfreak.clashcaller.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
-        <activity
-            android:name=".HistoryActivity"
+            android:name="io.deathgrindfreak.clashcaller.HistoryActivity"
             android:label="@string/title_activity_history" >
         </activity>
         <activity
-            android:name=".ClashSettingsActivity"
+            android:name="io.deathgrindfreak.clashcaller.ClashSettingsActivity"
             android:label="@string/title_activity_clash_settings" >
         </activity>
         <activity
-            android:name=".HelpActivity"
+            android:name="io.deathgrindfreak.clashcaller.HelpActivity"
             android:label="@string/title_activity_help" >
         </activity>
     </application>

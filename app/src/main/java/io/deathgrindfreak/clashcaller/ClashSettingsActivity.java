@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +21,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import io.deathgrindfreak.util.ClashUtil;
 
 
 public class ClashSettingsActivity extends ActionBarActivity {
@@ -39,15 +41,17 @@ public class ClashSettingsActivity extends ActionBarActivity {
 
 
         // Set the typeface
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
 
         // Set the clan name
         TextView clanHeader = (TextView) findViewById(R.id.clanInformation);
         clanHeader.setTypeface(clashFont);
+        clanHeader.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
 
         Button clanButton = (Button) findViewById(R.id.clanNameButton);
         clanButton.setTypeface(clashFont);
+        clanButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
         SharedPreferences sharedPref = ClashSettingsActivity.this.getSharedPreferences(
                 getString(R.string.clan_name), Context.MODE_PRIVATE);
@@ -71,6 +75,7 @@ public class ClashSettingsActivity extends ActionBarActivity {
         // Set the village button
         Button villageButton = (Button) findViewById(R.id.memberNameButton);
         villageButton.setTypeface(clashFont);
+        villageButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
         SharedPreferences sharedPrefv = ClashSettingsActivity.this.getSharedPreferences(
                 getString(R.string.village_name), Context.MODE_PRIVATE);
@@ -94,6 +99,7 @@ public class ClashSettingsActivity extends ActionBarActivity {
         // Set the clan id
         Button idButton = (Button) findViewById(R.id.idButton);
         idButton.setTypeface(clashFont);
+        idButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
         SharedPreferences sharedPrefid = ClashSettingsActivity.this.getSharedPreferences(
                 getString(R.string.id_name), Context.MODE_PRIVATE);

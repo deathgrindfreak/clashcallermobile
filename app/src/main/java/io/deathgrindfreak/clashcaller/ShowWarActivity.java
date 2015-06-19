@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -40,9 +40,9 @@ import io.deathgrindfreak.model.Clan;
 import io.deathgrindfreak.model.ClanMember;
 import io.deathgrindfreak.model.General;
 import io.deathgrindfreak.model.Target;
+import io.deathgrindfreak.util.ClashUtil;
 import io.deathgrindfreak.util.JsonParse;
 import io.deathgrindfreak.util.TaskCallback;
-import io.deathgrindfreak.util.UrlParameterContainer;
 
 
 public class ShowWarActivity extends ActionBarActivity {
@@ -55,6 +55,9 @@ public class ShowWarActivity extends ActionBarActivity {
     private Clan clanInfo;
 
     private ShowWarController showWarController;
+
+    // Main view
+    private ScrollView mainView;
 
     private static final String SHOWTAG = "Show War Activity";
 
@@ -78,7 +81,6 @@ public class ShowWarActivity extends ActionBarActivity {
     private static final int STAR_BUTTON_INDEX = 4;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,18 +92,32 @@ public class ShowWarActivity extends ActionBarActivity {
         // Create the controller
         showWarController = new ShowWarController(this);
 
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
+        final int previousPosition;
         if (savedInstanceState != null) {
             clanInfo = savedInstanceState.getParcelable("clan");
+            previousPosition = savedInstanceState.getInt("previousScrollPosition");
         } else {
             Bundle data = getIntent().getExtras();
             clanInfo = data.getParcelable("clan");
+            previousPosition = data.getInt("previousScrollPosition");
         }
 
         Log.d(SHOWTAG, "Claninfo on load: " + clanInfo);
 
         displayClanInfo(clanInfo);
+
+        Log.d(SHOWTAG, "Scroll position: " + previousPosition);
+
+        // Scroll to the previous position
+        mainView.post(new Runnable() {
+
+            @Override
+            public void run() {
+                mainView.scrollTo(0, previousPosition);
+            }
+        });
     }
 
 
@@ -201,9 +217,16 @@ public class ShowWarActivity extends ActionBarActivity {
                     if (nfo != null) {
                         clanInfo = nfo;
                         showWarIntent.putExtra("clan", clanInfo);
+                        showWarIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
+                        // Dismiss the progress
                         if (progress.isShowing())
                             progress.dismiss();
+
+                        // Set the previous scroll position
+                        int index = mainView.getScrollY();
+                        Log.d(SHOWTAG, "Scroll position: " + index);
+                        showWarIntent.putExtra("previousScrollPosition", index);
 
                         startActivity(showWarIntent);
                         finish();
@@ -218,7 +241,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private void displayClanInfo(Clan clan) {
 
-        ScrollView mainView = (ScrollView) findViewById(R.id.showWarLayout);
+        mainView = (ScrollView) findViewById(R.id.showWarLayout);
 
         LinearLayout mainViewChild = new LinearLayout(this);
         mainViewChild.setGravity(Gravity.TOP);
@@ -266,13 +289,9 @@ public class ShowWarActivity extends ActionBarActivity {
         enemyNameView.setTextColor(getResources().getColor(R.color.button_blue));
 
         // Set text size
-        clanNameView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_large_material));
-        enemyNameView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_large_material));
-        vs.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
-
+        clanNameView.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
+        enemyNameView.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
+        vs.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         clanNameView.setTypeface(clashFont);
         enemyNameView.setTypeface(clashFont);
         vs.setTypeface(clashFont);
@@ -326,10 +345,8 @@ public class ShowWarActivity extends ActionBarActivity {
         clanID.setTextColor(getResources().getColor(R.color.button_blue));
 
         // Set text size
-        idText.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
-        clanID.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
+        idText.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_medium)));
+        clanID.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_medium)));
 
         clanID.setTypeface(clashFont);
 
@@ -344,8 +361,7 @@ public class ShowWarActivity extends ActionBarActivity {
         clanMessage.setPadding(0, dpAsPixels, 0, 2 * dpAsPixels);
         clanMessage.setText(gen.getClanmessage());
         clanMessage.setGravity(Gravity.CENTER_HORIZONTAL);
-        clanMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
+        clanMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_medium)));
         clanMessage.setTypeface(clashFont);
         clanMessage.setBackgroundDrawable(null);
 
@@ -610,21 +626,21 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private ImageButton makeStarSpacer() {
         ImageButton star = new ImageButton(this);
-        star.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
+        star.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, STAR_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
         return star;
     }
 
     private ImageButton makeCommentSpacer() {
         ImageButton commentButton = new ImageButton(this);
-        commentButton.setLayoutParams(new TableRow.LayoutParams(dptopx(COMMENT_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
+        commentButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, COMMENT_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
         return commentButton;
     }
 
     private Button makeNumberSpacer() {
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(dptopx(NUMBER_WIDTH), TableRow.LayoutParams.WRAP_CONTENT, 0));
+        numberButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, NUMBER_WIDTH), TableRow.LayoutParams.WRAP_CONTENT, 0));
 
         return numberButton;
     }
@@ -638,14 +654,14 @@ public class ShowWarActivity extends ActionBarActivity {
 
     private ImageButton makeXSpacer() {
         ImageButton xButton = new ImageButton(this);
-        xButton.setLayoutParams(new TableRow.LayoutParams(dptopx(X_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
+        xButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, X_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
         return xButton;
     }
 
     private ImageButton makePlusSpacer() {
         ImageButton plusButton = new ImageButton(this);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
+        plusButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, PLUS_WIDTH), TableRow.LayoutParams.WRAP_CONTENT));
 
 
         return plusButton;
@@ -669,7 +685,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         starButton.setScaleType(ImageView.ScaleType.CENTER);
 
-        starButton.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH),
+        starButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, STAR_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
 
@@ -692,7 +708,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         commentButton.setScaleType(ImageView.ScaleType.CENTER);
 
-        commentButton.setLayoutParams(new TableRow.LayoutParams(dptopx(COMMENT_WIDTH),
+        commentButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, COMMENT_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
         // Add the listener and alertdialog popup
@@ -790,12 +806,11 @@ public class ShowWarActivity extends ActionBarActivity {
     private Button makeNumberButton(int callNumber, NUMBER_COLOR color) {
 
         Button numberButton = new Button(this);
-        numberButton.setLayoutParams(new TableRow.LayoutParams(dptopx(NUMBER_WIDTH),
+        numberButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, NUMBER_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT, 0));
         numberButton.setGravity(Gravity.LEFT);
         numberButton.setText((callNumber + 1) + ".");
-        numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_medium_material));
+        numberButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_medium)));
         numberButton.setTypeface(clashFont);
         numberButton.setBackgroundDrawable(null);
 
@@ -825,7 +840,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         starButton.setScaleType(ImageView.ScaleType.CENTER);
 
-        starButton.setLayoutParams(new TableRow.LayoutParams(dptopx(STAR_WIDTH),
+        starButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, STAR_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
         // Set the listener and alertdialog popup
@@ -961,8 +976,8 @@ public class ShowWarActivity extends ActionBarActivity {
                 or.setGravity(Gravity.CENTER_HORIZONTAL);
                 or.setBackgroundColor(getResources().getColor(R.color.white));
                 or.setTypeface(clashFont);
-                or.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        getResources().getDimension(R.dimen.abc_text_size_large_material));
+                or.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(ShowWarActivity.this,
+                        getString(R.string.text_size_large)));
                 or.setTextColor(getResources().getColor(R.color.button_blue));
                 or.setText("- or -");
 
@@ -1086,7 +1101,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         ImageButton reviewButton = new ImageButton(this);
         reviewButton.setImageResource(R.drawable.review);
-        reviewButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH),
+        reviewButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, PLUS_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
         reviewButton.setOnClickListener(new View.OnClickListener() {
@@ -1119,10 +1134,9 @@ public class ShowWarActivity extends ActionBarActivity {
         Button memButton = new Button(this);
         memButton.setGravity(Gravity.LEFT);
         memButton.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, MEMBER_WEIGHT));
-        memButton.setPadding(0,0,40,0);
+        memButton.setPadding(0, 0, 40, 0);
         memButton.setText(mem.getPlayername());
-        memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        memButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         memButton.setTypeface(clashFont);
         memButton.setTextColor(getResources().getColor(R.color.button_blue));
         memButton.setBackgroundDrawable(null);
@@ -1211,7 +1225,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
         ImageButton plusButton = new ImageButton(this);
         plusButton.setImageResource(R.drawable.add);
-        plusButton.setLayoutParams(new TableRow.LayoutParams(dptopx(PLUS_WIDTH),
+        plusButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, PLUS_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
         // Add the listener and alertdialog popup
@@ -1337,7 +1351,7 @@ public class ShowWarActivity extends ActionBarActivity {
         ImageButton xButton = new ImageButton(this);
         xButton.setImageResource(R.drawable.x_grey);
         xButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        xButton.setLayoutParams(new TableRow.LayoutParams(dptopx(X_WIDTH),
+        xButton.setLayoutParams(new TableRow.LayoutParams(ClashUtil.dptopx(this, X_WIDTH),
                 TableRow.LayoutParams.WRAP_CONTENT));
 
         xButton.setOnClickListener(new View.OnClickListener() {
@@ -1471,8 +1485,7 @@ public class ShowWarActivity extends ActionBarActivity {
             // Set the title
             TextView logTitle = new TextView(this);
             logTitle.setTextColor(getResources().getColor(R.color.button_blue));
-            logTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimension(R.dimen.abc_text_size_large_material));
+            logTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
             logTitle.setTypeface(clashFont);
             logTitle.setGravity(Gravity.CENTER_HORIZONTAL);
             logTitle.setPadding(0, 0, 0, 20);
@@ -1486,8 +1499,7 @@ public class ShowWarActivity extends ActionBarActivity {
 
                 TextView logLine = new TextView(this);
                 logLine.setTextColor(getResources().getColor(R.color.number_grey));
-                logLine.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        getResources().getDimension(R.dimen.abc_text_size_small_material));
+                logLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
                 logLine.setTypeface(clashFont);
 
                 Spannable goldLine = new SpannableString(line);
@@ -1501,18 +1513,6 @@ public class ShowWarActivity extends ActionBarActivity {
         }
 
         return logLayout;
-    }
-
-
-    private int dptopx(int dp) {
-
-        DisplayMetrics m = getResources().getDisplayMetrics();
-        Log.d(SHOWTAG, "Current Device size: "
-                + (m.widthPixels / m.densityDpi)
-                + "x" + (m.heightPixels / m.densityDpi));
-        Log.d(SHOWTAG, "Current Device dpi: " + m.densityDpi);
-
-        return dp * (m.densityDpi / 160);
     }
 
 

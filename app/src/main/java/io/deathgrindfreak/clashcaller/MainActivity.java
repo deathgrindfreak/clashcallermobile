@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -6,10 +6,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import io.deathgrindfreak.util.ClashUtil;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -27,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
         // Set the Clash of Clans font
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
         // Set the button typeface
         Button swarButton = (Button) findViewById(R.id.startWarButton);
@@ -40,9 +43,13 @@ public class MainActivity extends ActionBarActivity {
         Button histButton = (Button) findViewById(R.id.historyButton);
 
         swarButton.setTypeface(clashFont);
+        swarButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_xlarge)));
         jwarButton.setTypeface(clashFont);
+        jwarButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_xlarge)));
         histButton.setTypeface(clashFont);
+        histButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_xlarge)));
         search.setTypeface(clashFont);
+        search.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_xlarge)));
 
         //addSettingsListener();
     }

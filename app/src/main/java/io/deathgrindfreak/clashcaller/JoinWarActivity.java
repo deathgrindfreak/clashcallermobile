@@ -1,13 +1,13 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,19 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.ClashUtil;
 import io.deathgrindfreak.util.JsonParse;
 import io.deathgrindfreak.util.TaskCallback;
-import io.deathgrindfreak.util.UrlParameterContainer;
 
 public class JoinWarActivity extends ActionBarActivity {
 
@@ -54,13 +51,15 @@ public class JoinWarActivity extends ActionBarActivity {
 
 
         // Set the Clash of Clans font
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
         // Set the button typeface
         Button submit = (Button) findViewById(R.id.joinSubmitButton);
         TextView joinWar = (TextView) findViewById(R.id.joinWarText);
+        joinWar.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
 
         submit.setTypeface(clashFont);
+        submit.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
         submit.setTextColor(getResources().getColor(R.color.white));
         joinWar.setTypeface(clashFont);
     }

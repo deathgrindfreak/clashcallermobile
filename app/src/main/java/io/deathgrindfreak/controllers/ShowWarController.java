@@ -1,18 +1,15 @@
 package io.deathgrindfreak.controllers;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.util.Log;
 
 import java.util.Map;
 
-import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
-import io.deathgrindfreak.clashcallermobile.R;
-import io.deathgrindfreak.clashcallermobile.ShowWarActivity;
-import io.deathgrindfreak.clashcallermobile.StartWarActivity;
-import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.clashcaller.JoinWarActivity;
+import io.deathgrindfreak.clashcaller.R;
+import io.deathgrindfreak.clashcaller.ShowWarActivity;
+import io.deathgrindfreak.clashcaller.StartWarActivity;
 import io.deathgrindfreak.util.ApiClassConnector;
-import io.deathgrindfreak.util.JsonParse;
 import io.deathgrindfreak.util.TaskCallback;
 import io.deathgrindfreak.util.UrlParameterContainer;
 

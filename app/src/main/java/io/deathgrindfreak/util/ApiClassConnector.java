@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Gravity;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -15,8 +14,6 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import io.deathgrindfreak.clashcallermobile.JoinWarActivity;
 
 /**
  * Created by jcbell on 4/19/2015.

@@ -1,4 +1,4 @@
-package io.deathgrindfreak.clashcallermobile;
+package io.deathgrindfreak.clashcaller;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -35,9 +35,9 @@ import java.util.List;
 import io.deathgrindfreak.controllers.HistoryController;
 import io.deathgrindfreak.controllers.ShowWarController;
 import io.deathgrindfreak.model.Clan;
+import io.deathgrindfreak.util.ClashUtil;
 import io.deathgrindfreak.util.JsonParse;
 import io.deathgrindfreak.util.TaskCallback;
-import io.deathgrindfreak.util.UrlParameterContainer;
 
 
 public class HistoryActivity extends ActionBarActivity {
@@ -70,7 +70,7 @@ public class HistoryActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         getSupportActionBar().setIcon(R.mipmap.ic_cclogo);
 
-        clashFont = Typeface.createFromAsset(getAssets(), "Supercell-magic-webfont.ttf");
+        clashFont = Typeface.createFromAsset(getAssets(), getString(R.string.font));
 
         historyController = new HistoryController(this);
         showWarController = new ShowWarController();
@@ -148,9 +148,8 @@ public class HistoryActivity extends ActionBarActivity {
         // Set the main title
         TextView errTitle = new TextView(this);
         errTitle.setGravity(Gravity.CENTER);
-        errTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
-        errTitle.setTextColor(getResources().getColor(R.color.number_grey));
+        errTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
+        errTitle.setTextColor(getResources().getColor(R.color.dark_grey));
         errTitle.setText("Nothing to display.");
 
         mainView.addView(errTitle);
@@ -188,8 +187,7 @@ public class HistoryActivity extends ActionBarActivity {
         histTitle.setTypeface(clashFont);
         histTitle.setTextColor(getResources().getColor(R.color.button_blue));
         histTitle.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-        histTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_large_material));
+        histTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_large)));
         histTitle.setText("War History");
 
         histHolder.addView(histTitle);
@@ -330,11 +328,10 @@ public class HistoryActivity extends ActionBarActivity {
         warIdLink.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 10f));
         warIdLink.setTextColor(getResources().getColor(R.color.button_blue));
-        warIdLink.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        warIdLink.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
 
         Spannable warStr = new SpannableString("WarID: " + warId);
-        warStr.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.number_grey)),
+        warStr.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.dark_grey)),
                 0, "WarID: ".length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         warStr.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.button_blue)),
                 "WarID: ".length(), warStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -405,9 +402,8 @@ public class HistoryActivity extends ActionBarActivity {
 
         TextView enemy = new TextView(this);
         enemy.setTypeface(clashFont);
-        enemy.setTextColor(getResources().getColor(R.color.number_grey));
-        enemy.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        enemy.setTextColor(getResources().getColor(R.color.dark_grey));
+        enemy.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         enemy.setText(attrs.get("clan") + " vs. " + attrs.get("enemy"));
         enemy.setEllipsize(TextUtils.TruncateAt.END);
         enemy.setSingleLine(true);
@@ -415,16 +411,14 @@ public class HistoryActivity extends ActionBarActivity {
 
         TextView date = new TextView(this);
         date.setTypeface(clashFont);
-        date.setTextColor(getResources().getColor(R.color.number_grey));
-        date.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        date.setTextColor(getResources().getColor(R.color.dark_grey));
+        date.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         date.setText("Start Date: " + attrs.get("date"));
 
         TextView size = new TextView(this);
         size.setTypeface(clashFont);
-        size.setTextColor(getResources().getColor(R.color.number_grey));
-        size.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.abc_text_size_small_material));
+        size.setTextColor(getResources().getColor(R.color.dark_grey));
+        size.setTextSize(TypedValue.COMPLEX_UNIT_PX, ClashUtil.dptopx(this, getString(R.string.text_size_small)));
         size.setText("Size: " + attrs.get("size") + " x " + attrs.get("size"));
 
 
