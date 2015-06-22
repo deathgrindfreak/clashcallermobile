@@ -4,6 +4,8 @@
 
 Clash Caller Mobile is an Android app designed to interact with the [Clash Caller](http://clashcaller.com) site through its API.  For those unfamilar with the Clash Caller website, it intends to help in organizing wars for the popular [Clash of Clans](http://supercell.com/en/games/clashofclans/) mobile game by allowing players to "call" bases to attack as well as chronicling the results of their attacks for others to see.  
 
+Note that Clash Caller Mobile **does not** interact with the Clash of Clans game in any way (if Supercell decides to provide the public with an official API this will change of course.  I, however, wouldn't hold my breath ...)
+
 ## Main View
 
 The main view should be the first thing you see when the app loads.  The first view we'll cover is the Start War View which allows clan leaders and co-leaders (or other designated individuals) to start a war from their phone.
