@@ -166,6 +166,20 @@ public class ShowWarActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // Share button for war id
+        if (id == R.id.share_button) {
+
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            String warLink = "http://clashofclans.com/war/" + clanInfo.getGeneral().getWarcode();
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Clash Caller link for war against clan: "
+                    + clanInfo.getGeneral().getEnemyname());
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, warLink);
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+            return true;
+        }
+
         if (id == R.id.refresh_button) {
             refreshPage();
             return true;

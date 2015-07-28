@@ -7,6 +7,11 @@
         android:title="refresh"
         android:icon="@drawable/ic_menu_refresh"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/share_button"
+        android:title="share"
+        android:icon="@drawable/ic_menu_share"
+        app:showAsAction="always"/>
     <item android:id="@+id/action_home" android:title="@string/action_home"
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
